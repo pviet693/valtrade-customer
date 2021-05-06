@@ -1,0 +1,75 @@
+.slide-nav {
+    flex-basis: 220px;
+    height: auto;
+    margin-top: 40px;
+
+    ul {
+        li {
+            list-style-type: none;
+            margin: 10px 0;
+
+            a {
+                &:hover {
+                    text-decoration: none;
+                    color: #0795DF;
+                    font-weight: 600;
+                }
+
+                i {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 26px;
+                    height: 26px;
+                    color: #fff;
+                    border-radius: 50%;
+                    margin-right: 10px;
+                    font-size: 14px;
+                }
+
+                .fa-user-edit {
+                    background-color: rgb(255, 193, 7);
+                }
+
+                .fa-bell {
+                    background-color: rgb(238, 77, 45);
+                }
+
+                .fa-book {
+                    background-color: rgb(68, 181, 255);
+                }
+
+                .fa-address-card {
+                    background-color: rgb(255, 119, 97);
+                }
+
+                .fa-key {
+                    background-color: rgb(255, 174, 4);
+                }
+
+                .fa-comment {
+                    background-color: rgb(0, 132, 255);
+                }
+            }
+        }
+
+        .slide-nav-avatar {
+            img {
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                margin-right: 10px;
+                object-fit: cover;
+            }
+
+            div {
+                div {
+                    &:nth-child(2) {
+                        color: #ddd;
+                        font-weight: 500;
+                    }
+                }
+            }
+        }
+    }
+}

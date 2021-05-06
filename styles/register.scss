@@ -1,0 +1,61 @@
+.register {
+    background-color: #F6F6F6;
+    width: 100%;
+    height: auto;
+    display: block;
+
+    .register-title {
+        font-size: 22px;
+        color: #5A616F;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 115px;
+
+        a {
+            color: #0795DF;
+            margin-left: 5px;
+            &:hover {
+                text-decoration: none;
+            }
+        }
+    }
+
+    .register-content {
+        background-color: #fff;
+        width: 100%;
+        height: auto;
+        border-radius: 4px;
+        display: block;
+        padding: 20px;
+
+        .btn-register {
+            background-color: #0795DF;
+            color: #fff;
+            font-size: 18px;
+        }
+
+        .btn-register-google {
+            background-color: #DC4E41 !important;
+            color: #fff !important;
+            font-size: 18px !important;
+            justify-content: center;
+            height: 45px;
+            div {
+
+                display: none;
+            }
+        }
+
+        .btn-register-facebook {
+            background-color: #2C65D8;
+            color: #fff;
+            font-size: 18px;
+            height: 45px;
+        }
+    }
+
+    .register-footer {
+        height: 20px;
+    }
+}
