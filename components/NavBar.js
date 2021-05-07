@@ -45,13 +45,13 @@ function NavBar() {
                         Bảng tin
                     </div>
                     <div className="navbar-link-item">
-                        <i className="far fa-bell" aria-hidden></i>
+                        <i className="pi pi-bell" aria-hidden></i>
                         <div>
                             Thông báo
                         </div>
                     </div>
                     <div className="navbar-link-item">
-                        <i className="far fa-question-circle" aria-hidden></i>
+                        <i className="pi pi-question-circle" aria-hidden></i>
                         <div>
                             Trợ giúp
                         </div>

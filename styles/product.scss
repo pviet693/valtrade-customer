@@ -1,0 +1,268 @@
+.product {
+    background-color: #F6F6F6;
+    width: 100%;
+    color: #686868 !important;
+
+    a {
+        &:hover {
+            text-decoration: none;
+        }
+    }
+
+    .product-content {
+        width: 100%;
+        height: auto;
+        padding: 10px 0;
+        display: flex;
+        flex-direction: row;
+        flex-grow: 1;
+        flex-wrap: nowrap;
+        flex-shrink: 1;
+
+        .content-filter {
+            flex-basis: 300px;
+            max-width: 300px;
+            height: auto;
+            background-color: #fff;
+            padding: 20px;
+
+            ::-webkit-scrollbar {
+                width: 6px !important;
+                height: auto !important;
+            }
+
+            ::-webkit-scrollbar-track {
+                background: #80bdfa;
+            }
+
+            ::-webkit-scrollbar-thumb {
+                background: #0795ff;
+            }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background: #0795df;
+            }
+
+            .filter-row {
+                margin-bottom: 20px;
+
+                &:last-child {
+                    margin-bottom: 0;
+                }
+
+                .filter-row-title {
+                    font-size: 16px;
+                    font-weight: 600;
+                    margin-bottom: 15px;
+                }
+
+                .filter-row-content {
+                    max-height: 300px;
+                    overflow: auto;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: flex-start;
+                    padding: 10px;
+
+                    .img-box {
+                        width: 20px;
+                        height: 20px;
+                        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+                        margin-right: 10px;
+
+                        img {
+                            width: 100%;
+                            height: 100%;
+                            object-fit: contain;
+                        }
+                    }
+
+                    .filter-category-row {
+                        margin-bottom: 10px;
+                        width: 100%;
+
+                        &:last-child {
+                            margin-bottom: 0;
+                        }
+
+                        i {
+                            color: #0795df;
+                        }
+                    }
+
+                    .filter-price-row {
+                        display: flex;
+                        align-items: center;
+                        justify-content: flex-start;
+                        background-color: #F6F6F6;
+                        padding: 20px;
+                        width: 100%;
+                        margin-bottom: 20px;
+
+                        &:last-child {
+                            margin-bottom: 0;
+                        }
+
+                        .price-value {
+                            font-size: 1.1rem;
+                            font-weight: normal;
+                            margin-left: 20px;
+                        }
+                    }
+                }
+            }
+        }
+
+        .content-list {
+            margin-left: 10px;
+            flex-basis: calc(100% - 310px);
+            
+            .list-order {
+                background-color: #fff;
+                margin-bottom: 20px;
+                padding: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .list-container {
+                background-color: #fff;
+                padding: 20px;
+
+                .product-card {
+                    padding: 20px;
+                    cursor: pointer;
+                    box-shadow: 0px 2px 8px rgb(180 180 180);
+                    position: relative;
+                    font-size: 0.8rem !important;
+
+                    &:hover {
+                        box-shadow: 0px 2px 16px rgb(160 160 160);
+
+                        .img-product-box {
+                            box-shadow: unset;
+                            border: 1px solid #80bdff;
+                        }
+
+                        .product-action {
+                            display: flex;
+                        }
+                    }
+
+                    .img-product-box {
+                        width: 180px !important;
+                        height: 180px;
+                        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+
+                        img {
+                            width: 100%;
+                            height: 100%;
+                            object-fit: contain;
+                        }
+                    }
+
+                    .product-info {
+                        margin-top: 0.5rem;
+
+                        .product-name {
+                            margin-bottom: 0.5rem;
+                        }
+
+                        .product-price {
+                            color: #FF0000;
+                            font-weight: 550;
+                        }
+
+                        .product-brand {
+                            font-size: 1em;
+                        }
+
+                        .product-warranty {
+                            font-size: 1em;
+
+                            span {
+                                color: #5CB85C;
+                                font-weight: 550;
+                            }
+                        }
+
+                        .product-sku {
+                            font-size: 1em;
+
+                            span {
+                                font-weight: 550;
+                            }
+                        }
+
+                        .product-primary-price {
+                            font-size: 1em;
+
+                            span {
+                                font-weight: 550;
+                                color: #0795DF;
+                            }
+                        }
+                    }
+
+                    .product-action {
+                        display: none;
+                        position: absolute;
+                        top: 0;
+                        bottom: 0;
+                        left: 0;
+                        right: 0;
+                        background-color: rgba(#80bdff, 0.6);
+                        z-index: 1;
+                        align-items: center;
+                        flex-direction: column;
+                        justify-content: center;
+
+                        .button-add-to-cart {
+                            width: 165px;
+                            height: 40px;
+                            border-radius: 5px;
+                            text-align: center;
+                            background-color: #fff;
+                            color: #0795DF;
+                            border: 0.5px solid #0795DF;
+
+                            &:focus {
+                                outline: unset;
+                            }
+                        }
+
+                        .button-buy-now {
+                            width: 165px;
+                            height: 40px;
+                            border-radius: 5px;
+                            text-align: center;
+                            background-color: #0795DF;
+                            color: #fff;
+                            margin-top: 20px;
+
+                            &:focus {
+                                outline: unset;
+                            }
+                        }
+
+                        .button-detail {
+                            width: 165px;
+                            height: 40px;
+                            border-radius: 5px;
+                            text-align: center;
+                            background-color: #0795DF;
+                            color: #fff;
+                            margin-top: 20px;
+
+                            &:focus {
+                                outline: unset;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
