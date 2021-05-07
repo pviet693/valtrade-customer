@@ -1,13 +1,29 @@
-import { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Head from 'next/head';
 import Slider from "react-slick";
 import Link from 'next/link';
 import * as common from './../utils/common';
 import api from './../utils/backend-api.utils';
+import Brand from "../components/Brand";
+import Product from "../components/Product";
+import Category from "../components/Category";
 
-const Home = (props) => {
-    const { brands, categories, products } = props;
+const Home = ({ brands, categories, products }) => {
+    const size = 10;
 
+    const brand = brands.slice(0,size).map((x,index) => 
+        <Brand key={index.toString()} name={x.name} image={x.image} />
+    );
+
+    const product = products.map((x, index) => 
+        <Product key={index.toString()} name={x.name} image={x.image}
+        price={x.price} brand={x.brand.name} sku={x.sku} oldPrice={x.oldPrice} />
+    );
+
+    const category = categories.map((x, index) => (
+        <Category key={index.toString()} name={x.name} image={x.image} />
+    ));
+    
     const settings = {
         className: "text-center",
         centerMode: true,
@@ -40,42 +56,7 @@ const Home = (props) => {
                                 </Link>
                             </div>
                             <Slider {...settings}>
-                                <div className="brand-card">
-                                    <div className="img-brand-box">
-                                        <img src="/static/adidas-3-la.jpg" />
-                                    </div>
-                                    <div className="brand-name">Adidas</div>
-                                </div>
-                                <div className="brand-card">
-                                    <div className="img-brand-box">
-                                        <img src="/static/adidas-3-la.jpg" />
-                                    </div>
-                                    <div className="brand-name">Adidas</div>
-                                </div>
-                                <div className="brand-card">
-                                    <div className="img-brand-box">
-                                        <img src="/static/adidas-3-la.jpg" />
-                                    </div>
-                                    <div className="brand-name">Adidas</div>
-                                </div>
-                                <div className="brand-card">
-                                    <div className="img-brand-box">
-                                        <img src="/static/adidas-3-la.jpg" />
-                                    </div>
-                                    <div className="brand-name">Adidas</div>
-                                </div>
-                                <div className="brand-card">
-                                    <div className="img-brand-box">
-                                        <img src="/static/adidas-3-la.jpg" />
-                                    </div>
-                                    <div className="brand-name">Adidas</div>
-                                </div>
-                                <div className="brand-card">
-                                    <div className="img-brand-box">
-                                        <img src="/static/adidas-3-la.jpg" />
-                                    </div>
-                                    <div className="brand-name">Adidas</div>
-                                </div>
+                                {brand}
                             </Slider>
                         </div>
                         <div className="content-category">
@@ -93,71 +74,7 @@ const Home = (props) => {
                                 </Link>
                             </div>
                             <div className="row">
-                                <div className="col-md-3 d-flex align-items-center flex-column">
-                                    <div className="category-card">
-                                        <div className="img-category-box">
-                                            <img src="/static/adidas-3-la.jpg" />
-                                        </div>
-                                        <div className="category-name">Adidas</div>
-                                    </div>
-                                </div>
-                                <div className="col-md-3 d-flex align-items-center flex-column">
-                                    <div className="category-card">
-                                        <div className="img-category-box">
-                                            <img src="/static/adidas-3-la.jpg" />
-                                        </div>
-                                        <div className="category-name">Adidas</div>
-                                    </div>
-                                </div>
-                                <div className="col-md-3 d-flex align-items-center flex-column">
-                                    <div className="category-card">
-                                        <div className="img-category-box">
-                                            <img src="/static/adidas-3-la.jpg" />
-                                        </div>
-                                        <div className="category-name">Adidas</div>
-                                    </div>
-                                </div>
-                                <div className="col-md-3 d-flex align-items-center flex-column">
-                                    <div className="category-card">
-                                        <div className="img-category-box">
-                                            <img src="/static/adidas-3-la.jpg" />
-                                        </div>
-                                        <div className="category-name">Adidas</div>
-                                    </div>
-                                </div>
-
-                                <div className="col-md-3 d-flex align-items-center flex-column">
-                                    <div className="category-card">
-                                        <div className="img-category-box">
-                                            <img src="/static/adidas-3-la.jpg" />
-                                        </div>
-                                        <div className="category-name">Adidas</div>
-                                    </div>
-                                </div>
-                                <div className="col-md-3 d-flex align-items-center flex-column">
-                                    <div className="category-card">
-                                        <div className="img-category-box">
-                                            <img src="/static/adidas-3-la.jpg" />
-                                        </div>
-                                        <div className="category-name">Adidas</div>
-                                    </div>
-                                </div>
-                                <div className="col-md-3 d-flex align-items-center flex-column">
-                                    <div className="category-card">
-                                        <div className="img-category-box">
-                                            <img src="/static/adidas-3-la.jpg" />
-                                        </div>
-                                        <div className="category-name">Adidas</div>
-                                    </div>
-                                </div>
-                                <div className="col-md-3 d-flex align-items-center flex-column">
-                                    <div className="category-card">
-                                        <div className="img-category-box">
-                                            <img src="/static/adidas-3-la.jpg" />
-                                        </div>
-                                        <div className="category-name">Adidas</div>
-                                    </div>
-                                </div>
+                                {category}
                             </div>
                         </div>
 
@@ -176,206 +93,7 @@ const Home = (props) => {
                                 </Link>
                             </div>
                             <div className="row px-3 justify-content-center">
-                                <div className="col-md-3 d-flex align-items-center flex-column mb-4">
-                                    <div className="product-card">
-                                        <div className="img-product-box">
-                                            <img src="/static/adidas-3-la.jpg" />
-                                        </div>
-                                        <div className="product-info">
-                                            <div className="product-name">Giày adidas abc dsde jdkls iui</div>
-                                            <div className="product-price">4.400.400 đ</div>
-                                            <div className="product-brand">Thương hiệu: ABC</div>
-                                            <div className="product-warranty">Tình trạng bảo hành: <span>Vẫn còn</span></div>
-                                            <div className="product-sku">SKU: <span>SKU123</span></div>
-                                            <div className="product-primary-price">Giá gốc: <span>5.000.000 đ</span></div>
-                                        </div>
-                                        <div className="product-action">
-                                            <button className="btn button-add-to-cart">Thêm vào giỏ hàng</button>
-                                            <button className="btn button-buy-now">Mua ngay</button>
-                                            <button className="btn button-detail">Chi tiết</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-md-3 d-flex align-items-center flex-column mb-4">
-                                    <div className="product-card">
-                                        <div className="img-product-box">
-                                            <img src="/static/adidas-3-la.jpg" />
-                                        </div>
-                                        <div className="product-info">
-                                            <div className="product-name">Giày adidas abc dsde jdkls iui</div>
-                                            <div className="product-price">4.400.400 đ</div>
-                                            <div className="product-brand">Thương hiệu: ABC</div>
-                                            <div className="product-warranty">Tình trạng bảo hành: <span>Vẫn còn</span></div>
-                                            <div className="product-sku">SKU: <span>SKU123</span></div>
-                                            <div className="product-primary-price">Giá gốc: <span>5.000.000 đ</span></div>
-                                        </div>
-                                        <div className="product-action">
-                                            <button className="btn button-add-to-cart">Thêm vào giỏ hàng</button>
-                                            <button className="btn button-buy-now">Mua ngay</button>
-                                            <button className="btn button-detail">Chi tiết</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-md-3 d-flex align-items-center flex-column mb-4">
-                                    <div className="product-card">
-                                        <div className="img-product-box">
-                                            <img src="/static/adidas-3-la.jpg" />
-                                        </div>
-                                        <div className="product-info">
-                                            <div className="product-name">Giày adidas abc dsde jdkls iui</div>
-                                            <div className="product-price">4.400.400 đ</div>
-                                            <div className="product-brand">Thương hiệu: ABC</div>
-                                            <div className="product-warranty">Tình trạng bảo hành: <span>Vẫn còn</span></div>
-                                            <div className="product-sku">SKU: <span>SKU123</span></div>
-                                            <div className="product-primary-price">Giá gốc: <span>5.000.000 đ</span></div>
-                                        </div>
-                                        <div className="product-action">
-                                            <button className="btn button-add-to-cart">Thêm vào giỏ hàng</button>
-                                            <button className="btn button-buy-now">Mua ngay</button>
-                                            <button className="btn button-detail">Chi tiết</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-md-3 d-flex align-items-center flex-column mb-4">
-                                    <div className="product-card">
-                                        <div className="img-product-box">
-                                            <img src="/static/adidas-3-la.jpg" />
-                                        </div>
-                                        <div className="product-info">
-                                            <div className="product-name">Giày adidas abc dsde jdkls iui</div>
-                                            <div className="product-price">4.400.400 đ</div>
-                                            <div className="product-brand">Thương hiệu: ABC</div>
-                                            <div className="product-warranty">Tình trạng bảo hành: <span>Vẫn còn</span></div>
-                                            <div className="product-sku">SKU: <span>SKU123</span></div>
-                                            <div className="product-primary-price">Giá gốc: <span>5.000.000 đ</span></div>
-                                        </div>
-                                        <div className="product-action">
-                                            <button className="btn button-add-to-cart">Thêm vào giỏ hàng</button>
-                                            <button className="btn button-buy-now">Mua ngay</button>
-                                            <button className="btn button-detail">Chi tiết</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-md-3 d-flex align-items-center flex-column mb-4">
-                                    <div className="product-card">
-                                        <div className="img-product-box">
-                                            <img src="/static/adidas-3-la.jpg" />
-                                        </div>
-                                        <div className="product-info">
-                                            <div className="product-name">Giày adidas abc dsde jdkls iui</div>
-                                            <div className="product-price">4.400.400 đ</div>
-                                            <div className="product-brand">Thương hiệu: ABC</div>
-                                            <div className="product-warranty">Tình trạng bảo hành: <span>Vẫn còn</span></div>
-                                            <div className="product-sku">SKU: <span>SKU123</span></div>
-                                            <div className="product-primary-price">Giá gốc: <span>5.000.000 đ</span></div>
-                                        </div>
-                                        <div className="product-action">
-                                            <button className="btn button-add-to-cart">Thêm vào giỏ hàng</button>
-                                            <button className="btn button-buy-now">Mua ngay</button>
-                                            <button className="btn button-detail">Chi tiết</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-md-3 d-flex align-items-center flex-column mb-4">
-                                    <div className="product-card">
-                                        <div className="img-product-box">
-                                            <img src="/static/adidas-3-la.jpg" />
-                                        </div>
-                                        <div className="product-info">
-                                            <div className="product-name">Giày adidas abc dsde jdkls iui</div>
-                                            <div className="product-price">4.400.400 đ</div>
-                                            <div className="product-brand">Thương hiệu: ABC</div>
-                                            <div className="product-warranty">Tình trạng bảo hành: <span>Vẫn còn</span></div>
-                                            <div className="product-sku">SKU: <span>SKU123</span></div>
-                                            <div className="product-primary-price">Giá gốc: <span>5.000.000 đ</span></div>
-                                        </div>
-                                        <div className="product-action">
-                                            <button className="btn button-add-to-cart">Thêm vào giỏ hàng</button>
-                                            <button className="btn button-buy-now">Mua ngay</button>
-                                            <button className="btn button-detail">Chi tiết</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-md-3 d-flex align-items-center flex-column mb-4">
-                                    <div className="product-card">
-                                        <div className="img-product-box">
-                                            <img src="/static/adidas-3-la.jpg" />
-                                        </div>
-                                        <div className="product-info">
-                                            <div className="product-name">Giày adidas abc dsde jdkls iui</div>
-                                            <div className="product-price">4.400.400 đ</div>
-                                            <div className="product-brand">Thương hiệu: ABC</div>
-                                            <div className="product-warranty">Tình trạng bảo hành: <span>Vẫn còn</span></div>
-                                            <div className="product-sku">SKU: <span>SKU123</span></div>
-                                            <div className="product-primary-price">Giá gốc: <span>5.000.000 đ</span></div>
-                                        </div>
-                                        <div className="product-action">
-                                            <button className="btn button-add-to-cart">Thêm vào giỏ hàng</button>
-                                            <button className="btn button-buy-now">Mua ngay</button>
-                                            <button className="btn button-detail">Chi tiết</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-md-3 d-flex align-items-center flex-column mb-4">
-                                    <div className="product-card">
-                                        <div className="img-product-box">
-                                            <img src="/static/adidas-3-la.jpg" />
-                                        </div>
-                                        <div className="product-info">
-                                            <div className="product-name">Giày adidas abc dsde jdkls iui</div>
-                                            <div className="product-price">4.400.400 đ</div>
-                                            <div className="product-brand">Thương hiệu: ABC</div>
-                                            <div className="product-warranty">Tình trạng bảo hành: <span>Vẫn còn</span></div>
-                                            <div className="product-sku">SKU: <span>SKU123</span></div>
-                                            <div className="product-primary-price">Giá gốc: <span>5.000.000 đ</span></div>
-                                        </div>
-                                        <div className="product-action">
-                                            <button className="btn button-add-to-cart">Thêm vào giỏ hàng</button>
-                                            <button className="btn button-buy-now">Mua ngay</button>
-                                            <button className="btn button-detail">Chi tiết</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-md-3 d-flex align-items-center flex-column mb-4">
-                                    <div className="product-card">
-                                        <div className="img-product-box">
-                                            <img src="/static/adidas-3-la.jpg" />
-                                        </div>
-                                        <div className="product-info">
-                                            <div className="product-name">Giày adidas abc dsde jdkls iui</div>
-                                            <div className="product-price">4.400.400 đ</div>
-                                            <div className="product-brand">Thương hiệu: ABC</div>
-                                            <div className="product-warranty">Tình trạng bảo hành: <span>Vẫn còn</span></div>
-                                            <div className="product-sku">SKU: <span>SKU123</span></div>
-                                            <div className="product-primary-price">Giá gốc: <span>5.000.000 đ</span></div>
-                                        </div>
-                                        <div className="product-action">
-                                            <button className="btn button-add-to-cart">Thêm vào giỏ hàng</button>
-                                            <button className="btn button-buy-now">Mua ngay</button>
-                                            <button className="btn button-detail">Chi tiết</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-md-3 d-flex align-items-center flex-column mb-4">
-                                    <div className="product-card">
-                                        <div className="img-product-box">
-                                            <img src="/static/adidas-3-la.jpg" />
-                                        </div>
-                                        <div className="product-info">
-                                            <div className="product-name">Giày adidas abc dsde jdkls iui</div>
-                                            <div className="product-price">4.400.400 đ</div>
-                                            <div className="product-brand">Thương hiệu: ABC</div>
-                                            <div className="product-warranty">Tình trạng bảo hành: <span>Vẫn còn</span></div>
-                                            <div className="product-sku">SKU: <span>SKU123</span></div>
-                                            <div className="product-primary-price">Giá gốc: <span>5.000.000 đ</span></div>
-                                        </div>
-                                        <div className="product-action">
-                                            <button className="btn button-add-to-cart">Thêm vào giỏ hàng</button>
-                                            <button className="btn button-buy-now">Mua ngay</button>
-                                            <button className="btn button-detail">Chi tiết</button>
-                                        </div>
-                                    </div>
-                                </div>
+                                {product}
                             </div>
                         </div>
                     </div>
@@ -392,12 +110,81 @@ export async function getServerSideProps(ctx) {
 
     try {
         // call api list brand
+        const res = await api.buyer.getListBrand();
+        if (res.status === 200) {
+            if (res.data.code === 200) {
+                res.data.result.map(x => {
+                    let brand = {
+                        id: "",
+                        name: "",
+                        description: "",
+                        image: ""
+                    };
+                    brand.id = x._id || "";
+                    brand.name = x.name || "";
+                    brand.description = x.description || "";
+                    brand.image = x.imageUrl.url || "";
+                    brands.push(brand);
+                })
+            } else {
+                let message = res.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
+                common.Toast(message, 'error');
+            }
+        }
         // call api list category
+        const res1 = await api.buyer.getListCategory();
+        if (res1.status === 200) {
+            if (res1.data.code === 200) {
+                res1.data.list.map(x => {
+                    let category = {
+                        id: "",
+                        name: "",
+                        image: ""
+                    };
+                    category.id = x.childId || "";
+                    category.name = x.childName || "";
+                    category.image = x.imageUrl.url || "";
+                    categories.push(category);
+                });
+            } else {
+                let message = res1.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
+                common.Toast(message, 'error');
+            }
+        }
         // call api list product
+
+        const res2 = await api.buyer.getListProduct();
+            if (res2.status === 200){
+                if (res2.data.code === 200){
+                    res2.data.result.map(x => {
+                        let product = {
+                            id: "",
+                            name: "",
+                            price: "",
+                            brand: "",
+                            sku: "",
+                            oldPrice: "",
+                            image: "",
+                        };
+                        product.id = x._id || "";
+                        product.name = x.name || "";
+                        product.price = x.price || "";
+                        product.oldPrice = x.oldPrice || "";
+                        product.brand = x.brand || "";
+                        product.sku = x.sku || "";  
+                        product.image = x.arrayImage[0].url || "";  
+                        products.push(product);          
+                    });
+                }
+                else {
+                    let message = res2.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
+                    common.Toast(message, 'error');
+                }
+            }
+        
     } catch(error) {
         console.log(error);
     }
-
     return {
         props: { brands: brands, categories: categories, products: products },
     }

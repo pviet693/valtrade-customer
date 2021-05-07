@@ -71,6 +71,15 @@ const api = {
                 'Content-Type': 'multipart/form-data'
             }
             return axios.put(url.buyer.putUpdateAvatar, body, newConfig);
+        },
+        getListBrand: () => {
+            return axios.get(url.buyer.getListBrand());
+        },
+        getListCategory: () => {
+            return axios.get(url.buyer.getListCategory());
+        },  
+        getListProduct: () => {
+            return axios.get(url.buyer.getListProduct());
         }
     },
     product: {

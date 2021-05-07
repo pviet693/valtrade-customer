@@ -8,7 +8,8 @@ import { TabMenu } from 'primereact/tabmenu';
 import { Paginator } from 'primereact/paginator';
 import { useState } from 'react';
 
-const Product = () => {
+const Product = ({brands, categories, products}) => {
+    console.log(products);
     const items = [
         { label: 'SẢN PHẨM MỚI', icon: 'pi pi-fw pi-home' },
         { label: 'GIÁ CAO', icon: 'pi pi-arrow-up' },
@@ -27,14 +28,14 @@ const Product = () => {
     }
 
     const CategoryCard = (props) => {
-        const { name, src } = props;
+        const { name, image } = props;
         return (
             <Link href="/product">
                 <a className="filter-category-row">
                     <div className="d-flex align-items-center justify-content-between w-100">
                         <div className="d-flex align-items-center">
                             <div className="img-box">
-                                <img src={src} alt="Image" />
+                                <img src={image} alt="Image" />
                             </div>
                             <div className="category-name">
                                 {name}
@@ -48,14 +49,14 @@ const Product = () => {
     }
 
     const BrandCard = (props) => {
-        const { name, src } = props;
+        const { name, image } = props;
         return (
             <Link href="/product">
                 <a className="filter-category-row">
                     <div className="d-flex align-items-center justify-content-between w-100">
                         <div className="d-flex align-items-center">
                             <div className="img-box">
-                                <img src={src} alt="Image" />
+                                <img src={image} alt="Image" />
                             </div>
                             <div className="category-name">
                                 {name}
@@ -102,20 +103,20 @@ const Product = () => {
     }
 
     const ProductCard = (props) => {
-        const { src, name, price, brand, warrantyStatus, sku, primaryPrice } = props;
+        const { name, price, brand, sku, oldPrice, image, warrantyStatus } = props;
         return (
             <div className="col-md-4 d-flex align-items-center flex-column mb-4">
                 <div className="product-card">
                     <div className="img-product-box">
-                        <img src={src} />
+                        <img src={image} />
                     </div>
                     <div className="product-info">
                         <div className="product-name">{name}</div>
-                        <div className="product-price">{price} đ</div>
+                        <div className="product-price">{price} VND</div>
                         <div className="product-brand">Thương hiệu: {brand}</div>
                         <div className="product-warranty">Tình trạng bảo hành: <span>{warrantyStatus ? 'Vẫn còn' : 'Hết hạn'}</span></div>
                         <div className="product-sku">SKU: <span>{sku}</span></div>
-                        <div className="product-primary-price">Giá gốc: <span>{primaryPrice} đ</span></div>
+                        <div className="product-primary-price">Giá gốc: <span>{oldPrice} VND</span></div>
                     </div>
                     <div className="product-action">
                         <button className="btn button-add-to-cart">Thêm vào giỏ hàng</button>
@@ -126,6 +127,21 @@ const Product = () => {
             </div>
         )
     }
+
+    const size=10;
+
+    const brand = brands.map((x,index) => 
+        <BrandCard key={index.toString()} name={x.name} image={x.image} />
+    );
+
+    const product = products.map((x, index) => 
+        <ProductCard key={index.toString()} name={x.name} image={x.image}
+        price={x.price} brand={x.brand.name} sku={x.sku} oldPrice={x.oldPrice} warrantyStatus={true}/>
+    );
+
+    const category = categories.map((x, index) => (
+        <CategoryCard key={index.toString()} name={x.name} image={x.image} />
+    ));
 
     return (
         <>
@@ -143,22 +159,7 @@ const Product = () => {
                                     Danh mục sản phẩm
                                 </div>
                                 <div className="filter-row-content">
-                                    <CategoryCard name="Điện thoại thông minh" src="/static/adidas-3-la.jpg" />
-                                    <CategoryCard name="Điện thoại thông minh" src="/static/adidas-3-la.jpg" />
-                                    <CategoryCard name="Điện thoại thông minh" src="/static/adidas-3-la.jpg" />
-                                    <CategoryCard name="Điện thoại thông minh" src="/static/adidas-3-la.jpg" />
-                                    <CategoryCard name="Điện thoại thông minh" src="/static/adidas-3-la.jpg" />
-                                    <CategoryCard name="Điện thoại thông minh" src="/static/adidas-3-la.jpg" />
-                                    <CategoryCard name="Điện thoại thông minh" src="/static/adidas-3-la.jpg" />
-                                    <CategoryCard name="Điện thoại thông minh" src="/static/adidas-3-la.jpg" />
-                                    <CategoryCard name="Điện thoại thông minh" src="/static/adidas-3-la.jpg" />
-                                    <CategoryCard name="Điện thoại thông minh" src="/static/adidas-3-la.jpg" />
-                                    <CategoryCard name="Điện thoại thông minh" src="/static/adidas-3-la.jpg" />
-                                    <CategoryCard name="Điện thoại thông minh" src="/static/adidas-3-la.jpg" />
-                                    <CategoryCard name="Điện thoại thông minh" src="/static/adidas-3-la.jpg" />
-                                    <CategoryCard name="Điện thoại thông minh" src="/static/adidas-3-la.jpg" />
-                                    <CategoryCard name="Điện thoại thông minh" src="/static/adidas-3-la.jpg" />
-                                    <CategoryCard name="Điện thoại thông minh" src="/static/adidas-3-la.jpg" />
+                                    {category}
                                 </div>
                             </div>
                             <div className="filter-row">
@@ -177,16 +178,7 @@ const Product = () => {
                                     Thương hiệu sản phẩm
                                 </div>
                                 <div className="filter-row-content">
-                                    <BrandCard name="Adidas" src="/static/adidas-3-la.jpg" />
-                                    <BrandCard name="Adidas" src="/static/adidas-3-la.jpg" />
-                                    <BrandCard name="Adidas" src="/static/adidas-3-la.jpg" />
-                                    <BrandCard name="Adidas" src="/static/adidas-3-la.jpg" />
-                                    <BrandCard name="Adidas" src="/static/adidas-3-la.jpg" />
-                                    <BrandCard name="Adidas" src="/static/adidas-3-la.jpg" />
-                                    <BrandCard name="Adidas" src="/static/adidas-3-la.jpg" />
-                                    <BrandCard name="Adidas" src="/static/adidas-3-la.jpg" />
-                                    <BrandCard name="Adidas" src="/static/adidas-3-la.jpg" />
-                                    <BrandCard name="Adidas" src="/static/adidas-3-la.jpg" />
+                                    {brand}
                                 </div>
                             </div>
                         </div>
@@ -197,95 +189,7 @@ const Product = () => {
                             </div>
                             <div className="list-container">
                                 <div className="row px-3 justify-content-center">
-                                    <ProductCard
-                                        src="/static/adidas-3-la.jpg"
-                                        name="Adidas 1242 anc def uiwew sdkj"
-                                        warrantyStatus={true}
-                                        brand="Adidas"
-                                        price="4.400.000"
-                                        primaryPrice="5.000.000"
-                                        sku="SKU223344"
-                                    />
-
-                                    <ProductCard
-                                        src="/static/adidas-3-la.jpg"
-                                        name="Adidas 1242 anc def uiwew sdkj"
-                                        warrantyStatus={true}
-                                        brand="Adidas"
-                                        price="4.400.000"
-                                        primaryPrice="5.000.000"
-                                        sku="SKU223344"
-                                    />
-
-                                    <ProductCard
-                                        src="/static/adidas-3-la.jpg"
-                                        name="Adidas 1242 anc def uiwew sdkj"
-                                        warrantyStatus={true}
-                                        brand="Adidas"
-                                        price="4.400.000"
-                                        primaryPrice="5.000.000"
-                                        sku="SKU223344"
-                                    />
-
-                                    <ProductCard
-                                        src="/static/adidas-3-la.jpg"
-                                        name="Adidas 1242 anc def uiwew sdkj"
-                                        warrantyStatus={true}
-                                        brand="Adidas"
-                                        price="4.400.000"
-                                        primaryPrice="5.000.000"
-                                        sku="SKU223344"
-                                    />
-
-                                    <ProductCard
-                                        src="/static/adidas-3-la.jpg"
-                                        name="Adidas 1242 anc def uiwew sdkj"
-                                        warrantyStatus={true}
-                                        brand="Adidas"
-                                        price="4.400.000"
-                                        primaryPrice="5.000.000"
-                                        sku="SKU223344"
-                                    />
-
-                                    <ProductCard
-                                        src="/static/adidas-3-la.jpg"
-                                        name="Adidas 1242 anc def uiwew sdkj"
-                                        warrantyStatus={true}
-                                        brand="Adidas"
-                                        price="4.400.000"
-                                        primaryPrice="5.000.000"
-                                        sku="SKU223344"
-                                    />
-
-                                    <ProductCard
-                                        src="/static/adidas-3-la.jpg"
-                                        name="Adidas 1242 anc def uiwew sdkj"
-                                        warrantyStatus={true}
-                                        brand="Adidas"
-                                        price="4.400.000"
-                                        primaryPrice="5.000.000"
-                                        sku="SKU223344"
-                                    />
-
-                                    <ProductCard
-                                        src="/static/adidas-3-la.jpg"
-                                        name="Adidas 1242 anc def uiwew sdkj"
-                                        warrantyStatus={true}
-                                        brand="Adidas"
-                                        price="4.400.000"
-                                        primaryPrice="5.000.000"
-                                        sku="SKU223344"
-                                    />
-
-                                    <ProductCard
-                                        src="/static/adidas-3-la.jpg"
-                                        name="Adidas 1242 anc def uiwew sdkj"
-                                        warrantyStatus={true}
-                                        brand="Adidas"
-                                        price="4.400.000"
-                                        primaryPrice="5.000.000"
-                                        sku="SKU223344"
-                                    />
+                                    {product}
                                 </div>
                             </div>
 
@@ -296,6 +200,93 @@ const Product = () => {
             </div>
         </>
     )
+}
+
+export async function getServerSideProps(ctx) {
+    let brands = [];
+    let categories = [];
+    let products = [];
+
+    try {
+        // call api list brand
+        const res = await api.buyer.getListBrand();
+        if (res.status === 200) {
+            if (res.data.code === 200) {
+                res.data.result.map(x => {
+                    let brand = {
+                        id: "",
+                        name: "",
+                        description: "",
+                        image: ""
+                    };
+                    brand.id = x._id || "";
+                    brand.name = x.name || "";
+                    brand.description = x.description || "";
+                    brand.image = x.imageUrl.url || "";
+                    brands.push(brand);
+                })
+            } else {
+                let message = res.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
+                common.Toast(message, 'error');
+            }
+        }
+        // call api list category
+        const res1 = await api.buyer.getListCategory();
+        if (res1.status === 200) {
+            if (res1.data.code === 200) {
+                res1.data.list.map(x => {
+                    let category = {
+                        id: "",
+                        name: "",
+                        image: ""
+                    };
+                    category.id = x.childId || "";
+                    category.name = x.childName || "";
+                    category.image = x.imageUrl.url || "";
+                    categories.push(category);
+                });
+            } else {
+                let message = res1.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
+                common.Toast(message, 'error');
+            }
+        }
+        // call api list product
+
+        const res2 = await api.buyer.getListProduct();
+            if (res2.status === 200){
+                if (res2.data.code === 200){
+                    res2.data.result.map(x => {
+                        let product = {
+                            id: "",
+                            name: "",
+                            price: "",
+                            brand: "",
+                            sku: "",
+                            oldPrice: "",
+                            image: "",
+                        };
+                        product.id = x._id || "";
+                        product.name = x.name || "";
+                        product.price = x.price || "";
+                        product.oldPrice = x.oldPrice || "";
+                        product.brand = x.brand || "";
+                        product.sku = x.sku || "";  
+                        product.image = x.arrayImage[0].url || "";  
+                        products.push(product);          
+                    });
+                }
+                else {
+                    let message = res2.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
+                    common.Toast(message, 'error');
+                }
+            }
+        
+    } catch(error) {
+        console.log(error);
+    }
+    return {
+        props: { brands: brands, categories: categories, products: products },
+    }
 }
 
 export default Product;

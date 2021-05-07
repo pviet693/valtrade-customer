@@ -14,13 +14,16 @@ const url = {
         postUpdateProfile: () => `${baseUrl}/api/buyer/updateProfile`,
         postChangePassword: () => `${baseUrl}/api/buyer/changePassword`,
         putUpdateAvatar: () => `${baseUrl}/api/buyer/update-profile-image`,
+        getListBrand: () => `${baseUrl}/api/brand/get`,
+        getListCategory: () => `${baseUrl}/api/category/list`,
+        getListProduct: () => `${baseUrl}/api/product/get`,
     },
     product: {
         postCreate: () => `${baseUrl}/api/product/create`,
         getDetail: () => `${baseUrl}/api/product/detail/:id`,
         delete: () => `${baseUrl}/api/product/remove/:id`,
         putUpdate: () => `${baseUrl}/api/product/update`,
-    },
+    }
 }
 
 export default url;
