@@ -9,7 +9,6 @@ import { Paginator } from 'primereact/paginator';
 import { useState } from 'react';
 
 const Product = ({brands, categories, products}) => {
-    console.log(products);
     const items = [
         { label: 'SẢN PHẨM MỚI', icon: 'pi pi-fw pi-home' },
         { label: 'GIÁ CAO', icon: 'pi pi-arrow-up' },
@@ -18,13 +17,17 @@ const Product = ({brands, categories, products}) => {
         { label: 'TÊN (Z - A)', icon: 'pi pi-arrow-down' }
     ];
     const router = useRouter();
-    const [activeItem, setActiveItem] = useState(items[0]);
+    const [activeItem, setActiveItem] = useState({ label: 'GIÁ CAO', icon: 'pi pi-arrow-up' });
     const [first, setFirst] = useState(0);
     const [rows, setRows] = useState(10);
 
     const onPageChange = (event) => {
         setFirst(event.first);
         setRows(event.rows);
+    }
+
+    const onChangeTabMenu = (e) => {
+        setActiveItem({...e.value});
     }
 
     const CategoryCard = (props) => {
@@ -185,15 +188,15 @@ const Product = ({brands, categories, products}) => {
                         <div className="content-list">
                             <div className="list-order">
                                 <div>Sắp xếp: </div>
-                                <TabMenu model={items} activeItem={activeItem}/>
+                                <TabMenu id="order" model={items} activeItem={activeItem} onTabChange={onChangeTabMenu}/>
                             </div>
                             <div className="list-container">
-                                <div className="row px-3 justify-content-center">
+                                <div className="row justify-content-start">
                                     {product}
                                 </div>
                             </div>
 
-                            <Paginator first={first} rows={rows} totalRecords={120} rowsPerPageOptions={[10, 20, 30]} onPageChange={onPageChange}></Paginator>
+                            <Paginator first={first} rows={rows} totalRecords={120} onPageChange={onPageChange}></Paginator>
                         </div>
                     </div>
                 </div>

@@ -92,7 +92,7 @@ const Home = ({ brands, categories, products }) => {
                                     </a>
                                 </Link>
                             </div>
-                            <div className="row px-3 justify-content-center">
+                            <div className="row px-3 justify-content-start">
                                 {product}
                             </div>
                         </div>
@@ -154,6 +154,7 @@ export async function getServerSideProps(ctx) {
         // call api list product
 
         const res2 = await api.buyer.getListProduct();
+        console.log(res2.data.result);
             if (res2.status === 200){
                 if (res2.data.code === 200){
                     res2.data.result.map(x => {

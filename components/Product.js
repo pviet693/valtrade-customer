@@ -6,7 +6,7 @@ const Product = ({ name, price, brand, sku, oldPrice, image}) => {
                     <img src={image} />
                 </div>
                 <div className="product-info">
-                    <div className="product-name">Tên sản phẩm:{name}</div>
+                    <div className="product-name">{name}</div>
                     <div className="product-price">Giá bán: {price} VND</div>
                     <div className="product-brand">Thương hiệu: {brand}</div>
                     <div className="product-warranty">Tình trạng bảo hành: <span>Vẫn còn</span></div>
