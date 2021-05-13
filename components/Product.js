@@ -11,11 +11,11 @@ const Product = ({ name, price, brand, sku, oldPrice, image}) => {
                 </div>
                 <div className="product-info">
                     <div className="product-name">{name}</div>
-                    <div className="product-price">Giá bán: {price} VND</div>
+                    <div className="product-price">Giá bán: {new Intl.NumberFormat().format(price)} VND</div>
                     <div className="product-brand">Thương hiệu: {brand}</div>
                     <div className="product-warranty">Tình trạng bảo hành: <span>Vẫn còn</span></div>
                     <div className="product-sku">SKU: <span>{sku}</span></div>
-                    <div className="product-primary-price">Giá gốc: <span>{formatPrice(oldPrice)} VND</span></div>
+                    <div className="product-primary-price">Giá gốc: <span>{new Intl.NumberFormat().format(oldPrice)} VND</span></div>
                 </div>
                 <div className="product-action">
                     <button className="btn button-add-to-cart">Thêm vào giỏ hàng</button>

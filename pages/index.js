@@ -107,6 +107,13 @@ export async function getServerSideProps(ctx) {
     let brands = [];
     let categories = [];
     let products = [];
+    let isSignin = false;
+    // check token
+    const cookies = ctx.req.headers.cookie;
+    if (cookies) {
+        const token = cookie.parse(cookies).seller_token;
+        isSignin = token ? true : false;
+    }
 
     try {
         // call api list brand
@@ -154,7 +161,6 @@ export async function getServerSideProps(ctx) {
         // call api list product
 
         const res2 = await api.buyer.getListProduct();
-        console.log(res2.data.result);
             if (res2.status === 200){
                 if (res2.data.code === 200){
                     res2.data.result.map(x => {
@@ -187,7 +193,7 @@ export async function getServerSideProps(ctx) {
         console.log(error);
     }
     return {
-        props: { brands: brands, categories: categories, products: products },
+        props: { brands: brands, categories: categories, products: products, isSignin: isSignin }
     }
 }
 
