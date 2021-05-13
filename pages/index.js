@@ -9,18 +9,18 @@ import Product from "../components/Product";
 import Category from "../components/Category";
 
 const Home = ({ brands, categories, products }) => {
-    const size = 10;
+    const size = 8;
 
     const brand = brands.slice(0,size).map((x,index) => 
         <Brand key={index.toString()} name={x.name} image={x.image} />
     );
 
-    const product = products.map((x, index) => 
+    const product = products.slice(0,size).map((x, index) => 
         <Product key={index.toString()} name={x.name} image={x.image}
         price={x.price} brand={x.brand.name} sku={x.sku} oldPrice={x.oldPrice} />
     );
 
-    const category = categories.map((x, index) => (
+    const category = categories.slice(0,size).map((x, index) => (
         <Category key={index.toString()} name={x.name} image={x.image} />
     ));
     

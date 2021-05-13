@@ -29,7 +29,6 @@ const Product = ({brands, categories, products}) => {
     const formatPrice = (price) => {
         return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
- 
 
     const CategoryCard = (props) => {
         const { name, image } = props;
