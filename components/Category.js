@@ -1,4 +1,4 @@
-const Category = ({image, name}) => {
+const Category = ({image, name, id}) => {
     return (
         <div className="col-md-3 d-flex align-items-center flex-column">
             <div className="category-card">
