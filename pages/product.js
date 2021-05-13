@@ -10,7 +10,7 @@ import { useState } from 'react';
 
 const Product = ({brands, categories, products}) => {
     const items = [
-        { label: 'SẢN PHẨM MỚI', icon: 'pi pi-fw pi-home' },
+        { label: 'SẢN PHẨM MỚI', icon: 'pi pi-fw pi-home'},
         { label: 'GIÁ CAO', icon: 'pi pi-arrow-up' },
         { label: 'GIÁ THẤP', icon: 'pi pi-arrow-down' },
         { label: 'TÊN (A - Z)', icon: 'pi pi-arrow-up' },
@@ -115,11 +115,11 @@ const Product = ({brands, categories, products}) => {
                     </div>
                     <div className="product-info">
                         <div className="product-name">{name}</div>
-                        <div className="product-price">{price} VND</div>
+                        <div className="product-price">{formatPrice(price)} VND</div>
                         <div className="product-brand">Thương hiệu: {brand}</div>
                         <div className="product-warranty">Tình trạng bảo hành: <span>{warrantyStatus ? 'Vẫn còn' : 'Hết hạn'}</span></div>
                         <div className="product-sku">SKU: <span>{sku}</span></div>
-                        <div className="product-primary-price">Giá gốc: <span>{oldPrice} VND</span></div>
+                        <div className="product-primary-price">Giá gốc: <span>{formatPrice(oldPrice)} VND</span></div>
                     </div>
                     <div className="product-action">
                         <button className="btn button-add-to-cart">Thêm vào giỏ hàng</button>
@@ -129,6 +129,10 @@ const Product = ({brands, categories, products}) => {
                 </div>
             </div>
         )
+    }
+
+    const filterCategory = (categoryId) => {
+        
     }
 
     const size=10;
@@ -143,7 +147,7 @@ const Product = ({brands, categories, products}) => {
     );
 
     const category = categories.map((x, index) => (
-        <CategoryCard key={index.toString()} name={x.name} image={x.image} />
+        <CategoryCard key={index.toString()} id={x.id} name={x.name} image={x.image} onClick={filterCategory} />
     ));
 
     return (
@@ -188,7 +192,7 @@ const Product = ({brands, categories, products}) => {
                         <div className="content-list">
                             <div className="list-order">
                                 <div>Sắp xếp: </div>
-                                <TabMenu id="order" model={items} activeItem={activeItem} onTabChange={onChangeTabMenu}/>
+                                <TabMenu model={items} activeItem={activeItem} style={{width: '100%'}}/>
                             </div>
                             <div className="list-container">
                                 <div className="row justify-content-start">

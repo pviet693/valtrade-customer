@@ -1,6 +1,10 @@
 const Product = ({ name, price, brand, sku, oldPrice, image}) => {
+    const formatPrice = (price) => {
+       return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
     return (
-        <div className="col-md-3 d-flex align-items-center flex-column mb-4">
+        <div className="col-md-3 d-flex align-items-center flex-column mb-4 h-100">
             <div className="product-card">
                 <div className="img-product-box">
                     <img src={image} />
@@ -11,7 +15,7 @@ const Product = ({ name, price, brand, sku, oldPrice, image}) => {
                     <div className="product-brand">Thương hiệu: {brand}</div>
                     <div className="product-warranty">Tình trạng bảo hành: <span>Vẫn còn</span></div>
                     <div className="product-sku">SKU: <span>{sku}</span></div>
-                    <div className="product-primary-price">Giá gốc: <span>{oldPrice} VND</span></div>
+                    <div className="product-primary-price">Giá gốc: <span>{formatPrice(oldPrice)} VND</span></div>
                 </div>
                 <div className="product-action">
                     <button className="btn button-add-to-cart">Thêm vào giỏ hàng</button>
