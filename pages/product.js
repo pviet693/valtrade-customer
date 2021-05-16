@@ -7,6 +7,8 @@ import { Checkbox } from 'primereact/checkbox';
 import { TabMenu } from 'primereact/tabmenu';
 import { Paginator } from 'primereact/paginator';
 import { useState } from 'react';
+import ProductCard from '../components/ProductCard';
+import Router from 'next/router';
 
 const Product = ({brands, categories, products}) => {
     const items = [
@@ -105,32 +107,6 @@ const Product = ({brands, categories, products}) => {
         }
     }
 
-    const ProductCard = (props) => {
-        const { name, price, brand, sku, oldPrice, image, warrantyStatus } = props;
-        return (
-            <div className="col-md-4 d-flex align-items-center flex-column mb-4">
-                <div className="product-card">
-                    <div className="img-product-box">
-                        <img src={image} />
-                    </div>
-                    <div className="product-info">
-                        <div className="product-name">{name}</div>
-                        <div className="product-price">{new Intl.NumberFormat().format(price)} VND</div>
-                        <div className="product-brand">Thương hiệu: {brand}</div>
-                        <div className="product-warranty">Tình trạng bảo hành: <span>{warrantyStatus ? 'Vẫn còn' : 'Hết hạn'}</span></div>
-                        <div className="product-sku">SKU: <span>{sku}</span></div>
-                        <div className="product-primary-price">Giá gốc: <span>{new Intl.NumberFormat().format(oldPrice)} VND</span></div>
-                    </div>
-                    <div className="product-action">
-                        <button className="btn button-add-to-cart">Thêm vào giỏ hàng</button>
-                        <button className="btn button-buy-now">Mua ngay</button>
-                        <button className="btn button-detail">Chi tiết</button>
-                    </div>
-                </div>
-            </div>
-        )
-    }
-
     const filterCategory = (categoryId) => {
         
     }
@@ -142,13 +118,22 @@ const Product = ({brands, categories, products}) => {
     );
 
     const product = products.map((x, index) => 
-        <ProductCard key={index.toString()} name={x.name} image={x.image}
-        price={x.price} brand={x.brand.name} sku={x.sku} oldPrice={x.oldPrice} warrantyStatus={true}/>
+        <div className="col-md-4 d-flex align-items-center flex-column mb-4">
+            <ProductCard key={index.toString()} name={x.name} image={x.image} onClick={() => navigateToDetail(x)}
+            price={x.price} brand={x.brand.name} sku={x.sku} oldPrice={x.oldPrice} warrantyStatus={true}/>
+        </div>
     );
 
     const category = categories.map((x, index) => (
         <CategoryCard key={index.toString()} id={x.id} name={x.name} image={x.image} onClick={filterCategory} />
     ));
+
+    const navigateToDetail = (product) => {
+        Router.push({
+            pathname: '/product-detail',
+            query: { id: product.id },
+        })
+    }
 
     return (
         <>

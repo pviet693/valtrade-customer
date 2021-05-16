@@ -6,19 +6,18 @@ import classNames from 'classnames';
 import Cookie from 'js-cookie'; 
 
 function NavBar() {
-
     const router = useRouter();
     const isActive = (path) => path === router.pathname;
     const [isHover, setHover] = useState(false);
     const { state, dispatch } = useContext(DataContext);
     const { auth } = state;
+    console.log(auth);
 
     const logout = async () => {
         Cookie.remove('access_token', { path: '/' });
+        Cookie.remove();
         dispatch({
-            type: 'AUTH', payload: {
-                user: {}
-            }
+            type: 'AUTH', payload: {}
         });
     }
 
@@ -127,10 +126,10 @@ function NavBar() {
                                         onMouseEnter={handleMouseEnter}
                                         onMouseLeave={handleMouseLeave}>
                                     {
-                                        (Object.keys(auth.user.imageUrl).length > 0)
+                                        (Object.keys(auth.user).length > 0)
                                         ?
                                             <div className="img-box">
-                                                <img src={auth.user.imageUrl.url} alt="avatar" />
+                                                <img src={Object.keys(auth.user.imageUrl).length > 0 ? auth.user.imageUrl.url : '/static/avatar2.png'} alt="avatar" />
                                             </div>
                                         :
                                             <div className="img-box">

@@ -5,8 +5,10 @@ import Link from 'next/link';
 import * as common from './../utils/common';
 import api from './../utils/backend-api.utils';
 import Brand from "../components/Brand";
-import Product from "../components/Product";
+import ProductCard from "../components/ProductCard";
 import Category from "../components/Category";
+import cookie from "cookie";
+import Router from 'next/router';
 
 const Home = ({ brands, categories, products }) => {
     const size = 8;
@@ -16,8 +18,10 @@ const Home = ({ brands, categories, products }) => {
     );
 
     const product = products.slice(0,size).map((x, index) => 
-        <Product key={index.toString()} name={x.name} image={x.image}
-        price={x.price} brand={x.brand.name} sku={x.sku} oldPrice={x.oldPrice} />
+        <div className="col-md-3 d-flex align-items-center flex-column mb-4">
+            <ProductCard key={index.toString()} name={x.name} image={x.image}
+                price={x.price} brand={x.brand.name} sku={x.sku} oldPrice={x.oldPrice} onClick={() => navigateToDetail(x)} />
+        </div>
     );
 
     const category = categories.slice(0,size).map((x, index) => (
@@ -32,6 +36,13 @@ const Home = ({ brands, categories, products }) => {
         slidesToShow: 4,
         speed: 1000
     };
+
+    const navigateToDetail = (product) => {
+        Router.push({
+            pathname: '/product-detail',
+            query: { id: product.id },
+        })
+    }
 
     return (
         <>

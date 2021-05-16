@@ -9,6 +9,8 @@ import '../styles/slidenav.scss';
 import '../styles/reset-password.scss';
 import '../styles/new-password.scss';
 import '../styles/product.scss';
+import '../styles/product-detail.scss';
+import '../styles/product-card.scss';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "primeicons/primeicons.css";
