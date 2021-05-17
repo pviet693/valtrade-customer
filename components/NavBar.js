@@ -8,10 +8,8 @@ import Cookie from 'js-cookie';
 function NavBar() {
     const router = useRouter();
     const isActive = (path) => path === router.pathname;
-    const [isHover, setHover] = useState(false);
     const { state, dispatch } = useContext(DataContext);
     const { auth } = state;
-    console.log(auth);
 
     const logout = async () => {
         Cookie.remove('access_token', { path: '/' });
@@ -19,18 +17,6 @@ function NavBar() {
         dispatch({
             type: 'AUTH', payload: {}
         });
-    }
-
-    const handleMouseHover = () => {
-        setHover(!isHover);
-    }
-
-    const handleMouseEnter = () => {
-        setHover(true);
-    }
-
-    const handleMouseLeave = () => {
-        setHover(false);
     }
 
     return (
@@ -122,9 +108,7 @@ function NavBar() {
                         {
                             (Object.keys(auth).length > 0) &&
                             <div className="navbar-profile d-flex align-items-center ml-2">
-                                <div className="navbar-account" 
-                                        onMouseEnter={handleMouseEnter}
-                                        onMouseLeave={handleMouseLeave}>
+                                <div className="navbar-account">
                                     {
                                         (Object.keys(auth.user).length > 0)
                                         ?
@@ -141,29 +125,24 @@ function NavBar() {
                                     </div>
                                 </div>
 
-                                {
-                                    isHover &&
-                                    <div className="hover-profile d-flex flex-column"
-                                        onMouseEnter={handleMouseEnter}
-                                        onMouseLeave={handleMouseLeave}>
-                                        <div className="connect" />
-                                        <Link href="/profile">
-                                            <a>
-                                                Hồ sơ của tôi
-                                            </a>
-                                        </Link>
-                                        <Link href="/order">
-                                            <a>
-                                                Đơn hàng của tôi
-                                            </a>
-                                        </Link>
-                                        <Link href="/">
-                                            <a onClick={logout}>
-                                                <div>Đăng xuất</div>
-                                            </a>
-                                        </Link>
-                                    </div>
-                                }
+                                <div className="hover-profile">
+                                    <div className="connect" />
+                                    <Link href="/profile">
+                                        <a>
+                                            Hồ sơ của tôi
+                                        </a>
+                                    </Link>
+                                    <Link href="/order">
+                                        <a>
+                                            Đơn hàng của tôi
+                                        </a>
+                                    </Link>
+                                    <Link href="/">
+                                        <a onClick={logout}>
+                                            <div>Đăng xuất</div>
+                                        </a>
+                                    </Link>
+                                </div>
                             </div>
                         }
                     </div>

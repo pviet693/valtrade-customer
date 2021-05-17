@@ -6,6 +6,7 @@ import * as common from './../utils/common';
 import api from './../utils/backend-api.utils';
 import Brand from "../components/Brand";
 import ProductCard from "../components/ProductCard";
+import AuctionCard from "../components/AuctionCard";
 import Category from "../components/Category";
 import cookie from "cookie";
 import Router from 'next/router';
@@ -20,7 +21,14 @@ const Home = ({ brands, categories, products }) => {
     const product = products.slice(0,size).map((x, index) => 
         <div className="col-md-3 d-flex align-items-center flex-column mb-4">
             <ProductCard key={index.toString()} name={x.name} image={x.image}
-                price={x.price} brand={x.brand.name} sku={x.sku} oldPrice={x.oldPrice} onClick={() => navigateToDetail(x)} />
+                price={x.price} brand={x.brand.name} sku={x.sku} oldPrice={x.oldPrice} onClick={() => navigateToDetailProduct(x)} />
+        </div>
+    );
+
+    const auction = products.slice(0, size).map((x, index) =>
+        <div className="col-md-3 d-flex align-items-center flex-column mb-4">
+            <AuctionCard key={index.toString()} name={x.name} image={x.image} time={10} winner={'abc'} 
+                participantsNumber={10} currentPrice={x.price}  onClick={() => navigateToDetailAuction(x)} />
         </div>
     );
 
@@ -37,10 +45,17 @@ const Home = ({ brands, categories, products }) => {
         speed: 1000
     };
 
-    const navigateToDetail = (product) => {
+    const navigateToDetailProduct = (product) => {
         Router.push({
             pathname: '/product-detail',
             query: { id: product.id },
+        })
+    }
+
+    const navigateToDetailAuction = (auction) => {
+        Router.push({
+            pathname: '/auction-detail',
+            query: { id: auction.id },
         })
     }
 
@@ -105,6 +120,25 @@ const Home = ({ brands, categories, products }) => {
                             </div>
                             <div className="row px-3 justify-content-start">
                                 {product}
+                            </div>
+                        </div>
+
+                        <div className="content-product">
+                            <div className="product-header">
+                                <div className="product-title">
+                                    Sản phẩm đấu giá
+                                </div>
+                                <Link href="/auction">
+                                    <a>
+                                        <div className="see-more">
+                                            <div>Xem thêm</div>
+                                            <i className="pi pi-angle-right" aria-hidden></i>
+                                        </div>
+                                    </a>
+                                </Link>
+                            </div>
+                            <div className="row px-3 justify-content-start">
+                                {auction}
                             </div>
                         </div>
                     </div>

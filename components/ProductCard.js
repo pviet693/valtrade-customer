@@ -1,7 +1,4 @@
 const ProductCard = ({ name, price, brand, sku, oldPrice, image, warrantyStatus, onClick }) => {
-    // const formatName = (name) => {
-    //     return `${name.substring(0, 45)}...`;
-    // }
 
     return (
         <div className="product-card">
