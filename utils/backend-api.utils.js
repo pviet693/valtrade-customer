@@ -80,6 +80,9 @@ const api = {
         },  
         getListProduct: () => {
             return axios.get(url.buyer.getListProduct());
+        },
+        getListProductFilter: (categoryId) => {
+            return axios.get(url.buyer.getListProductFilter().concat(categoryId));
         }
     },
     product: {
