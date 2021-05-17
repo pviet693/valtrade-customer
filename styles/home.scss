@@ -15,8 +15,8 @@
         padding: 10px 0;
 
         .content-brand {
-            background-color: #fff;
-            box-shadow: 2px 4px 20px 3px rgb(0 0 0 / 5%);
+            background-color: #fff;            
+            box-shadow: 0 1px 1px 0 rgb(0 0 0 / 5%);
             padding: 20px;
 
             .brand-header {
@@ -66,9 +66,10 @@
             .brand-card {
                 width: 200px !important;
                 height: auto;
+                display: flex;
                 flex-direction: column;
                 align-items: center;
-                padding: 20px;
+                padding: 10px;
                 cursor: pointer;
 
                 &:hover {
@@ -79,11 +80,14 @@
                 .img-brand-box {
                     width: 160px !important;
                     height: 160px;
+                    padding: 10px;
                     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
     
                     &:hover {
                         border: 1px solid #d7d7d7;
                         box-shadow: unset;
+                        width: 165px !important;
+                        height: 165px;
                     }
     
                     img {
@@ -97,6 +101,7 @@
                     font-weight: 500;
                     font-size: 1.2rem;
                     margin-top: 0.8rem;
+                    text-align: center;
                 }
             }
         }
@@ -104,7 +109,7 @@
         .content-category {
             background-color: #fff;
             height: auto;
-            box-shadow: 2px 4px 20px 3px rgb(0 0 0 / 5%);
+            box-shadow: 0 1px 1px 0 rgb(0 0 0 / 5%);
             padding: 20px;
             margin-top: 10px;
 
@@ -127,7 +132,7 @@
                     align-items: center;
                 }
             }
-
+            
             .category-card {
                 display: flex;
                 flex-direction: column;
@@ -144,8 +149,14 @@
                 .img-category-box {
                     width: 160px !important;
                     height: 160px;
+                    padding: 10px;
                     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
                     border-radius: 10%;
+
+                    &:hover {
+                        width: 170px !important;
+                        height: 170px;
+                    }
 
                     img {
                         width: 100%;
@@ -158,6 +169,8 @@
                     font-weight: 500;
                     font-size: 1.2rem;
                     margin-top: 0.8rem;
+                    text-align: center;
+                    min-height: 60px;
                 }
             }
         }
@@ -165,7 +178,7 @@
         .content-product {
             background-color: #fff;
             height: auto;
-            box-shadow: 2px 4px 20px 3px rgb(0 0 0 / 5%);
+            box-shadow: 0 1px 1px 0 rgb(0 0 0 / 5%);
             padding: 20px;
             margin-top: 10px;
 
@@ -194,6 +207,10 @@
                 cursor: pointer;
                 box-shadow: 0px 2px 8px rgb(180 180 180);
                 position: relative;
+                font-size: 0.8rem !important;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
 
                 &:hover {
                     box-shadow: 0px 2px 16px rgb(160 160 160);
@@ -209,8 +226,9 @@
                 }
 
                 .img-product-box {
-                    width: 220px !important;
-                    height: 220px;
+                    width: 180px !important;
+                    height: 180px;
+                    padding: 10px;
                     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 
                     img {
@@ -222,25 +240,24 @@
 
                 .product-info {
                     margin-top: 0.5rem;
-                    font-size: 1.1rem;
                     
                     .product-name {
-                        font-size: 1.1rem;
+                        font-size: 1.1em;
                         margin-bottom: 0.5rem;
                     }
 
                     .product-price {
                         color: #FF0000;
                         font-weight: 550;
-                        font-size: 1rem;
+                        font-size: 1em;
                     }   
 
                     .product-brand {
-                        font-size: 1rem;
+                        font-size: 1em;
                     }
 
                     .product-warranty {
-                        font-size: 1rem;
+                        font-size: 1em;
 
                         span {
                             color: #5CB85C;
@@ -249,7 +266,7 @@
                     }
 
                     .product-sku {
-                        font-size: 1rem;
+                        font-size: 1em;
 
                         span {
                             font-weight: 550;
@@ -257,7 +274,7 @@
                     }
 
                     .product-primary-price {
-                        font-size: 1rem;
+                        font-size: 1em;
 
                         span {
                             font-weight: 550;

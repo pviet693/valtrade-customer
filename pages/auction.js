@@ -2,23 +2,21 @@ import Link from 'next/link';
 import Head from 'next/head';
 import * as common from './../utils/common';
 import api from './../utils/backend-api.utils';
-import { useRouter } from 'next/router';
 import { Checkbox } from 'primereact/checkbox';
 import { TabMenu } from 'primereact/tabmenu';
 import { Paginator } from 'primereact/paginator';
 import { useState } from 'react';
-import ProductCard from '../components/ProductCard';
+import AuctionCard from '../components/AuctionCard';
 import Router from 'next/router';
 
-const Product = ({brands, categories, products}) => {
+const Auction = ({ brands, categories, auctions }) => {
     const items = [
-        { label: 'SẢN PHẨM MỚI', icon: 'pi pi-fw pi-home'},
+        { label: 'SẢN PHẨM MỚI', icon: 'pi pi-fw pi-home' },
         { label: 'GIÁ CAO', icon: 'pi pi-arrow-up' },
         { label: 'GIÁ THẤP', icon: 'pi pi-arrow-down' },
         { label: 'TÊN (A - Z)', icon: 'pi pi-arrow-up' },
         { label: 'TÊN (Z - A)', icon: 'pi pi-arrow-down' }
     ];
-    const router = useRouter();
     const [activeItem, setActiveItem] = useState({ label: 'GIÁ CAO', icon: 'pi pi-arrow-up' });
     const [first, setFirst] = useState(0);
     const [rows, setRows] = useState(10);
@@ -29,13 +27,13 @@ const Product = ({brands, categories, products}) => {
     }
 
     const onChangeTabMenu = (e) => {
-        setActiveItem({...e.value});
+        setActiveItem({ ...e.value });
     }
 
     const CategoryCard = (props) => {
         const { name, image } = props;
         return (
-            <Link href="/product">
+            <Link href="/auction">
                 <a className="filter-category-row">
                     <div className="d-flex align-items-center justify-content-between w-100">
                         <div className="d-flex align-items-center">
@@ -56,7 +54,7 @@ const Product = ({brands, categories, products}) => {
     const BrandCard = (props) => {
         const { name, image } = props;
         return (
-            <Link href="/product">
+            <Link href="/auction">
                 <a className="filter-category-row">
                     <div className="d-flex align-items-center justify-content-between w-100">
                         <div className="d-flex align-items-center">
@@ -76,11 +74,11 @@ const Product = ({brands, categories, products}) => {
 
     const FilterPriceCard = (props) => {
         const { from, to, gt, lt, value } = props;
-        
+
         if (gt) {
             return (
                 <div className="filter-price-row">
-                    <Checkbox onChange={(e) => {}} checked={true} value={value}></Checkbox>
+                    <Checkbox onChange={(e) => { }} checked={true} value={value}></Checkbox>
                     <div className="price-value">
                         Trên {from}
                     </div>
@@ -108,19 +106,19 @@ const Product = ({brands, categories, products}) => {
     }
 
     const filterCategory = (categoryId) => {
-        
+
     }
 
-    const size=10;
+    const size = 10;
 
-    const brand = brands.map((x,index) => 
+    const brand = brands.map((x, index) =>
         <BrandCard key={index.toString()} name={x.name} image={x.image} />
     );
 
-    const product = products.map((x, index) => 
+    const auction = auctions.map((x, index) =>
         <div className="col-md-4 d-flex align-items-center flex-column mb-4">
-            <ProductCard key={index.toString()} name={x.name} image={x.image} onClick={() => navigateToDetail(x)}
-            price={x.price} brand={x.brand.name} sku={x.sku} oldPrice={x.oldPrice} warrantyStatus={true}/>
+            <AuctionCard key={index.toString()} name={x.name} image={x.image} time={10} winner={'abc'}
+                participantsNumber={10} currentPrice={x.price} onClick={() => navigateToDetailAuction(x)} />
         </div>
     );
 
@@ -128,10 +126,10 @@ const Product = ({brands, categories, products}) => {
         <CategoryCard key={index.toString()} id={x.id} name={x.name} image={x.image} onClick={filterCategory} />
     ));
 
-    const navigateToDetail = (product) => {
+    const navigateToDetailAuction = (auction) => {
         Router.push({
-            pathname: '/product-detail',
-            query: { id: product.id },
+            pathname: '/auction-detail',
+            query: { id: auction.id },
         })
     }
 
@@ -139,12 +137,12 @@ const Product = ({brands, categories, products}) => {
         <>
             <Head>
                 <title>
-                    Danh sách sản phẩm
+                    Danh sách đấu giá
                 </title>
             </Head>
-            <div className="product">
+            <div className="auction">
                 <div className="container">
-                    <div className="product-content">
+                    <div className="auction-content">
                         <div className="content-filter">
                             <div className="filter-row">
                                 <div className="filter-row-title">
@@ -177,11 +175,27 @@ const Product = ({brands, categories, products}) => {
                         <div className="content-list">
                             <div className="list-order">
                                 <div>Sắp xếp: </div>
-                                <TabMenu model={items} activeItem={activeItem} style={{width: '100%'}}/>
+                                <TabMenu model={items} activeItem={activeItem} style={{ width: '100%' }} />
                             </div>
                             <div className="list-container">
                                 <div className="row justify-content-start">
-                                    {product}
+                                    {/* {auction} */}
+                                    <div className="col-md-4 d-flex align-items-center flex-column mb-4">
+                                        <AuctionCard name={'Adidas'} image={'static/adidas-3-la.jpg'} time={10} winner={'abc'}
+                                            participantsNumber={10} currentPrice={1000000} onClick={() => navigateToDetailAuction({ id: 123 })} />
+                                    </div>
+                                    <div className="col-md-4 d-flex align-items-center flex-column mb-4">
+                                        <AuctionCard name={'Adidas'} image={'static/adidas-3-la.jpg'} time={10} winner={'abc'}
+                                            participantsNumber={10} currentPrice={1000000} onClick={() => navigateToDetailAuction({ id: 123 })} />
+                                    </div>
+                                    <div className="col-md-4 d-flex align-items-center flex-column mb-4">
+                                        <AuctionCard name={'Adidas'} image={'static/adidas-3-la.jpg'} time={10} winner={'abc'}
+                                            participantsNumber={10} currentPrice={1000000} onClick={() => navigateToDetailAuction({ id: 123 })} />
+                                    </div>
+                                    <div className="col-md-4 d-flex align-items-center flex-column mb-4">
+                                        <AuctionCard name={'Adidas'} image={'static/adidas-3-la.jpg'} time={10} winner={'abc'}
+                                            participantsNumber={10} currentPrice={1000000} onClick={() => navigateToDetailAuction({ id: 123 })} />
+                                    </div>
                                 </div>
                             </div>
 
@@ -197,7 +211,7 @@ const Product = ({brands, categories, products}) => {
 export async function getServerSideProps(ctx) {
     let brands = [];
     let categories = [];
-    let products = [];
+    let auctions = [];
 
     try {
         // call api list brand
@@ -222,6 +236,7 @@ export async function getServerSideProps(ctx) {
                 common.Toast(message, 'error');
             }
         }
+
         // call api list category
         const res1 = await api.buyer.getListCategory();
         if (res1.status === 200) {
@@ -242,43 +257,15 @@ export async function getServerSideProps(ctx) {
                 common.Toast(message, 'error');
             }
         }
-        // call api list product
 
-        const res2 = await api.buyer.getListProduct();
-            if (res2.status === 200){
-                if (res2.data.code === 200){
-                    res2.data.result.map(x => {
-                        let product = {
-                            id: "",
-                            name: "",
-                            price: "",
-                            brand: "",
-                            sku: "",
-                            oldPrice: "",
-                            image: "",
-                        };
-                        product.id = x._id || "";
-                        product.name = x.name || "";
-                        product.price = x.price || "";
-                        product.oldPrice = x.oldPrice || "";
-                        product.brand = x.brand || "";
-                        product.sku = x.sku || "";  
-                        product.image = x.arrayImage[0].url || "";  
-                        products.push(product);          
-                    });
-                }
-                else {
-                    let message = res2.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
-                    common.Toast(message, 'error');
-                }
-            }
-        
-    } catch(error) {
+        // call api list auction
+
+    } catch (error) {
         console.log(error);
     }
     return {
-        props: { brands: brands, categories: categories, products: products },
+        props: { brands: brands, categories: categories, auctions: auctions },
     }
 }
 
-export default Product;
+export default Auction;

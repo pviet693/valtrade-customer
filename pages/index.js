@@ -5,8 +5,11 @@ import Link from 'next/link';
 import * as common from './../utils/common';
 import api from './../utils/backend-api.utils';
 import Brand from "../components/Brand";
-import Product from "../components/Product";
+import ProductCard from "../components/ProductCard";
+import AuctionCard from "../components/AuctionCard";
 import Category from "../components/Category";
+import cookie from "cookie";
+import Router from 'next/router';
 
 const Home = ({ brands, categories, products }) => {
     const size = 8;
@@ -21,8 +24,17 @@ const Home = ({ brands, categories, products }) => {
     );
 
     const product = products.slice(0,size).map((x, index) => 
-        <Product key={index.toString()} name={x.name} image={x.image}
-        price={x.price} brand={x.brand.name} sku={x.sku} oldPrice={x.oldPrice} />
+        <div className="col-md-3 d-flex align-items-center flex-column mb-4">
+            <ProductCard key={index.toString()} name={x.name} image={x.image}
+                price={x.price} brand={x.brand.name} sku={x.sku} oldPrice={x.oldPrice} onClick={() => navigateToDetailProduct(x)} />
+        </div>
+    );
+
+    const auction = products.slice(0, size).map((x, index) =>
+        <div className="col-md-3 d-flex align-items-center flex-column mb-4">
+            <AuctionCard key={index.toString()} name={x.name} image={x.image} time={10} winner={'abc'} 
+                participantsNumber={10} currentPrice={x.price}  onClick={() => navigateToDetailAuction(x)} />
+        </div>
     );
 
     const category = categories.slice(0,size).map((x, index) => (
@@ -37,6 +49,20 @@ const Home = ({ brands, categories, products }) => {
         slidesToShow: 4,
         speed: 1000
     };
+
+    const navigateToDetailProduct = (product) => {
+        Router.push({
+            pathname: '/product-detail',
+            query: { id: product.id },
+        })
+    }
+
+    const navigateToDetailAuction = (auction) => {
+        Router.push({
+            pathname: '/auction-detail',
+            query: { id: auction.id },
+        })
+    }
 
     return (
         <>
@@ -97,8 +123,27 @@ const Home = ({ brands, categories, products }) => {
                                     </a>
                                 </Link>
                             </div>
-                            <div className="row px-3 justify-content-center">
+                            <div className="row px-3 justify-content-start">
                                 {product}
+                            </div>
+                        </div>
+
+                        <div className="content-product">
+                            <div className="product-header">
+                                <div className="product-title">
+                                    Sản phẩm đấu giá
+                                </div>
+                                <Link href="/auction">
+                                    <a>
+                                        <div className="see-more">
+                                            <div>Xem thêm</div>
+                                            <i className="pi pi-angle-right" aria-hidden></i>
+                                        </div>
+                                    </a>
+                                </Link>
+                            </div>
+                            <div className="row px-3 justify-content-start">
+                                {auction}
                             </div>
                         </div>
                     </div>
@@ -112,6 +157,13 @@ export async function getServerSideProps(ctx) {
     let brands = [];
     let categories = [];
     let products = [];
+    let isSignin = false;
+    // check token
+    const cookies = ctx.req.headers.cookie;
+    if (cookies) {
+        const token = cookie.parse(cookies).seller_token;
+        isSignin = token ? true : false;
+    }
 
     try {
         // call api list brand
@@ -191,7 +243,7 @@ export async function getServerSideProps(ctx) {
         console.log(error);
     }
     return {
-        props: { brands: brands, categories: categories, products: products },
+        props: { brands: brands, categories: categories, products: products, isSignin: isSignin }
     }
 }
 
