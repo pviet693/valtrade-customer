@@ -1,9 +1,10 @@
 import Head from 'next/head';
 import { Galleria } from 'primereact/galleria';
 import ProductCard from '../components/ProductCard';
+import api from '../utils/backend-api.utils';
+import * as common from './../utils/common';
 
-const ProductDetail = () => {
-
+const ProductDetail = ({product, shop, productRecommend}) => {
     const responsiveOptions = [
         {
             breakpoint: '1024px',
@@ -39,10 +40,10 @@ const ProductDetail = () => {
                             <img src="/static/avatar2.png" alt="Avatar" />
                             <div>
                                 <div className="shop-name">
-                                    Shop ABC
+                                    {product.shopName}
                                 </div>
                                 <div className="shop-contact">
-                                    Liên hệ: 0968 250 823
+                                    Liên hệ: {product.phone}
                                 </div>
                                 <div className="shop-action">
                                     <button className="btn btn-follow">Theo dõi</button>
@@ -86,37 +87,31 @@ const ProductDetail = () => {
                     </div>
                     <div className="product-info-container">
                         <div className="product-info-image">
-                            <Galleria value={['/static/adidas-3-la.jpg', '/static/adidas-3-la.jpg', '/static/adidas-3-la.jpg', '/static/adidas-3-la.jpg']} responsiveOptions={responsiveOptions} numVisible={4} circular style={{ maxWidth: '640px' }}
-                                showItemNavigators showItemNavigatorsOnHover item={itemTemplate} thumbnail={thumbnailTemplate} />
+                            <Galleria value={product.arrayImage} responsiveOptions={responsiveOptions} numVisible={4} circular style={{ maxWidth: '640px' }}
+                                showItemNavigators showItemNavigatorsOnHover item={itemTemplate} thumbnail={thumbnailTemplate} /> 
                         </div>
                         <div className="product-info-detail">
                             <div className="detail-name">
-                                Laptop Asus X509JA i3 1005G1 Ram 4GB
+                                {product.name}
                             </div>
                             <div className="detail-price">
-                                {new Intl.NumberFormat().format(9000000)} VND
+                                Giá:  {new Intl.NumberFormat().format(product.price)} VND
                             </div>
-                            <h5>Thông tin chi tiết:</h5>
+                            <h5>Thông tin chi tiết</h5>
                             <div className="detail-row">
-                                Thương hiệu: <span>DELL</span>
-                            </div>
-                            <div className="detail-row">
-                                SKU: <span className="detail-sku">SKU123</span>
+                                Thương hiệu: <span><strong>{product.brand}</strong></span>
                             </div>
                             <div className="detail-row">
-                                Tình trạng bảo hành: <span className="detail-warranty-status">Vẫn còn</span>
+                                SKU: <span className="detail-sku">{product.sku}</span>
                             </div>
                             <div className="detail-row">
-                                Chất liệu: <span>DELL</span>
+                                Tình trạng bảo hành: <span className="detail-warranty-status">{product.restWarrantyTime}</span>
                             </div>
                             <div className="detail-row">
-                                Model: <span>DELL</span>
+                                Mô tả: <span>{product.description}</span>
                             </div>
                             <div className="detail-row">
-                                Mô tả: <span>DELL</span>
-                            </div>
-                            <div className="detail-row">
-                                Lưu ý: <span>DELL</span>
+                                Lưu ý: <span>{product.note}</span>
                             </div>
 
                             <div className="detail-action">
@@ -199,13 +194,45 @@ export async function getServerSideProps(ctx) {
     const { query } = ctx;
     const { id } = query;
     
+    let productDetail = {
+        brand: "",
+        sku: "",
+        restWarrantyTime: "",
+        description: "",
+        note: "",
+        arrayImage: [],
+        price: "",
+        name: "",
+        shopName: "",
+        phone: "",
+    };
     // call api get product detail
+    try {
+        const res = await api.buyer.getDetailProduct(id);
+        if (res.status === 200) {
+            if (res.data.code === 200) {
+                const data = res.data.result;
+                productDetail.id = id;
+                productDetail.arrayImage = data.arrayImage.map(x => x.url);
+                productDetail.name = data.name || "";
+                productDetail.description = data.description || "";
+                productDetail.sku = data.sku ||"";
+                productDetail.restWarrantyTime = data.restWarrantyTime || "";
+                productDetail.brand = data.brand.name || "";
+                productDetail.note = data.note || "";
+                productDetail.price = data.price || "";
+                productDetail.shopName = data.sellerInfor.nameShop || "";
+                productDetail.phone = data.sellerInfor.phone||"";                                                                                                                                                                                                                                                        
+            }
+        }
+    } catch (error) {
+        common.Toast(error, 'error');
+    }
     // call api get product have same brand
-    // call get info shop
 
     return {
         props: {
-            product: {},
+            product: productDetail,
             shop: {},
             productRecommend: []
         }

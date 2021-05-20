@@ -17,6 +17,7 @@ const url = {
         getListBrand: () => `${baseUrl}/api/brand/get`,
         getListCategory: () => `${baseUrl}/api/category/list`,
         getListProduct: () => `${baseUrl}/api/product/get`,
+        getDetailProduct: () => `${baseUrl}/api/product/detail/:id`,
     },
     product: {
         postCreate: () => `${baseUrl}/api/product/create`,

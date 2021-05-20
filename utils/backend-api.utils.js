@@ -80,6 +80,9 @@ const api = {
         },  
         getListProduct: () => {
             return axios.get(url.buyer.getListProduct());
+        },
+        getDetailProduct: (id) => {
+            return axios.get(url.buyer.getDetailProduct().replace(':id',id));
         }
     },
     product: {
