@@ -4,7 +4,7 @@ import ProductCard from '../components/ProductCard';
 import api from '../utils/backend-api.utils';
 import * as common from './../utils/common';
 
-const ProductDetail = ({product, shop, productRecommend}) => {
+const ProductDetail = ({product, productRecommend}) => {
     const responsiveOptions = [
         {
             breakpoint: '1024px',
@@ -206,7 +206,6 @@ export async function getServerSideProps(ctx) {
         shopName: "",
         phone: "",
     };
-    // call api get product detail
     try {
         const res = await api.buyer.getDetailProduct(id);
         if (res.status === 200) {
@@ -233,7 +232,6 @@ export async function getServerSideProps(ctx) {
     return {
         props: {
             product: productDetail,
-            shop: {},
             productRecommend: []
         }
     }
