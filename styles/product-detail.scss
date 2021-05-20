@@ -173,7 +173,12 @@
                             width: 100%;
 
                             .p-galleria-thumbnail-items {
-                                justify-content: space-around;
+                                justify-content: flex-start;
+
+                                .p-galleria-thumbnail-item-content {
+                                    text-align: center;
+                                    margin: 0 10px;
+                                }
                             }
                         }
                     }
@@ -225,10 +230,10 @@
                 }
 
                 .detail-action {
+                    margin-top: 20px;
                     display: flex;
                     align-items: center;
                     justify-content: flex-start;
-                    position: absolute;
                     bottom: 0px;
 
                     .button-add-to-cart {
