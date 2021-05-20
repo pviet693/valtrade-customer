@@ -83,6 +83,9 @@ const api = {
         },
         getListProductFilter: (categoryId) => {
             return axios.get(url.buyer.getListProductFilter().concat(categoryId));
+        },
+        getDetailProduct: (id) => {
+            return axios.get(url.buyer.getDetailProduct().replace(':id',id));
         }
     },
     product: {
