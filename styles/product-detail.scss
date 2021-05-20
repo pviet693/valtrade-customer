@@ -185,6 +185,14 @@
                 font-size: 1.1rem;
                 position: relative;
 
+                h5 {
+                    color: #027ca5;
+                    font-size: 21px;
+                    padding: 16px 0;
+                    line-height: 1;
+                    margin: 0;
+                }
+
                 .detail-name {
                     font-size: 1.3rem;
                     font-weight: 500;
@@ -344,5 +352,4 @@
             }
         }
     }
-
 }

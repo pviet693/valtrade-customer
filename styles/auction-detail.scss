@@ -186,71 +186,22 @@
                 font-size: 1.1rem;
                 position: relative;
 
+                h5 {
+                    color: #027ca5;
+                    font-size: 21px;
+                    padding: 16px 0;
+                    line-height: 1;
+                    margin: 0;
+                }
+
                 .detail-name {
                     font-size: 1.3rem;
                     font-weight: 500;
                     margin-bottom: 10px;
                 }
 
-                .detail-price {
-                    color: #FF0000;
-                    font-weight: 550;
-                    font-size: 1.2rem;
-                    margin-bottom: 1rem;
-                }
-
-                .detail-old-price {
-                    color: #0795DF;
-                    font-weight: 550;
-                }
-
-                .detail-row {
-                    margin-bottom: 0.1rem;
-                }
-
-                .detail-sku {
-                    font-weight: 600;
-                }
-
-                .detail-warranty-status {
-                    font-weight: 600;
-                    color: #5CB85C;
-                }
-
-                .detail-action {
-                    display: flex;
-                    align-items: center;
-                    justify-content: flex-start;
-                    position: absolute;
-                    bottom: 0px;
-
-                    .button-add-to-cart {
-                        margin-right: 40px;
-                        width: 185px;
-                        height: 40px;
-                        border-radius: 5px;
-                        text-align: center;
-                        background-color: #fff;
-                        color: #0795DF;
-                        border: 0.5px solid #0795DF;
-
-                        &:focus {
-                            outline: unset;
-                        }
-                    }
-
-                    .button-buy-now {
-                        width: 180px;
-                        height: 40px;
-                        border-radius: 5px;
-                        text-align: center;
-                        background-color: #0795DF;
-                        color: #fff;
-
-                        &:focus {
-                            outline: unset;
-                        }
-                    }
+                .detail-time {
+                    
                 }
             }
         }
