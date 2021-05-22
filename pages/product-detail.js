@@ -87,7 +87,7 @@ const ProductDetail = ({product, productRecommend}) => {
                     </div>
                     <div className="product-info-container">
                         <div className="product-info-image">
-                            <Galleria value={product.arrayImage} responsiveOptions={responsiveOptions} numVisible={4} circular style={{ maxWidth: '640px' }}
+                            <Galleria id={product.id} value={product.arrayImage} responsiveOptions={responsiveOptions} numVisible={4} circular style={{ maxWidth: '640px' }}
                                 showItemNavigators showItemNavigatorsOnHover item={itemTemplate} thumbnail={thumbnailTemplate} /> 
                         </div>
                         <div className="product-info-detail">
@@ -95,7 +95,7 @@ const ProductDetail = ({product, productRecommend}) => {
                                 {product.name}
                             </div>
                             <div className="detail-price">
-                                Giá:  {new Intl.NumberFormat().format(product.price)} VND
+                                Giá:  {common.numberWithCommas(product.price)} VND
                             </div>
                             <h5>Thông tin chi tiết</h5>
                             <div className="detail-row">
@@ -195,6 +195,7 @@ export async function getServerSideProps(ctx) {
     const { id } = query;
     
     let productDetail = {
+        id: "",
         brand: "",
         sku: "",
         restWarrantyTime: "",

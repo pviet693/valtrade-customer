@@ -76,10 +76,11 @@ function NavBar() {
                     </div>
                     <div className="navbar-info">
                         <div className="navbar-info-item">
-                            <i className="pi pi-shopping-cart" aria-hidden></i>
                             <Link href="/cart">
                                 <a>
-                                    Giỏ hàng
+                                    <i className="pi pi-shopping-cart" aria-hidden></i>
+                                    <div>Giỏ hàng</div>
+                                    <div className="cart-quantity">3</div>
                                 </a>
                             </Link>
                         </div>

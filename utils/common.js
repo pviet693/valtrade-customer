@@ -59,3 +59,12 @@ export const Notification = (title, text, type) => {
 
     return swal.fire({})
 }
+
+export function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+export const formatPhone = (phone) => {
+    phone = phone.toString();
+    return phone.replace(/(\d{4})(\d{3})(\d{3})/, '$1 $2 $3');
+}

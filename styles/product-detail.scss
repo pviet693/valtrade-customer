@@ -173,7 +173,7 @@
                             width: 100%;
 
                             .p-galleria-thumbnail-items {
-                                justify-content: flex-start;
+                                flex: unset;
 
                                 .p-galleria-thumbnail-item-content {
                                     text-align: center;

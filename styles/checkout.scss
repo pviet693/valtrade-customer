@@ -1,0 +1,103 @@
+.checkout-container {
+    background-color: #F6F6F6;
+    width: 100%;
+    color: #686868 !important;
+
+    a {
+        &:hover {
+            text-decoration: none;
+        }
+    }
+
+    .title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #686868;
+        margin-bottom: 20px;
+    }
+
+    .checkout-content {
+        width: 100%;
+        height: auto;
+        padding: 10px 0;
+
+        .address-delivery-container {
+            background-color: #fff;
+            box-shadow: 0 1px 1px 0 rgb(0 0 0 / 5%);
+            padding: 20px;
+            margin-bottom: 10px;
+            position: relative;
+
+            .address-delivery__content {
+                display: flex;
+                justify-content: flex-start;
+
+                .address-delivery__content-info {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-start;
+                    margin-right: 40px;
+                }
+
+                .btn-change-address {
+                    border: 1px solid #0795DF;
+                    background-color: #E5F4FF;
+                    color: #0795DF;
+                    font-weight: 600;
+                    height: 32px;
+                    width: 32px;
+                    padding: unset;
+                }
+            }
+        }
+
+        .checkout-item__container {
+            background-color: #fff;
+            box-shadow: 0 1px 1px 0 rgb(0 0 0 / 5%);
+            padding: 20px;
+            margin-bottom: 10px;
+            position: relative;
+
+            .checkout-item__shop-info {
+                display: flex;
+                width: 100%;
+                align-items: center;
+                min-width: 40%;
+                position: relative;
+                padding-bottom: 10px;
+                border-bottom: 1px dashed #C4C4C4;
+
+                .cart-item__shop-name {
+                    margin-right: 1em;
+                    font-weight: 550;
+                }
+
+                .cart-item__shop-contact {
+                    margin-right: 1em;
+                    a {
+                        color: #007bff;
+
+                        &:hover {
+                            text-decoration: underline;
+                        }
+                    }
+                }
+
+                .btn-view-shop {
+                    padding: unset;
+                    width: 100px;
+                    height: 32px;
+                    border-radius: 5px;
+                    text-align: center;
+                    background-color: #fff;
+                    border: 1px solid #0795df;
+                    color: #686868 !important;
+
+                    &:focus {
+                        outline: unset;
+                    }
+                }
+            }
+        }
+    }
+}
