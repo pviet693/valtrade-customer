@@ -43,9 +43,9 @@ const api = {
             return axios.get(url.buyer.getCheckAuth(), body);
         },
         getProfile: () => {
-            if (isEnable()) {
+            // if (isEnable()) {
                 return axios.get(url.buyer.getProfile(), config);
-            }
+            // }
         },
         resetLink: () => {
             return axios.post(url.buyer.postResetLink());
@@ -86,6 +86,14 @@ const api = {
         },
         getDetailProduct: (id) => {
             return axios.get(url.buyer.getDetailProduct().replace(':id',id));
+        },
+        postCart: (body) =>{
+            // const newConfig = {
+            //     ...config,
+            //     'Content-Type': 'multipart/form-data'
+            // }
+            // return axios.post(url.buyer.postCart(), body, newConfig)
+            return axios.post(url.buyer.postCart(), body,config)
         }
     },
     product: {

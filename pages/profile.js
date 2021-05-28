@@ -9,6 +9,7 @@ import Cookie from 'js-cookie';
 import { useRouter } from "next/router";
 import Head from 'next/head';
 import Moment from 'moment';
+import api from "../utils/backend-api.utils";
 
 const Profile = ({ token, user }) => {
     // const { state, dispatch } = useContext(DataContext);
@@ -193,7 +194,7 @@ const Profile = ({ token, user }) => {
 
 export async function getServerSideProps(ctx) {
     try {
-        const res = api.buyer.getProfile();
+        const res = await api.buyer.getProfile();
         console.log(res);
 
     } catch(error) {
@@ -201,7 +202,9 @@ export async function getServerSideProps(ctx) {
     }
 
     return {
-        props: {}
+        props: {
+            buyer: {}
+        }
     }
 };
 

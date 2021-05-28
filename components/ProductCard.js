@@ -1,7 +1,7 @@
+import api from '../utils/backend-api.utils';
 import * as common from './../utils/common';
 
 const ProductCard = ({ name, price, brand, sku, oldPrice, image, warrantyStatus, onClick }) => {
-
     return (
         <div className="product-card">
             <div className="img-product-box">
