@@ -5,10 +5,12 @@ import { useState } from 'react';
 import { CartItem } from './../components/CartItem';
 import { Checkbox } from 'primereact/checkbox';
 import * as common from './../utils/common';
+import api from '../utils/backend-api.utils';
 
 const Cart = ({ listCards, recommendProducts }) => {
     const [cards, setCards] = useState(listCards);
     const [selectAll, setSelectAll] = useState(false);
+
 
     const increase = (cardId) => {
         let cardsTemp = cards;
@@ -83,12 +85,24 @@ const Cart = ({ listCards, recommendProducts }) => {
         }
     }
 
-    const checkout = () => {
+    const checkout = async () => {
         if (totalQuantity() > 0) {
-            Router.push({
-                pathname: '/checkout',
-                query: { id: '13579' },
-            })
+            try{
+                const res = await api.buyer.postCart(listCards);
+                if (res.status === 200){
+                    if (res.data.code === 200) {
+                        common.Notification("Thông báo", 'Bạn sẽ được chuyển sang trang thanh toán' ,'success');
+                        Router.push({
+                            pathname: '/checkout',
+                            query: { id: '13579' }
+                        })
+                    } else {
+                        common.Toast("Cập nhật thất bại.", 'error');
+                    }
+                }
+            } catch (e) {
+                console.log(e);
+            }
         }
     }
 

@@ -5,7 +5,7 @@ import url from './url-api.utils';
 let token = Cookie.get('access_token');
 
 let config = {
-    headers: {
+    headers: { 
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'
@@ -42,10 +42,10 @@ const api = {
         checkAuth: (body) => {
             return axios.get(url.buyer.getCheckAuth(), body);
         },
-        getProfile: (token) => {
-            if (isEnable(token)) {
+        getProfile: () => {
+            // if (isEnable()) {
                 return axios.get(url.buyer.getProfile(), config);
-            }
+            // }
         },
         resetLink: () => {
             return axios.post(url.buyer.postResetLink());
@@ -77,7 +77,7 @@ const api = {
         },
         getListCategory: () => {
             return axios.get(url.buyer.getListCategory());
-        },
+        },  
         getListProduct: () => {
             return axios.get(url.buyer.getListProduct());
         },
@@ -85,11 +85,18 @@ const api = {
             return axios.get(url.buyer.getListProductFilter().concat(categoryId));
         },
         getDetailProduct: (id) => {
-            return axios.get(url.buyer.getDetailProduct().replace(':id', id));
+            return axios.get(url.buyer.getDetailProduct().replace(':id',id));
+        },
+        postCart: (body) =>{
+            const newConfig = {
+                ...config,
+                'Content-Type': 'multipart/form-data'
+            }
+            return axios.post(url.buyer.postCart(), body, newConfig)
         }
     },
     product: {
-        create: (body) => {
+        create: (body)  => {
             return axios.post(url.product.postCreate(), body, config);
         },
         getDetail: (id) => {

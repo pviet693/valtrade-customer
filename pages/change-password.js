@@ -9,6 +9,10 @@ function ChangePassword() {
 
     }
 
+    const getFormErrorMessage = (name) => {
+        return errors[name] && <small className="p-error">{errors[name].message}</small>
+    };
+
     return (
         <>
             <Head>

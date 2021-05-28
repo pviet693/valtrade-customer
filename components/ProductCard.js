@@ -1,6 +1,30 @@
+import api from '../utils/backend-api.utils';
 import * as common from './../utils/common';
 
-const ProductCard = ({ name, price, brand, sku, oldPrice, image, warrantyStatus, onClick }) => {
+const ProductCard = ({ id, name, price, brand, sku, oldPrice, image, warrantyStatus, onClick }) => {
+    let lst = [];
+    let cartItem = {
+        productId: id,
+        quantity: 1
+    }
+    const addToCart = async () => {
+        try{
+            let formData = new FormData();
+            lst.push(cartItem);
+            formData.append('cartItem', lst);
+            const res = await api.buyer.postCart(formData);
+            if (res.status === 200){
+                if (res.data.code === 200){
+                    common.Toast("Thêm thành công vào giỏ hàng", 'success');
+                } else {
+                    let message = res.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
+                    common.Toast(message, 'error');
+                }
+            }
+        } catch(e){
+            console.log(e);
+        }
+    }
 
     return (
         <div className="product-card">
@@ -16,7 +40,7 @@ const ProductCard = ({ name, price, brand, sku, oldPrice, image, warrantyStatus,
                 <div className="product-primary-price">Giá gốc: <span>{common.numberWithCommas(oldPrice)} VND</span></div>
             </div>
             <div className="product-action">
-                <button className="btn button-add-to-cart">Thêm vào giỏ hàng</button>
+                <button className="btn button-add-to-cart" onClick={addToCart}>Thêm vào giỏ hàng</button>
                 <button className="btn button-buy-now">Mua ngay</button>
                 <button className="btn button-detail" onClick={onClick}>Chi tiết</button>
             </div>

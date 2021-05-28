@@ -25,8 +25,8 @@ const Home = ({ brands, categories, products }) => {
 
     const product = products.slice(0,size).map((x, index) => 
         <div className="col-md-3 d-flex align-items-center flex-column mb-4">
-            <ProductCard key={index.toString()} name={x.name} image={x.image}
-                price={x.price} brand={x.brand.name} sku={x.sku} oldPrice={x.oldPrice} onClick={() => navigateToDetailProduct(x)} />
+            <ProductCard key={index.toString()} id={x.id} name={x.name} image={x.image}
+                price={x.price} brand={x.brand.name} sku={x.sku} oldPrice={x.oldPrice} onClick={() => navigateToDetailProduct(x)}/>
         </div>
     );
 
@@ -158,6 +158,7 @@ export async function getServerSideProps(ctx) {
     let categories = [];
     let products = [];
     let isSignin = false;
+    
     // check token
     const cookies = ctx.req.headers.cookie;
     if (cookies) {
@@ -211,35 +212,36 @@ export async function getServerSideProps(ctx) {
         // call api list product
 
         const res2 = await api.buyer.getListProduct();
-            if (res2.status === 200){
-                if (res2.data.code === 200){
-                    res2.data.result.map(x => {
-                        let product = {
-                            id: "",
-                            name: "",
-                            price: "",
-                            brand: "",
-                            sku: "",
-                            oldPrice: "",
-                            image: "",
-                        };
-                        product.id = x._id || "";
-                        product.name = x.name || "";
-                        product.price = x.price || "";
-                        product.oldPrice = x.oldPrice || "";
-                        product.brand = x.brand || "";
-                        product.sku = x.sku || "";  
-                        product.image = x.arrayImage[0].url || "";  
-                        products.push(product);  
-                    });
-                }
-                else {
-                    let message = res2.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
-                    common.Toast(message, 'error');
-                }
+        if (res2.status === 200){
+            if (res2.data.code === 200){
+                res2.data.result.map(x => {
+                    let product = {
+                        id: "",
+                        name: "",
+                        price: "",
+                        brand: "",
+                        sku: "",
+                        oldPrice: "",
+                        image: "",
+                    };
+                    product.id = x._id || "";
+                    product.name = x.name || "";
+                    product.price = x.price || "";
+                    product.oldPrice = x.oldPrice || "";
+                    product.brand = x.brand || "";
+                    product.sku = x.sku || "";  
+                    product.image = x.arrayImage[0].url || "";  
+                    products.push(product);          
+                });
             }
-        
-    } catch(error) {
+            else {
+                let message = res2.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
+                common.Toast(message, 'error');
+            }
+        }
+    } 
+    
+    catch(error) {
         console.log(error);
     }
     return {
