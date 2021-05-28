@@ -12,9 +12,9 @@ const SlideNav = () => {
                 <li className="slide-nav-avatar d-flex align-items-center justify-content-start">
                     {
                         auth.user && Object.keys(auth.user).length > 0 && Object.keys(auth.user.imageUrl).length > 0
-                        ?
+                            ?
                             <img src={auth.user.imageUrl.url} alt="avatar" />
-                        :
+                            :
                             <img src={'/static/avatar2.png'} alt="avatar" />
                     }
                     <div>
@@ -22,7 +22,7 @@ const SlideNav = () => {
                         <div>{auth.user ? auth.user.name : 'Error'}</div>
                     </div>
                 </li>
-                <hr/>
+                <hr />
                 <li>
                     <Link href="/profile">
                         <a className="d-flex align-items-center">
@@ -32,7 +32,7 @@ const SlideNav = () => {
                     </Link>
                 </li>
                 <li>
-                    <Link href="/profile">
+                    <Link href="/notification">
                         <a className="d-flex align-items-center">
                             <i className="fa fa-bell" aria-hidden />
                             <div>Thông báo</div>
@@ -40,7 +40,7 @@ const SlideNav = () => {
                     </Link>
                 </li>
                 <li>
-                    <Link href="/profile">
+                    <Link href="/my-order">
                         <a className="d-flex align-items-center">
                             <i className="fa fa-book" aria-hidden />
                             <div>Quản lí đơn hàng</div>
@@ -48,7 +48,7 @@ const SlideNav = () => {
                     </Link>
                 </li>
                 <li>
-                    <Link href="/profile">
+                    <Link href="/address">
                         <a className="d-flex align-items-center">
                             <i className="fa fa-address-card" aria-hidden />
                             <div>Sổ địa chỉ</div>
@@ -56,7 +56,7 @@ const SlideNav = () => {
                     </Link>
                 </li>
                 <li>
-                    <Link href="/profile">
+                    <Link href="/change-password">
                         <a className="d-flex align-items-center">
                             <i className="fa fa-key" aria-hidden />
                             <div>Thay đổi mật khẩu</div>

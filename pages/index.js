@@ -230,7 +230,7 @@ export async function getServerSideProps(ctx) {
                         product.brand = x.brand || "";
                         product.sku = x.sku || "";  
                         product.image = x.arrayImage[0].url || "";  
-                        products.push(product);          
+                        products.push(product);  
                     });
                 }
                 else {

@@ -5,7 +5,7 @@ import url from './url-api.utils';
 let token = Cookie.get('access_token');
 
 let config = {
-    headers: { 
+    headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'
@@ -42,8 +42,8 @@ const api = {
         checkAuth: (body) => {
             return axios.get(url.buyer.getCheckAuth(), body);
         },
-        getProfile: () => {
-            if (isEnable()) {
+        getProfile: (token) => {
+            if (isEnable(token)) {
                 return axios.get(url.buyer.getProfile(), config);
             }
         },
@@ -77,7 +77,7 @@ const api = {
         },
         getListCategory: () => {
             return axios.get(url.buyer.getListCategory());
-        },  
+        },
         getListProduct: () => {
             return axios.get(url.buyer.getListProduct());
         },
@@ -85,11 +85,11 @@ const api = {
             return axios.get(url.buyer.getListProductFilter().concat(categoryId));
         },
         getDetailProduct: (id) => {
-            return axios.get(url.buyer.getDetailProduct().replace(':id',id));
+            return axios.get(url.buyer.getDetailProduct().replace(':id', id));
         }
     },
     product: {
-        create: (body)  => {
+        create: (body) => {
             return axios.post(url.product.postCreate(), body, config);
         },
         getDetail: (id) => {
