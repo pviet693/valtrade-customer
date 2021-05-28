@@ -17,6 +17,7 @@ import '../styles/auction-card.scss';
 import '../styles/cart.scss';
 import '../styles/cart-item.scss';
 import '../styles/checkout.scss';
+import '../styles/change-password.scss';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "primeicons/primeicons.css";

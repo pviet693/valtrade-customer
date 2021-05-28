@@ -8,7 +8,6 @@ import * as common from './../utils/common';
 import api from '../utils/backend-api.utils';
 
 const Cart = ({ listCards, recommendProducts }) => {
-    
     const [cards, setCards] = useState(listCards);
     const [selectAll, setSelectAll] = useState(false);
 

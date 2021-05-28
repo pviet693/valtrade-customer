@@ -88,12 +88,11 @@ const api = {
             return axios.get(url.buyer.getDetailProduct().replace(':id',id));
         },
         postCart: (body) =>{
-            // const newConfig = {
-            //     ...config,
-            //     'Content-Type': 'multipart/form-data'
-            // }
-            // return axios.post(url.buyer.postCart(), body, newConfig)
-            return axios.post(url.buyer.postCart(), body,config)
+            const newConfig = {
+                ...config,
+                'Content-Type': 'multipart/form-data'
+            }
+            return axios.post(url.buyer.postCart(), body, newConfig)
         }
     },
     product: {

@@ -14,7 +14,6 @@ import Router from 'next/router';
 const Home = ({ brands, categories, products }) => {
     const size = 8;
 
-
     const filterCategory = async (categoryId) => {
         const productCategory = await api.buyer.getListProductFilter(categoryId);
         console.log(productCategory);
@@ -26,7 +25,7 @@ const Home = ({ brands, categories, products }) => {
 
     const product = products.slice(0,size).map((x, index) => 
         <div className="col-md-3 d-flex align-items-center flex-column mb-4">
-            <ProductCard key={index.toString()} name={x.name} image={x.image}
+            <ProductCard key={index.toString()} id={x.id} name={x.name} image={x.image}
                 price={x.price} brand={x.brand.name} sku={x.sku} oldPrice={x.oldPrice} onClick={() => navigateToDetailProduct(x)}/>
         </div>
     );
