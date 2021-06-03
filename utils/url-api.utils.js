@@ -19,7 +19,8 @@ const url = {
         getListProduct: () => `${baseUrl}/api/product/get`,
         getListProductFilter: () => `${baseUrl}/api/product/get?categoryId=`,
         getDetailProduct: () => `${baseUrl}/api/product/detail/:id`,
-        postCart: () => `${baseUrl}/api/cart/updateCart`
+        postCart: () => `${baseUrl}/api/cart/updateCart`,
+        changePassword: () => `${baseUrl}/api/buyer/changePassword`
     },
     product: {
         postCreate: () => `${baseUrl}/api/product/create`,

@@ -34,7 +34,6 @@ const SigIn = () => {
             const loginRes = await api.buyer.login(userData);
             if (loginRes.status === 200) {
                 const data = loginRes.data;
-                console.log(data);
                 if (data.code === 200) {
                     const token = loginRes.data.token;
                     Cookie.set('access_token', token, {
