@@ -27,6 +27,13 @@ const url = {
         getDetail: () => `${baseUrl}/api/product/detail/:id`,
         delete: () => `${baseUrl}/api/product/remove/:id`,
         putUpdate: () => `${baseUrl}/api/product/update`,
+    },
+    cart: {
+        postCart: () => `${baseUrl}/api/cart/updateCart`,
+        getCart: () => `${baseUrl}/api/cart/getCart`,
+    },
+    filter: {
+        search: () => `${baseUrl}/api/product/get`,
     }
 }
 

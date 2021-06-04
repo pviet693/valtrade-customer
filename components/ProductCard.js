@@ -2,27 +2,27 @@ import api from '../utils/backend-api.utils';
 import * as common from './../utils/common';
 
 const ProductCard = ({ id, name, price, brand, sku, oldPrice, image, warrantyStatus, onClick }) => {
-    let lst = [];
-    let cartItem = {
-        productId: id,
-        quantity: 1
-    }
     const addToCart = async () => {
-        try{
-            let formData = new FormData();
-            lst.push(cartItem);
-            formData.append('cartItem', lst);
-            const res = await api.buyer.postCart(formData);
-            if (res.status === 200){
-                if (res.data.code === 200){
+        try {
+            let body = {
+                cartItems: [
+                    {
+                        inforProduct: id,
+                        quantity: 1
+                    }
+                ]
+            }
+            const res = await api.cart.postCart(body);
+            if (res.status === 200) {
+                if (res.data.code === 200) {
                     common.Toast("Thêm thành công vào giỏ hàng", 'success');
                 } else {
                     let message = res.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
                     common.Toast(message, 'error');
                 }
             }
-        } catch(e){
-            console.log(e);
+        } catch (e) {
+            common.Toast(e.message, 'error');
         }
     }
 
