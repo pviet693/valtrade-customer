@@ -12,7 +12,7 @@ import api from './../utils/backend-api.utils';
 import * as common from './../utils/common';
 
 const SigIn = () => {
-    const initialState = { email: '', password: ''};
+    const initialState = { email: '', password: '' };
     const refLoadingBar = useRef(null);
     const [userData, setUserData] = useState(initialState);
     const { email, password } = userData;
@@ -56,7 +56,7 @@ const SigIn = () => {
                     }
                 }
             }
-        } catch(error) {
+        } catch (error) {
             common.Toast(error, 'error');
         }
     }
@@ -133,13 +133,13 @@ const SigIn = () => {
                     <div className="signin-title">
                         <div>
                             Tạo tài khoản
-                            </div>
+                        </div>
                         <div>
                             <span>Bạn chưa có tài khoản?
-                                    <Link href="/register">
+                                <Link href="/register">
                                     <a>
                                         Đăng kí
-                                        </a>
+                                    </a>
                                 </Link>
                             </span>
                         </div>

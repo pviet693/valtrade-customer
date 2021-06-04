@@ -18,14 +18,20 @@ const url = {
         getListCategory: () => `${baseUrl}/api/category/list`,
         getListProduct: () => `${baseUrl}/api/product/get`,
         getListProductFilter: () => `${baseUrl}/api/product/get?categoryId=`,
-        getDetailProduct: () => `${baseUrl}/api/product/detail/:id`,
-        postCart: () => `${baseUrl}/api/cart/updateCart`
+        getDetailProduct: () => `${baseUrl}/api/product/detail/:id`
     },
     product: {
         postCreate: () => `${baseUrl}/api/product/create`,
         getDetail: () => `${baseUrl}/api/product/detail/:id`,
         delete: () => `${baseUrl}/api/product/remove/:id`,
         putUpdate: () => `${baseUrl}/api/product/update`,
+    },
+    cart: {
+        postCart: () => `${baseUrl}/api/cart/updateCart`,
+        getCart: () => `${baseUrl}/api/cart/getCart`,
+    },
+    filter: {
+        search: () => `${baseUrl}/api/product/get`,
     }
 }
 

@@ -16,38 +16,37 @@ const Home = ({ brands, categories, products }) => {
 
     const filterCategory = async (categoryId) => {
         const productCategory = await api.buyer.getListProductFilter(categoryId);
-        console.log(productCategory);
     }
 
-    const brand = brands.slice(0,size).map((x,index) => 
-        <Brand key={index.toString()} name={x.name} image={x.image} />
+    const brand = brands.map((x, index) =>
+        <Brand key={x.id} name={x.name} image={x.image} />
     );
 
-    const product = products.slice(0,size).map((x, index) => 
-        <div className="col-md-3 d-flex align-items-center flex-column mb-4">
-            <ProductCard key={index.toString()} id={x.id} name={x.name} image={x.image}
-                price={x.price} brand={x.brand.name} sku={x.sku} oldPrice={x.oldPrice} onClick={() => navigateToDetailProduct(x)}/>
+    const product = products.slice(0, size).map((x, index) =>
+        <div key={x.id} className="col-md-3 d-flex align-items-center flex-column mb-4">
+            <ProductCard id={x.id} name={x.name} image={x.image}
+                price={x.price} brand={x.brand.name} sku={x.sku} oldPrice={x.oldPrice} onClick={() => navigateToDetailProduct(x)} />
         </div>
     );
 
     const auction = products.slice(0, size).map((x, index) =>
-        <div className="col-md-3 d-flex align-items-center flex-column mb-4">
-            <AuctionCard key={index.toString()} name={x.name} image={x.image} time={10} winner={'abc'} 
-                participantsNumber={10} currentPrice={x.price}  onClick={() => navigateToDetailAuction(x)} />
+        <div key={x.id} className="col-md-3 d-flex align-items-center flex-column mb-4">
+            <AuctionCard name={x.name} image={x.image} time={10} winner={'abc'}
+                participantsNumber={10} currentPrice={x.price} onClick={() => navigateToDetailAuction(x)} />
         </div>
     );
 
-    const category = categories.slice(0,size).map((x, index) => (
-        <Category key={index.toString()} name={x.name} image={x.image}/>
+    const category = categories.slice(0, size).map((x, index) => (
+        <Category key={index.toString()} name={x.name} image={x.image} />
     ));
-    
+
     const settings = {
         className: "text-center",
         centerMode: true,
         infinite: true,
         centerPadding: "0",
-        slidesToShow: 4,
-        speed: 1000
+        slidesToShow: 5,
+        speed: 0
     };
 
     const navigateToDetailProduct = (product) => {
@@ -77,14 +76,6 @@ const Home = ({ brands, categories, products }) => {
                                 <div className="brand-title">
                                     Thương hiệu sản phẩm
                                 </div>
-                                <Link href="/">
-                                    <a>
-                                        <div className="see-more">
-                                            <div>Xem thêm</div>
-                                            <i className="pi pi-angle-right" aria-hidden></i>
-                                        </div>
-                                    </a>
-                                </Link>
                             </div>
                             <Slider {...settings}>
                                 {brand}
@@ -95,14 +86,6 @@ const Home = ({ brands, categories, products }) => {
                                 <div className="category-title">
                                     Danh mục sản phẩm
                                 </div>
-                                <Link href="/">
-                                    <a>
-                                        <div className="see-more">
-                                            <div>Xem thêm</div>
-                                            <i className="pi pi-angle-right" aria-hidden></i>
-                                        </div>
-                                    </a>
-                                </Link>
                             </div>
                             <div className="row">
                                 {category}
@@ -158,7 +141,7 @@ export async function getServerSideProps(ctx) {
     let categories = [];
     let products = [];
     let isSignin = false;
-    
+
     // check token
     const cookies = ctx.req.headers.cookie;
     if (cookies) {
@@ -212,8 +195,8 @@ export async function getServerSideProps(ctx) {
         // call api list product
 
         const res2 = await api.buyer.getListProduct();
-        if (res2.status === 200){
-            if (res2.data.code === 200){
+        if (res2.status === 200) {
+            if (res2.data.code === 200) {
                 res2.data.result.map(x => {
                     let product = {
                         id: "",
@@ -229,9 +212,9 @@ export async function getServerSideProps(ctx) {
                     product.price = x.price || "";
                     product.oldPrice = x.oldPrice || "";
                     product.brand = x.brand || "";
-                    product.sku = x.sku || "";  
-                    product.image = x.arrayImage[0].url || "";  
-                    products.push(product);          
+                    product.sku = x.sku || "";
+                    product.image = x.arrayImage[0].url || "";
+                    products.push(product);
                 });
             }
             else {
@@ -239,9 +222,9 @@ export async function getServerSideProps(ctx) {
                 common.Toast(message, 'error');
             }
         }
-    } 
-    
-    catch(error) {
+    }
+
+    catch (error) {
         console.log(error);
     }
     return {

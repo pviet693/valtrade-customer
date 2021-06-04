@@ -6,32 +6,38 @@ import { CartItem } from './../components/CartItem';
 import { Checkbox } from 'primereact/checkbox';
 import * as common from './../utils/common';
 import api from '../utils/backend-api.utils';
+import cookie from 'cookie';
 
 const Cart = ({ listCards, recommendProducts }) => {
     const [cards, setCards] = useState(listCards);
     const [selectAll, setSelectAll] = useState(false);
 
 
-    const increase = (cardId) => {
+    const increase = (productId) => {
         let cardsTemp = cards;
-        let index = cardsTemp.findIndex(x => x.id === cardId);
+        let index = cardsTemp.findIndex(x => x.productId === productId);
+        console.log(cardsTemp[index]);
+        if (cardsTemp[index].productQuantity === cardsTemp[index].quantity) {
+            common.Notification("Thông báo", 'Sản phẩm không đủ số lượng', 'error');
+            return;
+        }
         cardsTemp[index].productQuantity += 1;
         cardsTemp[index].total = cardsTemp[index].productQuantity * cardsTemp[index].price;
         setCards([...cardsTemp]);
     }
 
-    const decrease = (cardId) => {
+    const decrease = (productId) => {
         let cardsTemp = cards;
-        let index = cardsTemp.findIndex(x => x.id === cardId);
+        let index = cardsTemp.findIndex(x => x.productId === productId);
         if (cardsTemp[index].productQuantity === 1) return;
         cardsTemp[index].productQuantity -= 1;
         cardsTemp[index].total = cardsTemp[index].productQuantity * cardsTemp[index].price;
         setCards([...cardsTemp]);
     }
 
-    const selectCard = (cardId) => {
+    const selectCard = (productId) => {
         let cardsTemp = cards;
-        let index = cardsTemp.findIndex(x => x.id === cardId);
+        let index = cardsTemp.findIndex(x => x.productId === productId);
         cardsTemp[index].isChoose = !cardsTemp[index].isChoose;
         setCards([...cardsTemp]);
 
@@ -42,7 +48,7 @@ const Cart = ({ listCards, recommendProducts }) => {
     const viewDetail = (productId) => {
         Router.push({
             pathname: '/product-detail',
-            query: { id: '609ab7b22aeed90180d45c63' },
+            query: { id: productId },
         })
     }
 
@@ -87,11 +93,11 @@ const Cart = ({ listCards, recommendProducts }) => {
 
     const checkout = async () => {
         if (totalQuantity() > 0) {
-            try{
+            try {
                 const res = await api.buyer.postCart(listCards);
-                if (res.status === 200){
+                if (res.status === 200) {
                     if (res.data.code === 200) {
-                        common.Notification("Thông báo", 'Bạn sẽ được chuyển sang trang thanh toán' ,'success');
+                        common.Notification("Thông báo", 'Bạn sẽ được chuyển sang trang thanh toán', 'success');
                         Router.push({
                             pathname: '/checkout',
                             query: { id: '13579' }
@@ -138,10 +144,11 @@ const Cart = ({ listCards, recommendProducts }) => {
                                 cards.length > 0 && cards.map(card => {
                                     return (
                                         <CartItem
-                                            key={card.id}
-                                            cardId={card.id} productId={card.productId}
+                                            key={card.productId}
+                                            cardId={card.productId} productId={card.productId}
                                             shopId={'231'} shopName={'Shop ABC'} isChoose={card.isChoose} contact={'0968250823'}
                                             productName={card.productName}
+                                            productImage={card.productImage}
                                             productPrice={card.price} productQuantity={card.productQuantity} total={card.total}
                                             increase={increase}
                                             decrease={decrease}
@@ -153,9 +160,9 @@ const Cart = ({ listCards, recommendProducts }) => {
                                 })
                             }
                             {
-                                cards.length === 0 && 
+                                cards.length === 0 &&
                                 <div className="empty-cart">
-                                    <img src="/static/empty_cart.svg" alt="Empty cart"/>
+                                    <img src="/static/empty_cart.svg" alt="Empty cart" />
                                     <div>Giỏ hàng rỗng</div>
                                 </div>
                             }
@@ -188,47 +195,46 @@ export async function getServerSideProps(ctx) {
     let cards = [];
     let recommendProducts = [];
 
-    try {
-        let card = {
-            id: 123,
-            productName: 'Apple Macbook Pro 2020 M1 - 13 Inchs (Apple M1/ 8GB/ 256GB) - Hàng Chính Hãng',
-            productId: 'acd213',
-            productQuantity: 1,
-            price: 90000,
-            isChoose: false,
-            total: 90000
-        }
-        cards.push(card);
+    const cookies = ctx.req.headers.cookie;
+    if (cookies) {
+        const token = cookie.parse(cookies).access_token;
+        if (token) {
+            try {
+                const res = await api.cart.getCart(token);
+                if (res.data.code === 200) {
+                    const cartItems = res.data.cartItems;
+                    Object.keys(cartItems).forEach(id => {
+                        console.log(cartItems[id]);
+                        let card = {
+                            productName: cartItems[id].name || "",
+                            productId: id || "",
+                            productImage: cartItems[id].img.url || "",
+                            productQuantity: cartItems[id].quantity || 0,
+                            price: cartItems[id].price || 0,
+                            isChoose: false,
+                            total: cartItems[id].quantity * cartItems[id].price,
+                            quantity: cartItems[id].quantity || 1
+                        }
+                        cards.push(card);
+                    })
+                }
+            } catch (error) {
+                console.log(error);
+            }
 
-        let card2 = {
-            id: 124,
-            productName: 'Apple Macbook Pro 2020 M1 - 13 Inchs (Apple M1/ 8GB/ 256GB) - Hàng Chính Hãng',
-            productId: 'acd213',
-            productQuantity: 1,
-            price: 90000,
-            isChoose: false,
-            total: 90000
-        }
-        cards.push(card2);
-
-        let card3 = {
-            id: 125,
-            productName: 'Apple Macbook Pro 2020 M1 - 13 Inchs (Apple M1/ 8GB/ 256GB) - Hàng Chính Hãng',
-            productId: 'acd213',
-            productQuantity: 1,
-            price: 90000,
-            isChoose: false,
-            total: 90000
-        }
-        cards.push(card3);
-    } catch(error) {
-        console.log(error);
-    }
-
-    return {
-        props: {
-            listCards: cards,
-            recommendProducts: recommendProducts
+            return {
+                props: {
+                    listCards: cards,
+                    recommendProducts: recommendProducts
+                }
+            }
+        } else {
+            return {
+                redirect: {
+                    destination: '/signin',
+                    permanent: false,
+                },
+            }
         }
     }
 }

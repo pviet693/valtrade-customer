@@ -1,24 +1,88 @@
-@import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1&display=swap");
 
 html,
 body {
-    padding: 0;
-    margin: 0;
-    /* font-family: 'Shippori Mincho B1', serif; */
-    font-family: "Helvetica Neue", Helvetica, Arial, 文泉驛正黑, "WenQuanYi Zen Hei", "Hiragino Sans GB", "儷黑 Pro", "LiHei Pro", "Heiti TC", 微軟正黑體, "Microsoft JhengHei UI", "Microsoft JhengHei", sans-serif;
-    position: relative;
+  padding: 0;
+  margin: 0;
+  /* font-family: 'Shippori Mincho B1', serif; */
+  font-family: "Helvetica Neue", Helvetica, Arial, 文泉驛正黑,
+    "WenQuanYi Zen Hei", "Hiragino Sans GB", "儷黑 Pro", "LiHei Pro", "Heiti TC",
+    微軟正黑體, "Microsoft JhengHei UI", "Microsoft JhengHei", sans-serif;
+  position: relative;
 }
 
 a {
-    color: inherit;
-    text-decoration: none;
+  color: inherit;
+  text-decoration: none;
 }
 
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 #nprogress .bar {
-    background: #fff !important;
-    z-index: 1;
+  background: #fff !important;
+  z-index: 1;
+}
+
+.swal2-popup {
+  padding: 1.8em !important;
+}
+
+.swal-header {
+  padding: unset !important;
+}
+
+.swal-title {
+  text-align: unset;
+  width: 100%;
+  border-bottom: 1px solid #5a616f;
+  height: 35px;
+  font-size: 1.6rem !important;
+  color: #545454 !important;
+  font-weight: 500 !important;
+  display: none !important;
+}
+
+.swal-content {
+  font-size: 1.2rem !important;
+  padding: unset !important;
+  text-align: unset !important;
+}
+
+.swal-content-notifi {
+  text-align: center !important;
+}
+
+.btn-swal-cancel {
+  width: 35% !important;
+  height: 40px !important;
+  background-color: #fff !important;
+  border: 1px solid #d43f3a !important;
+  color: #d43f3a !important;
+  border-radius: 4px !important;
+}
+
+.btn-swal-confirm {
+  width: 35% !important;
+  height: 40px !important;
+  margin-right: 20px;
+  background-color: #00a23b !important;
+  border: 1px solid #00a23b !important;
+  color: #fff !important;
+  border-radius: 4px !important;
+}
+
+.btn-swal-confirm-error {
+  margin-top: 20px;
+  width: 35% !important;
+  height: 40px !important;
+  background-color: #d43f3a !important;
+  border: 1px solid #d43f3a !important;
+  color: #fff !important;
+  border-radius: 4px !important;
+}
+
+.swal2-icon {
+  margin: 0 auto 1.875em !important;
 }

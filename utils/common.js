@@ -45,19 +45,21 @@ export const Notification = (title, text, type) => {
     const swal = Swal.mixin({
         title: title,
         text: text,
-        showCancelButton: true,
+        showCancelButton: false,
         confirmButtonColor: type === 'success' ? '#3085d6' : '#d9534f',
         confirmButtonText: 'OK',
         customClass: {
             confirmButton: type === 'success' ? 'btn btn-swal-confirm' : 'btn btn-swal-confirm-error',
             header: 'swal-header',
             title: 'swal-title',
-            content: 'swal-content',
+            content: 'swal-content-notifi',
         },
         buttonsStyling: false
     })
 
-    return swal.fire({})
+    return swal.fire({
+        icon: type
+    })
 }
 
 export function numberWithCommas(x) {

@@ -5,7 +5,7 @@ import url from './url-api.utils';
 let token = Cookie.get('access_token');
 
 let config = {
-    headers: { 
+    headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'
@@ -43,9 +43,9 @@ const api = {
             return axios.get(url.buyer.getCheckAuth(), body);
         },
         getProfile: () => {
-            // if (isEnable()) {
+            if (isEnable()) {
                 return axios.get(url.buyer.getProfile(), config);
-            // }
+            }
         },
         resetLink: () => {
             return axios.post(url.buyer.postResetLink());
@@ -77,26 +77,16 @@ const api = {
         },
         getListCategory: () => {
             return axios.get(url.buyer.getListCategory());
-        },  
+        },
         getListProduct: () => {
             return axios.get(url.buyer.getListProduct());
         },
-        getListProductFilter: (categoryId) => {
-            return axios.get(url.buyer.getListProductFilter().concat(categoryId));
-        },
         getDetailProduct: (id) => {
-            return axios.get(url.buyer.getDetailProduct().replace(':id',id));
-        },
-        postCart: (body) =>{
-            const newConfig = {
-                ...config,
-                'Content-Type': 'multipart/form-data'
-            }
-            return axios.post(url.buyer.postCart(), body, newConfig)
+            return axios.get(url.buyer.getDetailProduct().replace(':id', id));
         }
     },
     product: {
-        create: (body)  => {
+        create: (body) => {
             return axios.post(url.product.postCreate(), body, config);
         },
         getDetail: (id) => {
@@ -109,6 +99,31 @@ const api = {
         },
         update: (body) => {
             return axios.put(url.product.putUpdate(), body, config);
+        }
+    },
+    cart: {
+        postCart: (body) => {
+            const newConfig = {
+                ...config,
+                'Content-Type': 'multipart/form-data'
+            }
+            return axios.post(url.cart.postCart(), body, newConfig)
+        },
+        getCart: (accessToken) => {
+            if (isEnable(accessToken)) {
+                return axios.get(url.cart.getCart(), config);
+            }
+        }
+    },
+    filter: {
+        search: (params) => {
+            const newConfig = {
+                ...config,
+                params: {
+                    params
+                }
+            }
+            return axios.get(url.filter.search(), newConfig);
         }
     }
 };
