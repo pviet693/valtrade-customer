@@ -86,3 +86,12 @@ a {
 .swal2-icon {
   margin: 0 auto 1.875em !important;
 }
+
+.loading {
+  color: #0795df !important;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -12px;
+  margin-left: -12px;
+}

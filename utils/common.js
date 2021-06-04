@@ -70,3 +70,7 @@ export const formatPhone = (phone) => {
     phone = phone.toString();
     return phone.replace(/(\d{4})(\d{3})(\d{3})/, '$1 $2 $3');
 }
+
+export const ToastPrime = (title, message, type, ref, timer = 3000) => {
+    ref.current.show({ severity: type, summary: title, detail: message, life: timer });
+}

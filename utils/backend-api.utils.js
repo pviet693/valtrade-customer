@@ -91,8 +91,8 @@ const api = {
             }
             return axios.post(url.buyer.postCart(), body, newConfig);
         },
-        changePassword: (newPassword) => {
-            return axios.post(url.buyer.changePassword(), { password: newPassword }, config);
+        changePassword: (body) => {
+            return axios.post(url.buyer.changePassword(), body, config);
         }
     },
     product: {
