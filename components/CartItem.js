@@ -1,6 +1,7 @@
 import { Checkbox } from 'primereact/checkbox';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import * as common from './../utils/common';
+import Button from '@material-ui/core/Button';
 
 export const CartItem = (props) => {
     const {
@@ -44,7 +45,14 @@ export const CartItem = (props) => {
                     {common.numberWithCommas(total)} VND
                 </div>
                 <div className="cart-item__product-action">
-                    <button className="btn btn-view-detail" onClick={() => viewDetail(productId)}>Chi tiết</button>
+                    <Button
+                        variant="contained"
+                        type="submit"
+                        onClick={() => viewDetail(productId)}
+                        className="btn btn-view-detail"
+                    >
+                        Chi tiết
+                    </Button>
                 </div>
             </div>
         </div>

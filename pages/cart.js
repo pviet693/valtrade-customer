@@ -63,7 +63,7 @@ const Cart = ({ listCards, recommendProducts }) => {
         setSelectAll(!selectAll);
         let cardsTemp = cards;
         cardsTemp.forEach((element, index) => {
-            cardsTemp[index].isChoose = !cardsTemp[index].isChoose;
+            cardsTemp[index].isChoose = cardsTemp[index].isChoose || !cardsTemp[index].isChoose;
         });
         setCards([...cardsTemp]);
     }
@@ -171,13 +171,27 @@ const Cart = ({ listCards, recommendProducts }) => {
                                 <div className="sum-cart__left">
                                     <Checkbox inputId="234" checked={selectAll} onChange={selectAllCard} />
                                     <div className="sum-cart__left-all">Chọn tất cả ({totalQuantity()})</div>
-                                    <button className="btn btn-danger" onClick={removeAll}>Xóa</button>
+                                    <Button
+                                        variant="contained"
+                                        type="submit"
+                                        className="btn btn-danger"
+                                        onClick={removeAll}
+                                    >
+                                        Xóa
+                                    </Button>
                                 </div>
                                 <div className="sum-cart__right">
                                     <div className="sum-cart__right-total">
                                         Tổng tiền hàng ({totalQuantity()} sản phẩm): <span>{common.numberWithCommas(cartTotal())} VND</span>
                                     </div>
-                                    <button className="btn btn-primary" onClick={checkout}>Mua hàng</button>
+                                    <Button
+                                        variant="contained"
+                                        type="submit"
+                                        onClick={checkout}
+                                        className="btn btn-primary"
+                                    >
+                                        Mua hàng
+                                    </Button>
                                 </div>
                             </div>
                         </div>
