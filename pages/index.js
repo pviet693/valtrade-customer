@@ -24,7 +24,7 @@ const Home = ({ brands, categories, products }) => {
 
     const product = products.slice(0, size).map((x, index) =>
         <div key={x.id} className="col-md-3 d-flex align-items-center flex-column mb-4">
-            <ProductCard id={x.id} name={x.name} image={x.image}
+            <ProductCard id={x.id} name={x.name} image={x.image} countProduct={x.countProduct}
                 price={x.price} brand={x.brand.name} sku={x.sku} oldPrice={x.oldPrice} onClick={() => navigateToDetailProduct(x)} />
         </div>
     );
@@ -193,7 +193,6 @@ export async function getServerSideProps(ctx) {
             }
         }
         // call api list product
-
         const res2 = await api.buyer.getListProduct();
         if (res2.status === 200) {
             if (res2.data.code === 200) {
@@ -206,6 +205,7 @@ export async function getServerSideProps(ctx) {
                         sku: "",
                         oldPrice: "",
                         image: "",
+                        countProduct: 1
                     };
                     product.id = x._id || "";
                     product.name = x.name || "";

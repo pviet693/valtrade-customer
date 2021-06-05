@@ -298,17 +298,31 @@
           flex-direction: column;
           justify-content: center;
 
-          .button-add-to-cart {
+          .button-wrapper {
+            position: relative;
             width: 165px;
             height: 40px;
-            border-radius: 5px;
-            text-align: center;
-            background-color: #fff;
-            color: #0795df;
-            border: 0.5px solid #0795df;
 
-            &:focus {
-              outline: unset;
+            .button-add-to-cart {
+              width: 100%;
+              height: 100%;
+              border-radius: 5px;
+              text-align: center;
+              background-color: #fff;
+              color: #0795df;
+              border: 0.5px solid #0795df;
+
+              &:focus {
+                outline: unset;
+              }
+
+              &:disabled {
+                background-color: rgba($color: #000000, $alpha: 40%);
+                cursor: not-allowed;
+                outline: unset;
+                border: unset;
+                color: #fff;
+              }
             }
           }
 

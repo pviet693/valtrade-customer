@@ -60,7 +60,7 @@ const SigIn = () => {
                 }
             }
         } catch (error) {
-            common.Toast(error, 'error');
+            setLoading(false);
             common.ToastPrime('Lỗi', error.message || error, 'error', toast);
         }
     }

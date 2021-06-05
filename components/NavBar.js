@@ -11,7 +11,7 @@ function NavBar() {
     const [searchInput, setInput] = useState("");
     const isActive = (path) => path === router.pathname;
     const { state, dispatch } = useContext(DataContext);
-    const { auth } = state;
+    const { auth, cart } = state;
 
     const logout = async () => {
         Cookie.remove('access_token', { path: '/' });
@@ -96,7 +96,7 @@ function NavBar() {
                                 <a>
                                     <i className="pi pi-shopping-cart" aria-hidden></i>
                                     <div>Giỏ hàng</div>
-                                    <div className="cart-quantity">3</div>
+                                    <div className="cart-quantity">{cart.length}</div>
                                 </a>
                             </Link>
                         </div>

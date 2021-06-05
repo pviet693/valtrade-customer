@@ -1,24 +1,25 @@
 import Head from 'next/head';
-import Link from 'next/link';
 import Router from 'next/router';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { CartItem } from './../components/CartItem';
 import { Checkbox } from 'primereact/checkbox';
 import * as common from './../utils/common';
 import api from '../utils/backend-api.utils';
 import cookie from 'cookie';
+import Button from '@material-ui/core/Button';
+import { DataContext } from '../store/GlobalState';
 
 const Cart = ({ listCards, recommendProducts }) => {
     const [cards, setCards] = useState(listCards);
     const [selectAll, setSelectAll] = useState(false);
-
+    const { state, dispatch, toast } = useContext(DataContext);
+    const { auth, cart } = state;
 
     const increase = (productId) => {
         let cardsTemp = cards;
         let index = cardsTemp.findIndex(x => x.productId === productId);
-        console.log(cardsTemp[index]);
         if (cardsTemp[index].productQuantity === cardsTemp[index].quantity) {
-            common.Notification("Thông báo", 'Sản phẩm không đủ số lượng', 'error');
+            common.ToastPrime('Lỗi', 'Sản phẩm không đủ số lượng.', 'error', toast);
             return;
         }
         cardsTemp[index].productQuantity += 1;
@@ -52,9 +53,9 @@ const Cart = ({ listCards, recommendProducts }) => {
         })
     }
 
-    const remove = (cardId) => {
+    const remove = (productId) => {
         let cardsTemp = cards;
-        cardsTemp = cardsTemp.filter(x => x.id !== cardId);
+        cardsTemp = cardsTemp.filter(x => x.productId !== productId);
         setCards([...cardsTemp]);
     }
 
@@ -100,7 +101,6 @@ const Cart = ({ listCards, recommendProducts }) => {
                         common.Notification("Thông báo", 'Bạn sẽ được chuyển sang trang thanh toán', 'success');
                         Router.push({
                             pathname: '/checkout',
-                            query: { id: '13579' }
                         })
                     } else {
                         common.Toast("Cập nhật thất bại.", 'error');
@@ -204,7 +204,6 @@ export async function getServerSideProps(ctx) {
                 if (res.data.code === 200) {
                     const cartItems = res.data.cartItems;
                     Object.keys(cartItems).forEach(id => {
-                        console.log(cartItems[id]);
                         let card = {
                             productName: cartItems[id].name || "",
                             productId: id || "",
