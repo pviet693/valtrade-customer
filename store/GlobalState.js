@@ -25,12 +25,12 @@ export const DataProvider = ({ children }) => {
                     user = profileRes.data.information;
                 }
 
-                dispatch({ type: 'AUTH', payload: { user: user } });
+                dispatch({ type: 'AUTH', payload: { user } });
 
                 const cartRes = await api.cart.getCart();
                 let carts = [];
                 if (cartRes.data.code === 200) {
-                    const cartItems = cartRes.data.cartItems;
+                    const cartItems = cartRes.data.result;
                     Object.keys(cartItems).forEach(id => {
                         let cart = {
                             productName: cartItems[id].name || "",
@@ -45,7 +45,7 @@ export const DataProvider = ({ children }) => {
 
                 dispatch({ type: 'ADD_CART', payload: carts });
             } catch (error) {
-                common.ToastPrime('Lỗi', error.message || error, 'error', toast);
+                common.ToastPrime('Lỗi', error.message + error.statusCode || error, 'error', toast);
             }
         }
     }, [])

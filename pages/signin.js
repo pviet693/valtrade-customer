@@ -194,7 +194,7 @@ const SigIn = () => {
                                             className="btn btn-signin"
                                             disabled={loading}
                                         >
-                                            Đăng kí
+                                            Đăng nhập
                                         </Button>
                                         {loading && <CircularProgress size={24} className='loading' />}
                                     </div>

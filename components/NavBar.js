@@ -12,6 +12,7 @@ function NavBar() {
     const isActive = (path) => path === router.pathname;
     const { state, dispatch } = useContext(DataContext);
     const { auth, cart } = state;
+    console.log(cart);
 
     const logout = async () => {
         Cookie.remove('access_token', { path: '/' });
@@ -19,6 +20,7 @@ function NavBar() {
         dispatch({
             type: 'AUTH', payload: {}
         });
+        dispatch({ type: 'ADD_CART', payload: [] });
     }
 
     const search = async (e) => {

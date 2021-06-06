@@ -195,6 +195,7 @@ export async function getServerSideProps(ctx) {
         // call api list product
         const res2 = await api.buyer.getListProduct();
         if (res2.status === 200) {
+            console.log(res2.data.result);
             if (res2.data.code === 200) {
                 res2.data.result.map(x => {
                     let product = {
@@ -214,6 +215,7 @@ export async function getServerSideProps(ctx) {
                     product.brand = x.brand || "";
                     product.sku = x.sku || "";
                     product.image = x.arrayImage[0].url || "";
+                    product.countProduct = x.countProduct || 1;
                     products.push(product);
                 });
             }

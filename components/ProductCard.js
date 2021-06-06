@@ -38,11 +38,6 @@ const ProductCard = ({ id, name, price, brand, sku, oldPrice, image, warrantySta
                         if (res.status === 200) {
                             if (res.data.code === 200) {
                                 common.ToastPrime('Thành công', 'Thêm vào giỏ hàng thành công.', 'success', toast);
-                                cartTemp.forEach((element, idx) => {
-                                    if (element.productId === id) {
-                                        cartTemp[idx].quantity++;
-                                    }
-                                });
                                 dispatch({
                                     type: 'ADD_CART', payload: cartTemp
                                 });
@@ -125,7 +120,7 @@ const ProductCard = ({ id, name, price, brand, sku, oldPrice, image, warrantySta
                 <img src={image} />
             </div>
             <div className="product-info">
-                <div className="product-name">{name}</div>
+                <div className="product-name" title={name}>{name}</div>
                 <div className="product-price">Giá bán: {common.numberWithCommas(price)} VND</div>
                 <div className="product-brand">Thương hiệu: {brand}</div>
                 <div className="product-warranty">Tình trạng bảo hành: <span>{warrantyStatus ? 'Vẫn còn' : 'Hết hạn'}</span></div>
@@ -133,7 +128,6 @@ const ProductCard = ({ id, name, price, brand, sku, oldPrice, image, warrantySta
                 <div className="product-primary-price">Giá gốc: <span>{common.numberWithCommas(oldPrice)} VND</span></div>
             </div>
             <div className="product-action">
-                {/* <button className="btn button-add-to-cart" onClick={addToCart}>Thêm vào giỏ hàng</button> */}
                 <div className="button-wrapper">
                     <Button
                         variant="contained"

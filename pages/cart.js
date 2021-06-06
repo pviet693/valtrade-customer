@@ -25,6 +25,16 @@ const Cart = ({ listCards, recommendProducts }) => {
         cardsTemp[index].productQuantity += 1;
         cardsTemp[index].total = cardsTemp[index].productQuantity * cardsTemp[index].price;
         setCards([...cardsTemp]);
+
+        let cartTemp = cart;
+        cartTemp.forEach((item, idx) => {
+            if (item.productId === productId) {
+                cartTemp[idx].quantity++;
+            }
+        })
+        dispatch({
+            type: 'ADD_CART', payload: cartTemp
+        });
     }
 
     const decrease = (productId) => {
@@ -34,6 +44,16 @@ const Cart = ({ listCards, recommendProducts }) => {
         cardsTemp[index].productQuantity -= 1;
         cardsTemp[index].total = cardsTemp[index].productQuantity * cardsTemp[index].price;
         setCards([...cardsTemp]);
+
+        let cartTemp = cart;
+        cartTemp.forEach((item, idx) => {
+            if (item.productId === productId) {
+                cartTemp[idx].quantity--;
+            }
+        })
+        dispatch({
+            type: 'ADD_CART', payload: cartTemp
+        });
     }
 
     const selectCard = (productId) => {
@@ -85,11 +105,16 @@ const Cart = ({ listCards, recommendProducts }) => {
     }
 
     const removeAll = () => {
-        if (totalQuantity() > 0) {
+        if (numCartSelect() > 0) {
             let cardsTemp = cards;
             cardsTemp = cardsTemp.filter(x => x.isChoose !== true);
             setCards([...cardsTemp]);
         }
+    }
+
+    const numCartSelect = () => {
+        const cartSelectArr = cards.filter(x => x.isChoose === true);
+        return cartSelectArr.length;
     }
 
     const checkout = async () => {
@@ -146,7 +171,7 @@ const Cart = ({ listCards, recommendProducts }) => {
                                         <CartItem
                                             key={card.productId}
                                             cardId={card.productId} productId={card.productId}
-                                            shopId={'231'} shopName={'Shop ABC'} isChoose={card.isChoose} contact={'0968250823'}
+                                            shopId={card.shopId} shopName={card.shopName} isChoose={card.isChoose} contact={card.contact}
                                             productName={card.productName}
                                             productImage={card.productImage}
                                             productPrice={card.price} productQuantity={card.productQuantity} total={card.total}
@@ -216,7 +241,7 @@ export async function getServerSideProps(ctx) {
             try {
                 const res = await api.cart.getCart(token);
                 if (res.data.code === 200) {
-                    const cartItems = res.data.cartItems;
+                    const cartItems = res.data.result;
                     Object.keys(cartItems).forEach(id => {
                         let card = {
                             productName: cartItems[id].name || "",
@@ -226,7 +251,10 @@ export async function getServerSideProps(ctx) {
                             price: cartItems[id].price || 0,
                             isChoose: false,
                             total: cartItems[id].quantity * cartItems[id].price,
-                            quantity: cartItems[id].quantity || 1
+                            quantity: cartItems[id].quantity || 1,
+                            shopId: cartItems[id].seller ? cartItems[id].seller._id || "" : "",
+                            shopName: cartItems[id].seller ? cartItems[id].seller.nameShop || "" : "",
+                            contact: cartItems[id].seller ? cartItems[id].seller.phone || "" : "",
                         }
                         cards.push(card);
                     })

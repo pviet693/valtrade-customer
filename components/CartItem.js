@@ -22,14 +22,25 @@ export const CartItem = (props) => {
                 <div className="cart-item__shop-contact" href="tel:">
                     Liên hệ: <a className="cart-item__shop-contact" href="tel:">{common.formatPhone(contact)}</a>
                 </div>
-                <button className="btn btn-view-shop">Xem shop</button>
-                <button className="btn btn-remove" onClick={() => remove(productId)}><DeleteOutlineIcon /></button>
+                <Button
+                    variant="contained"
+                    className="btn btn-view-shop"
+                >
+                    Xem shop
+                </Button>
+                <Button
+                    variant="contained"
+                    onClick={() => remove(productId)}
+                    className="btn btn-remove"
+                >
+                    <DeleteOutlineIcon />
+                </Button>
             </div>
             <div className="cart-item__product">
                 <div className="cart-item__product-info">
                     <Checkbox inputId="123" checked={isChoose} onChange={() => selectCard(productId)} />
                     <img src={productImage} alt="image" />
-                    <div className="name">{productName}</div>
+                    <div className="name" title={productName}>{productName}</div>
                 </div>
                 <div className="cart-item__product-price">
                     {common.numberWithCommas(productPrice)} VND
