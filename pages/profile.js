@@ -64,7 +64,7 @@ const Profile = ({ token, user }) => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        
+
     }
 
     const uploadFile = async (event) => {
@@ -104,14 +104,14 @@ const Profile = ({ token, user }) => {
                         <SlideNav />
                         <div className="profile-edit">
                             <div className="profile-edit-title">Thông tin cá nhân</div>
-                            <hr/>
+                            <hr />
                             <div className="row">
                                 <div className="col-sm-8">
                                     <form onSubmit={handleSubmit}>
                                         <div className="form-group row my-3">
                                             <label htmlFor="name" className="col-sm-3 col-form-label">Họ và tên</label>
                                             <div className="col-sm-9">
-                                                <input type="text" name="name" className="form-control" id="name" value={""} onChange={changeInput} placeholder="Nhập họ và tên"/>
+                                                <input type="text" name="name" className="form-control" id="name" value={""} onChange={changeInput} placeholder="Nhập họ và tên" />
                                             </div>
                                         </div>
                                         <div className="form-group row my-4">
@@ -130,15 +130,15 @@ const Profile = ({ token, user }) => {
                                             <label htmlFor="gender" className="col-sm-3 col-form-label">Giới tính</label>
                                             <div className="col-sm-9">
                                                 <div className="form-check form-check-inline">
-                                                    <input className="form-check-input" type="radio" name="gender" id="male" value="male" checked={'male' === 'male'} onChange={changeInput}/>
+                                                    <input className="form-check-input" type="radio" name="gender" id="male" value="male" checked={'male' === 'male'} onChange={changeInput} />
                                                     <label className="form-check-label" htmlFor="male">Nam</label>
                                                 </div>
                                                 <div className="form-check form-check-inline">
-                                                    <input className="form-check-input" type="radio" name="gender" id="female" value="female" checked={'male' === 'female'} onChange={changeInput}/>
+                                                    <input className="form-check-input" type="radio" name="gender" id="female" value="female" checked={'male' === 'female'} onChange={changeInput} />
                                                     <label className="form-check-label" htmlFor="female">Nữ</label>
                                                 </div>
                                                 <div className="form-check form-check-inline">
-                                                    <input className="form-check-input" type="radio" name="gender" id="gay" value="gay" checked={'male' === 'gay'} onChange={changeInput}/>
+                                                    <input className="form-check-input" type="radio" name="gender" id="gay" value="gay" checked={'male' === 'gay'} onChange={changeInput} />
                                                     <label className="form-check-label" htmlFor="gay">Khác</label>
                                                 </div>
                                             </div>
@@ -146,7 +146,7 @@ const Profile = ({ token, user }) => {
                                         <div className="form-group row my-4">
                                             <label htmlFor="birthday" className="col-sm-3 col-form-label">Date</label>
                                             <div className="col-sm-9">
-                                                <input className="form-control" type="date" id="birthday" placeholder="Nhập ngày sinh" value={new Date()} onChange={changeInput} name="birthday" id="birthday"/>
+                                                <input className="form-control" type="date" id="birthday" placeholder="Nhập ngày sinh" value={new Date()} onChange={changeInput} name="birthday" id="birthday" />
                                             </div>
                                         </div>
                                         <div className="row">
@@ -186,7 +186,7 @@ const Profile = ({ token, user }) => {
                         </div>
                     </div>
                 </div>
-                <div className="bottom"/>
+                <div className="bottom" />
             </div>
         </>
     )
@@ -195,9 +195,9 @@ const Profile = ({ token, user }) => {
 export async function getServerSideProps(ctx) {
     try {
         const res = await api.buyer.getProfile();
-        console.log(res);
+        // console.log(res);
 
-    } catch(error) {
+    } catch (error) {
         console.log(error);
     }
 

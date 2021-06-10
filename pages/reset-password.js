@@ -15,7 +15,7 @@ const ResetPassword = () => {
         event.preventDefault();
         const res = await url.buyer.resetLink({ email: email });
         if (res.status === 200) {
-            console.log(res.data);
+            // console.log(res.data);
         }
     }
 

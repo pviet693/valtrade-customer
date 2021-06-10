@@ -51,7 +51,7 @@ function ChangePassword() {
                     <div className="d-flex pb-3">
                         <SlideNav />
                         <div className="change-password-content">
-                            <div className="profile-edit-title">Cập nhật mật khẩu</div>
+                            <div className="content-title">Cập nhật mật khẩu</div>
                             <hr />
 
                             <form onSubmit={handleSubmit(onSubmit)}>

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import Cookie from 'js-cookie';
 import url from './url-api.utils';
+import * as common from './common';
 
 let token = Cookie.get('access_token');
 
@@ -134,6 +135,64 @@ const api = {
                 }
             }
             return axios.get(url.filter.search(), newConfig);
+        }
+    },
+    ghn: {
+        getProvince: () => {
+            const newConfig = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Token': `${common.tokenGHN}`,
+                },
+            }
+            return axios.get(url.ghn.getProvince(), newConfig);
+        },
+        getDistrict: (provinceId) => {
+            const newConfig = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': `${common.tokenGHN}`,
+                },
+                params: {
+                    province_id: provinceId
+                }
+            }
+            return axios.get(url.ghn.getDistrict(), newConfig);
+        },
+        getWard: (districtId) => {
+            const newConfig = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': `${common.tokenGHN}`
+                },
+                params: {
+                    district_id: districtId
+                }
+            }
+            return axios.get(url.ghn.getWard(), newConfig);
+        },
+    },
+    address: {
+        createAddress: (body) => {
+            if (isEnable()) {
+                return axios.post(url.address.postCreate(), body, config);
+            }
+        },
+        getListAddress: (accessToken) => {
+            if (isEnable(accessToken)) {
+                return axios.get(url.address.getListAddress(), config);
+            }
+        },
+        delete: (id) => {
+            if (isEnable()) {
+                let delete_url = url.address.delete().replace(":id", id)
+                return axios.delete(delete_url, config);
+            }
+        },
+        update: (body) => {
+            if (isEnable()) {
+                return axios.put(url.address.update(), body, config);
+            }
         }
     }
 };

@@ -34,6 +34,17 @@ const url = {
     },
     filter: {
         search: () => `${baseUrl}/api/product/get`,
+    },
+    ghn: {
+        getProvince: () => "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province",
+        getWard: () => "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward",
+        getDistrict: () => "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district"
+    },
+    address: {
+        getListAddress: () => `${baseUrl}/api/buyer/getListAddress`,
+        postCreate: () => `${baseUrl}/api/buyer/createAddress`,
+        delete: () => `${baseUrl}/api/buyer/deleteAddress/:id`,
+        update: () => `${baseUrl}/api/buyer/updateAddress`,
     }
 }
 

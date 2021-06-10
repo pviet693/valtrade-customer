@@ -21,7 +21,7 @@ a {
 }
 
 #nprogress .bar {
-  background: #fff !important;
+  background: #0795df !important;
   z-index: 1;
 }
 
@@ -106,4 +106,8 @@ a {
   color: #fff !important;
   background-color: #007bff !important;
   border-color: #007bff !important;
+}
+
+.MuiDialog-root {
+  z-index: 10 !important;
 }

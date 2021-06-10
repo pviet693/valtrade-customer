@@ -1,8 +1,8 @@
-.change-password-container {
+.address__container {
   background-color: #f6f6f6;
   color: #686868 !important;
 
-  .change-password-content {
+  .address__content {
     width: calc(100% - 230px);
     margin-top: 20px;
     height: 500px;
@@ -16,9 +16,41 @@
     border-radius: 0.125rem;
     padding: 20px;
 
-    .content-title {
+    .address__content__title {
       font-weight: 600;
       font-size: 1.1em;
+    }
+
+    .address-item__container {
+      background-color: #fafafa;
+      box-shadow: 0 1px 2px 0 rgb(0 0 0 / 13%);
+      padding: 20px;
+      margin-bottom: 20px;
+      color: #5a616f !important;
+
+      .address-item__row {
+        display: flex;
+        // align-items: center;
+        margin-bottom: 0.4em;
+
+        &:last-child {
+          margin-bottom: unset;
+        }
+
+        &__label {
+          min-width: 120px;
+          height: 1em;
+        }
+
+        &__value {
+          max-width: 400px;
+        }
+
+        &__default {
+          margin-left: 100px;
+          color: #5cb85c;
+        }
+      }
     }
 
     .button-wrapper {

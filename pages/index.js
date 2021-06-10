@@ -195,7 +195,6 @@ export async function getServerSideProps(ctx) {
         // call api list product
         const res2 = await api.buyer.getListProduct();
         if (res2.status === 200) {
-            console.log(res2.data.result);
             if (res2.data.code === 200) {
                 res2.data.result.map(x => {
                     let product = {
