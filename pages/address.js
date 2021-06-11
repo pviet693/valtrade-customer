@@ -5,6 +5,8 @@ import * as common from './../utils/common';
 import SlideNav from './../components/SlideNav';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -310,8 +312,8 @@ function Address(props) {
                                                 </div>
                                             </div>
                                             <div className="address-item__actions">
-                                                <button className="btn btn-primary btn-sm rounded-0 mr-2" type="button" data-toggle="tooltip" data-placement="top" title="Sửa" onClick={() => editAddress(address.id)}><i className="fa fa-edit" aria-hidden></i></button>
-                                                <button className="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Xóa" onClick={() => removeAddress(address.id)}><i className="fa fa-trash" aria-hidden></i></button>
+                                                <button className="btn btn-primary btn-sm rounded-0 mr-2" type="button" data-toggle="tooltip" data-placement="top" title="Sửa" onClick={() => editAddress(address.id)}><EditIcon /></button>
+                                                <button className="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Xóa" onClick={() => removeAddress(address.id)}><DeleteIcon /></button>
                                             </div>
                                         </div>
                                     )
