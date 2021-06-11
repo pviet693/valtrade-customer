@@ -5,7 +5,7 @@
   .address__content {
     width: calc(100% - 230px);
     margin-top: 20px;
-    height: 500px;
+    height: auto;
     position: relative;
     flex-grow: 1;
     box-sizing: border-box;
@@ -22,34 +22,43 @@
     }
 
     .address-item__container {
-      background-color: #fafafa;
-      box-shadow: 0 1px 2px 0 rgb(0 0 0 / 13%);
+      box-shadow: 0px 1px 2px 1px rgb(0 0 0 / 13%);
       padding: 20px;
       margin-bottom: 20px;
       color: #5a616f !important;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
 
-      .address-item__row {
+      &:hover {
+        box-shadow: 0px 1px 2px 2px rgb(0 0 0 / 13%);
+      }
+
+      .address-item__content {
+        .address-item__row {
+          display: flex;
+          margin-bottom: 0.4em;
+
+          &__label {
+            min-width: 120px;
+            height: 1.5em;
+          }
+
+          &__value {
+            max-width: 450px;
+          }
+
+          &__default {
+            margin-left: 100px;
+            color: #5cb85c;
+          }
+        }
+      }
+
+      .address-item__actions {
         display: flex;
-        // align-items: center;
-        margin-bottom: 0.4em;
-
-        &:last-child {
-          margin-bottom: unset;
-        }
-
-        &__label {
-          min-width: 120px;
-          height: 1em;
-        }
-
-        &__value {
-          max-width: 400px;
-        }
-
-        &__default {
-          margin-left: 100px;
-          color: #5cb85c;
-        }
+        align-items: center;
+        justify-content: center;
       }
     }
 
@@ -77,5 +86,45 @@
         }
       }
     }
+
+    .add-new-address {
+      border: 1px solid #0795df;
+      color: #0795df;
+    }
+  }
+}
+
+.MuiDialogContent-root {
+  .setting-row {
+    display: flex;
+    margin-bottom: 15px;
+
+    input {
+      width: 100%;
+      min-width: 350px;
+      height: 40px;
+    }
+
+    label {
+      font-size: 1.1rem;
+      margin-bottom: 0;
+      height: 40px;
+      display: flex;
+      align-items: center;
+    }
+
+    .row-title {
+      min-width: 200px;
+    }
+
+    .p-dropdown {
+      width: 100%;
+      min-width: 350px;
+      height: 40px;
+    }
+  }
+
+  .setting-row--checkbox {
+    margin-left: 188px;
   }
 }

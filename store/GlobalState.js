@@ -4,6 +4,7 @@ import Cookie from 'js-cookie';
 import api from '../utils/backend-api.utils';
 import { Toast } from 'primereact/toast';
 import * as common from '../utils/common';
+import Swal from 'sweetalert2';
 
 export const DataContext = createContext();
 
@@ -12,8 +13,14 @@ export const DataProvider = ({ children }) => {
     const initialState = {
         notify: {}, auth: {}, cart: [], modal: [], orders: [], users: [], categories: []
     }
-
     const [state, dispatch] = useReducer(reducers, initialState);
+    const swal = Swal.mixin({
+        title: 'Vui lòng chờ!',
+        html: "Đang xử lí...",
+        showCancelButton: false,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+    })
 
     useEffect(async () => {
         if (Cookie.get("access_token")) {
@@ -51,7 +58,7 @@ export const DataProvider = ({ children }) => {
     }, [])
 
     return (
-        <DataContext.Provider value={{ state, dispatch, toast }}>
+        <DataContext.Provider value={{ state, dispatch, toast, swal }}>
             <Toast ref={toast} />
             {children}
         </DataContext.Provider>

@@ -43,8 +43,8 @@ const api = {
         checkAuth: (body) => {
             return axios.get(url.buyer.getCheckAuth(), body);
         },
-        getProfile: () => {
-            if (isEnable()) {
+        getProfile: (token = '') => {
+            if (isEnable(token)) {
                 return axios.get(url.buyer.getProfile(), config);
             }
         },
@@ -71,7 +71,7 @@ const api = {
                 ...config,
                 'Content-Type': 'multipart/form-data'
             }
-            return axios.put(url.buyer.putUpdateAvatar, body, newConfig);
+            return axios.put(url.buyer.putUpdateAvatar(), body, newConfig);
         },
         getListBrand: () => {
             return axios.get(url.buyer.getListBrand());
