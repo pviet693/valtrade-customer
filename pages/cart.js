@@ -12,16 +12,24 @@ import { DataContext } from '../store/GlobalState';
 const Cart = ({ listCards, recommendProducts }) => {
     const [cards, setCards] = useState(listCards);
     const [selectAll, setSelectAll] = useState(false);
-    const { state, dispatch, toast } = useContext(DataContext);
+    const { state, dispatch, toast, swal } = useContext(DataContext);
     const { auth, cart } = state;
 
-    const increase = (productId) => {
+    const increase = async (productId) => {
+
         let cardsTemp = cards;
         let index = cardsTemp.findIndex(x => x.productId === productId);
         if (cardsTemp[index].productQuantity === cardsTemp[index].quantity) {
             common.ToastPrime('Lỗi', 'Sản phẩm không đủ số lượng.', 'error', toast);
             return;
         }
+
+        swal.fire({
+            willOpen: () => {
+                swal.showLoading();
+            },
+        })
+
         cardsTemp[index].productQuantity += 1;
         cardsTemp[index].total = cardsTemp[index].productQuantity * cardsTemp[index].price;
         setCards([...cardsTemp]);
@@ -35,12 +43,37 @@ const Cart = ({ listCards, recommendProducts }) => {
         dispatch({
             type: 'ADD_CART', payload: cartTemp
         });
+
+        try {
+            let body = { cartItems: [] };
+            body.cartItems = cartTemp.map(x => { return { inforProduct: x.productId, quantity: x.quantity } });
+            const res = await api.cart.postCart(body);
+            if (res.status === 200) {
+                swal.close();
+                if (res.data.code === 200) {
+                    common.ToastPrime('Thành công', 'Cập nhật giỏ hàng thành công.', 'success', toast);
+                } else {
+                    let message = res.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
+                    common.ToastPrime('Lỗi', message, 'error', toast);
+                }
+            }
+        } catch (error) {
+            swal.close();
+            common.ToastPrime('Lỗi', error, 'error', toast);
+        }
     }
 
-    const decrease = (productId) => {
+    const decrease = async (productId) => {
         let cardsTemp = cards;
         let index = cardsTemp.findIndex(x => x.productId === productId);
         if (cardsTemp[index].productQuantity === 1) return;
+
+        swal.fire({
+            willOpen: () => {
+                swal.showLoading();
+            },
+        })
+
         cardsTemp[index].productQuantity -= 1;
         cardsTemp[index].total = cardsTemp[index].productQuantity * cardsTemp[index].price;
         setCards([...cardsTemp]);
@@ -54,6 +87,24 @@ const Cart = ({ listCards, recommendProducts }) => {
         dispatch({
             type: 'ADD_CART', payload: cartTemp
         });
+
+        try {
+            let body = { cartItems: [] };
+            body.cartItems = cartTemp.map(x => { return { inforProduct: x.productId, quantity: x.quantity } });
+            const res = await api.cart.postCart(body);
+            if (res.status === 200) {
+                swal.close();
+                if (res.data.code === 200) {
+                    common.ToastPrime('Thành công', 'Cập nhật giỏ hàng thành công.', 'success', toast);
+                } else {
+                    let message = res.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
+                    common.ToastPrime('Lỗi', message, 'error', toast);
+                }
+            }
+        } catch (error) {
+            swal.close();
+            common.ToastPrime('Lỗi', error, 'error', toast);
+        }
     }
 
     const selectCard = (productId) => {
@@ -73,10 +124,38 @@ const Cart = ({ listCards, recommendProducts }) => {
         })
     }
 
-    const remove = (productId) => {
+    const remove = async (productId) => {
         let cardsTemp = cards;
         cardsTemp = cardsTemp.filter(x => x.productId !== productId);
         setCards([...cardsTemp]);
+
+        swal.fire({
+            willOpen: () => {
+                swal.showLoading();
+            },
+        })
+
+        let cartTemp = cart.filter(x => x.productId !== productId);
+
+        dispatch({
+            type: 'ADD_CART', payload: cartTemp
+        });
+
+        try {
+            const res = await api.cart.deleteCart(productId);
+            if (res.status === 200) {
+                swal.close();
+                if (res.data.code === 200) {
+                    common.ToastPrime('Thành công', 'Xóa giỏ hàng thành công.', 'success', toast);
+                } else {
+                    let message = res.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
+                    common.ToastPrime('Lỗi', message, 'error', toast);
+                }
+            }
+        } catch (error) {
+            swal.close();
+            common.ToastPrime('Lỗi', error, 'error', toast);
+        }
     }
 
     const selectAllCard = () => {
@@ -105,11 +184,33 @@ const Cart = ({ listCards, recommendProducts }) => {
     }
 
     const removeAll = () => {
-        if (numCartSelect() > 0) {
-            let cardsTemp = cards;
-            cardsTemp = cardsTemp.filter(x => x.isChoose !== true);
-            setCards([...cardsTemp]);
-        }
+        console.log(cards);
+        console.log(cart);
+        // if (numCartSelect() > 0) {
+        //     let cardsTemp = cards;
+        //     cardsTemp = cardsTemp.filter(x => x.isChoose !== true);
+        //     setCards([...cardsTemp]);
+        // }
+
+        // dispatch({
+        //     type: 'ADD_CART', payload: cartTemp
+        // });
+
+        // try {
+        //     const res = await api.cart.deleteCart(productId);
+        //     if (res.status === 200) {
+        //         swal.close();
+        //         if (res.data.code === 200) {
+        //             common.ToastPrime('Thành công', 'Xóa giỏ hàng thành công.', 'success', toast);
+        //         } else {
+        //             let message = res.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
+        //             common.ToastPrime('Lỗi', message, 'error', toast);
+        //         }
+        //     }
+        // } catch (error) {
+        //     swal.close();
+        //     common.ToastPrime('Lỗi', error, 'error', toast);
+        // }
     }
 
     const numCartSelect = () => {
@@ -120,19 +221,19 @@ const Cart = ({ listCards, recommendProducts }) => {
     const checkout = async () => {
         if (totalQuantity() > 0) {
             try {
-                const res = await api.buyer.postCart(listCards);
-                if (res.status === 200) {
-                    if (res.data.code === 200) {
-                        common.Notification("Thông báo", 'Bạn sẽ được chuyển sang trang thanh toán', 'success');
-                        Router.push({
-                            pathname: '/checkout',
-                        })
-                    } else {
-                        common.Toast("Cập nhật thất bại.", 'error');
-                    }
-                }
+                // const res = await api.buyer.postCart(listCards);
+                // if (res.status === 200) {
+                //     if (res.data.code === 200) {
+                //         common.Notification("Thông báo", 'Bạn sẽ được chuyển sang trang thanh toán', 'success');
+                //         Router.push({
+                //             pathname: '/checkout',
+                //         })
+                //     } else {
+                //         common.ToastPrime("Lỗi")
+                //     }
+                // }
             } catch (e) {
-                console.log(e);
+                common.ToastPrime('Lỗi', e, 'error', toast);
             }
         }
     }
@@ -196,14 +297,14 @@ const Cart = ({ listCards, recommendProducts }) => {
                                 <div className="sum-cart__left">
                                     <Checkbox inputId="234" checked={selectAll} onChange={selectAllCard} />
                                     <div className="sum-cart__left-all">Chọn tất cả ({totalQuantity()})</div>
-                                    <Button
+                                    {/* <Button
                                         variant="contained"
                                         type="submit"
                                         className="btn btn-danger"
                                         onClick={removeAll}
                                     >
                                         Xóa
-                                    </Button>
+                                    </Button> */}
                                 </div>
                                 <div className="sum-cart__right">
                                     <div className="sum-cart__right-total">
@@ -251,7 +352,7 @@ export async function getServerSideProps(ctx) {
                             price: cartItems[id].price || 0,
                             isChoose: false,
                             total: cartItems[id].quantity * cartItems[id].price,
-                            quantity: cartItems[id].quantity || 1,
+                            quantity: cartItems[id].countProduct || 1,
                             shopId: cartItems[id].seller ? cartItems[id].seller._id || "" : "",
                             shopName: cartItems[id].seller ? cartItems[id].seller.nameShop || "" : "",
                             contact: cartItems[id].seller ? cartItems[id].seller.phone || "" : "",

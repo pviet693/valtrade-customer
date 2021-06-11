@@ -124,7 +124,21 @@ const api = {
             if (isEnable(accessToken)) {
                 return axios.get(url.cart.getCart(), config);
             }
-        }
+        },
+        deleteCart: (id) => {
+            if (isEnable()) {
+                return axios.delete(url.cart.deleteCart(), {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    data: {
+                        productId: id
+                    }
+                });
+            }
+        },
     },
     filter: {
         search: (params) => {
