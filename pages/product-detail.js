@@ -108,7 +108,7 @@ const ProductDetail = ({product, productRecommend}) => {
                                 Tình trạng bảo hành: <span className="detail-warranty-status">{product.restWarrantyTime}</span>
                             </div>
                             <div className="detail-row">
-                                Mô tả: <span>{product.description}</span>
+                                Mô tả: <span className="product-description">{product.description}</span>
                             </div>
                             <div className="detail-row">
                                 Lưu ý: <span>{product.note}</span>

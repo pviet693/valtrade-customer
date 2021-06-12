@@ -13,13 +13,12 @@ import Router from 'next/router';
 
 const Home = ({ brands, categories, products }) => {
     const size = 8;
-
     const filterCategory = async (categoryId) => {
         const productCategory = await api.buyer.getListProductFilter(categoryId);
-        console.log(productCategory);
+        
     }
 
-    const brand = brands.slice(0,size).map((x,index) => 
+    const brand = brands.map((x,index) => 
         <Brand key={index.toString()} name={x.name} image={x.image} />
     );
 
