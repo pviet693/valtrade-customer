@@ -125,7 +125,7 @@ const api = {
                 return axios.get(url.cart.getCart(), config);
             }
         },
-        deleteCart: (id) => {
+        deleteCart: (body) => {
             if (isEnable()) {
                 return axios.delete(url.cart.deleteCart(), {
                     headers: {
@@ -133,9 +133,7 @@ const api = {
                         'Content-Type': 'application/json',
                         'Access-Control-Allow-Origin': '*'
                     },
-                    data: {
-                        productId: id
-                    }
+                    data: body
                 });
             }
         },

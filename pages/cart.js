@@ -8,6 +8,7 @@ import api from '../utils/backend-api.utils';
 import cookie from 'cookie';
 import Button from '@material-ui/core/Button';
 import { DataContext } from '../store/GlobalState';
+import { ContactlessOutlined } from '@material-ui/icons';
 
 const Cart = ({ listCards, recommendProducts }) => {
     const [cards, setCards] = useState(listCards);
@@ -142,7 +143,9 @@ const Cart = ({ listCards, recommendProducts }) => {
         });
 
         try {
-            const res = await api.cart.deleteCart(productId);
+            let body = { listProductId: [productId] };
+
+            const res = await api.cart.deleteCart(body);
             if (res.status === 200) {
                 swal.close();
                 if (res.data.code === 200) {
@@ -183,34 +186,46 @@ const Cart = ({ listCards, recommendProducts }) => {
         return quantity;
     }
 
-    const removeAll = () => {
+    const checkExist = (id, arr) => {
+        for (let index = 0; index < length; index++) {
+            if (Object.values(arr[index]).indexOf(id) > -1) return true;
+        }
+        return false;
+    }
+
+    const removeAll = async () => {
         console.log(cards);
         console.log(cart);
-        // if (numCartSelect() > 0) {
-        //     let cardsTemp = cards;
-        //     cardsTemp = cardsTemp.filter(x => x.isChoose !== true);
-        //     setCards([...cardsTemp]);
-        // }
+        if (numCartSelect() > 0) {
+            let cardsTemp = cards;
+            cardsTemp = cardsTemp.filter(x => x.isChoose !== true);
+            // setCards([...cardsTemp]);
+            console.log(cardsTemp);
 
-        // dispatch({
-        //     type: 'ADD_CART', payload: cartTemp
-        // });
+            let cartTemp = cart;
+            cartTemp = cartTemp.filter(x => checkExist(x.productId, cardsTemp));
+            console.log(cartTemp);
+            // dispatch({
+            //     type: 'ADD_CART', payload: cartTemp
+            // });
 
-        // try {
-        //     const res = await api.cart.deleteCart(productId);
-        //     if (res.status === 200) {
-        //         swal.close();
-        //         if (res.data.code === 200) {
-        //             common.ToastPrime('Thành công', 'Xóa giỏ hàng thành công.', 'success', toast);
-        //         } else {
-        //             let message = res.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
-        //             common.ToastPrime('Lỗi', message, 'error', toast);
-        //         }
-        //     }
-        // } catch (error) {
-        //     swal.close();
-        //     common.ToastPrime('Lỗi', error, 'error', toast);
-        // }
+            // try {
+            //     const res = await api.cart.deleteCart(productId);
+            //     if (res.status === 200) {
+            //         swal.close();
+            //         if (res.data.code === 200) {
+            //             common.ToastPrime('Thành công', 'Xóa giỏ hàng thành công.', 'success', toast);
+            //         } else {
+            //             let message = res.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
+            //             common.ToastPrime('Lỗi', message, 'error', toast);
+            //         }
+            //     }
+            // } catch (error) {
+            //     swal.close();
+            //     common.ToastPrime('Lỗi', error, 'error', toast);
+            // }
+        }
+
     }
 
     const numCartSelect = () => {
@@ -297,14 +312,14 @@ const Cart = ({ listCards, recommendProducts }) => {
                                 <div className="sum-cart__left">
                                     <Checkbox inputId="234" checked={selectAll} onChange={selectAllCard} />
                                     <div className="sum-cart__left-all">Chọn tất cả ({totalQuantity()})</div>
-                                    {/* <Button
+                                    <Button
                                         variant="contained"
                                         type="submit"
                                         className="btn btn-danger"
                                         onClick={removeAll}
                                     >
                                         Xóa
-                                    </Button> */}
+                                    </Button>
                                 </div>
                                 <div className="sum-cart__right">
                                     <div className="sum-cart__right-total">
