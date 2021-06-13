@@ -3,5 +3,6 @@ export const ACTIONS = {
     LOADING: 'LOADING',
     ADD_MODAL: 'ADD_MODAL',
     AUTH: 'AUTH',
-    ADD_CART: 'ADD_CART'
+    ADD_CART: 'ADD_CART',
+    SEARCH: 'SEARCH',
 }

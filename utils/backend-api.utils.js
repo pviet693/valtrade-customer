@@ -141,7 +141,6 @@ const api = {
     filter: {
         search: (params) => {
             const newConfig = {
-                ...config,
                 params: {
                     params
                 }

@@ -187,43 +187,49 @@ const Cart = ({ listCards, recommendProducts }) => {
     }
 
     const checkExist = (id, arr) => {
-        for (let index = 0; index < length; index++) {
+        for (let index = 0; index < arr.length; index++) {
             if (Object.values(arr[index]).indexOf(id) > -1) return true;
         }
         return false;
     }
 
     const removeAll = async () => {
-        console.log(cards);
-        console.log(cart);
         if (numCartSelect() > 0) {
+
+            swal.fire({
+                willOpen: () => {
+                    swal.showLoading();
+                },
+            })
+
+            let cartDelete = cards.filter(x => x.isChoose !== false);
+            cartDelete = cartDelete.map(x => x.productId);
             let cardsTemp = cards;
             cardsTemp = cardsTemp.filter(x => x.isChoose !== true);
-            // setCards([...cardsTemp]);
-            console.log(cardsTemp);
+            setCards([...cardsTemp]);
 
             let cartTemp = cart;
-            cartTemp = cartTemp.filter(x => checkExist(x.productId, cardsTemp));
-            console.log(cartTemp);
-            // dispatch({
-            //     type: 'ADD_CART', payload: cartTemp
-            // });
+            cartTemp = cartTemp.filter(x => { return checkExist(x.productId, cardsTemp) });
+            dispatch({
+                type: 'ADD_CART', payload: cartTemp
+            });
 
-            // try {
-            //     const res = await api.cart.deleteCart(productId);
-            //     if (res.status === 200) {
-            //         swal.close();
-            //         if (res.data.code === 200) {
-            //             common.ToastPrime('Thành công', 'Xóa giỏ hàng thành công.', 'success', toast);
-            //         } else {
-            //             let message = res.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
-            //             common.ToastPrime('Lỗi', message, 'error', toast);
-            //         }
-            //     }
-            // } catch (error) {
-            //     swal.close();
-            //     common.ToastPrime('Lỗi', error, 'error', toast);
-            // }
+            try {
+                let body = { listProductId: cartDelete };
+                const res = await api.cart.deleteCart(body);
+                if (res.status === 200) {
+                    swal.close();
+                    if (res.data.code === 200) {
+                        common.ToastPrime('Thành công', 'Xóa giỏ hàng thành công.', 'success', toast);
+                    } else {
+                        let message = res.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
+                        common.ToastPrime('Lỗi', message, 'error', toast);
+                    }
+                }
+            } catch (error) {
+                swal.close();
+                common.ToastPrime('Lỗi', error, 'error', toast);
+            }
         }
 
     }

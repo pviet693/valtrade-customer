@@ -10,9 +10,9 @@ import { useState } from 'react';
 import ProductCard from '../components/ProductCard';
 import Router from 'next/router';
 
-const Product = ({brands, categories, products}) => {
+const Product = ({ brands, categories, products, query }) => {
     const items = [
-        { label: 'SẢN PHẨM MỚI', icon: 'pi pi-fw pi-home'},
+        { label: 'SẢN PHẨM MỚI', icon: 'pi pi-fw pi-home' },
         { label: 'GIÁ CAO', icon: 'pi pi-arrow-up' },
         { label: 'GIÁ THẤP', icon: 'pi pi-arrow-down' },
         { label: 'TÊN (A - Z)', icon: 'pi pi-arrow-up' },
@@ -29,58 +29,54 @@ const Product = ({brands, categories, products}) => {
     }
 
     const onChangeTabMenu = (e) => {
-        setActiveItem({...e.value});
+        setActiveItem({ ...e.value });
     }
 
     const CategoryCard = (props) => {
-        const { name, image } = props;
+        const { id, name, image, onClick } = props;
         return (
-            <Link href="/product">
-                <a className="filter-category-row">
-                    <div className="d-flex align-items-center justify-content-between w-100">
-                        <div className="d-flex align-items-center">
-                            <div className="img-box">
-                                <img src={image} alt="Image" />
-                            </div>
-                            <div className="category-name">
-                                {name}
-                            </div>
+            <a className="filter-category-row" onClick={() => onClick(id)}>
+                <div className="d-flex align-items-center justify-content-start w-100">
+                    <div className="d-flex align-items-center">
+                        <div className="img-box">
+                            <img src={image} alt="Image" />
                         </div>
-                        <i className="pi pi-angle-right" aria-hidden></i>
+                        <div className="category-name">
+                            {name}
+                        </div>
                     </div>
-                </a>
-            </Link>
+                    <i className="pi pi-angle-right" aria-hidden></i>
+                </div>
+            </a>
         )
     }
 
     const BrandCard = (props) => {
-        const { name, image } = props;
+        const { id, name, image, onClick } = props;
         return (
-            <Link href="/product">
-                <a className="filter-category-row">
-                    <div className="d-flex align-items-center justify-content-between w-100">
-                        <div className="d-flex align-items-center">
-                            <div className="img-box">
-                                <img src={image} alt="Image" />
-                            </div>
-                            <div className="category-name">
-                                {name}
-                            </div>
+            <a className="filter-category-row" onClick={() => onClick(id)}>
+                <div className="d-flex align-items-center justify-content-between w-100">
+                    <div className="d-flex align-items-center">
+                        <div className="img-box">
+                            <img src={image} alt="Image" />
                         </div>
-                        <i className="pi pi-angle-right" aria-hidden></i>
+                        <div className="category-name">
+                            {name}
+                        </div>
                     </div>
-                </a>
-            </Link>
+                    <i className="pi pi-angle-right" aria-hidden></i>
+                </div>
+            </a >
         )
     }
 
     const FilterPriceCard = (props) => {
         const { from, to, gt, lt, value } = props;
-        
+
         if (gt) {
             return (
                 <div className="filter-price-row">
-                    <Checkbox onChange={(e) => {}} checked={true} value={value}></Checkbox>
+                    <Checkbox onChange={(e) => { }} checked={true} value={value}></Checkbox>
                     <div className="price-value">
                         Trên {from}
                     </div>
@@ -108,24 +104,38 @@ const Product = ({brands, categories, products}) => {
     }
 
     const filterCategory = (categoryId) => {
-        
+        let queryTemp = query;
+        queryTemp = { ...queryTemp, categoryId: categoryId }
+        router.push({
+            pathname: '/product',
+            query: queryTemp
+        })
     }
 
-    const size=10;
+    const filterBrand = (brandId) => {
+        let queryTemp = query;
+        queryTemp = { ...queryTemp, brand: brandId }
+        router.push({
+            pathname: '/product',
+            query: queryTemp
+        })
+    }
 
-    const brand = brands.map((x,index) => 
-        <BrandCard key={index.toString()} name={x.name} image={x.image} />
+    const size = 10;
+
+    const brand = brands.map((x, index) =>
+        <BrandCard key={x.id} name={x.name} image={x.image} id={x.id} onClick={filterBrand} />
     );
 
-    const product = products.map((x, index) => 
-        <div className="col-md-4 d-flex align-items-center flex-column mb-4">
-            <ProductCard key={index.toString()} name={x.name} image={x.image} onClick={() => navigateToDetail(x)}
-            price={x.price} brand={x.brand.name} sku={x.sku} oldPrice={x.oldPrice} warrantyStatus={true}/>
+    const product = products.map((x, index) =>
+        <div className="col-md-4 d-flex align-items-center flex-column mb-4" key={x.id}>
+            <ProductCard name={x.name} image={x.image} onClick={() => navigateToDetail(x)}
+                price={x.price} brand={x.brand.name} sku={x.sku} oldPrice={x.oldPrice} warrantyStatus={true} />
         </div>
     );
 
     const category = categories.map((x, index) => (
-        <CategoryCard key={index.toString()} id={x.id} name={x.name} image={x.image} onClick={filterCategory} />
+        <CategoryCard key={x.id} id={x.id} name={x.name} image={x.image} onClick={filterCategory} />
     ));
 
     const navigateToDetail = (product) => {
@@ -177,7 +187,7 @@ const Product = ({brands, categories, products}) => {
                         <div className="content-list">
                             <div className="list-order">
                                 <div>Sắp xếp: </div>
-                                <TabMenu model={items} activeItem={activeItem} style={{width: '100%'}}/>
+                                <TabMenu model={items} activeItem={activeItem} style={{ width: '100%' }} />
                             </div>
                             <div className="list-container">
                                 <div className="row justify-content-start">
@@ -198,6 +208,7 @@ export async function getServerSideProps(ctx) {
     let brands = [];
     let categories = [];
     let products = [];
+    const query = ctx.query;
 
     try {
         // call api list brand
@@ -244,9 +255,10 @@ export async function getServerSideProps(ctx) {
         }
         // call api list product
 
-        const res2 = await api.buyer.getListProduct();
-            if (res2.status === 200){
-                if (res2.data.code === 200){
+        if (Object.keys(query).length === 0) {
+            const res2 = await api.buyer.getListProduct();
+            if (res2.status === 200) {
+                if (res2.data.code === 200) {
                     res2.data.result.map(x => {
                         let product = {
                             id: "",
@@ -262,9 +274,9 @@ export async function getServerSideProps(ctx) {
                         product.price = x.price || "";
                         product.oldPrice = x.oldPrice || "";
                         product.brand = x.brand || "";
-                        product.sku = x.sku || "";  
-                        product.image = x.arrayImage[0].url || "";  
-                        products.push(product);          
+                        product.sku = x.sku || "";
+                        product.image = x.arrayImage[0].url || "";
+                        products.push(product);
                     });
                 }
                 else {
@@ -272,12 +284,42 @@ export async function getServerSideProps(ctx) {
                     common.Toast(message, 'error');
                 }
             }
-        
-    } catch(error) {
+        } else {
+            const res2 = await api.filter.search(query);
+            if (res2.status === 200) {
+                if (res2.data.code === 200) {
+                    res2.data.result.map(x => {
+                        let product = {
+                            id: "",
+                            name: "",
+                            price: "",
+                            brand: "",
+                            sku: "",
+                            oldPrice: "",
+                            image: "",
+                        };
+                        product.id = x._id || "";
+                        product.name = x.name || "";
+                        product.price = x.price || "";
+                        product.oldPrice = x.oldPrice || "";
+                        product.brand = x.brand || "";
+                        product.sku = x.sku || "";
+                        product.image = x.arrayImage[0].url || "";
+                        products.push(product);
+                    });
+                }
+                else {
+                    let message = res2.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
+                    common.Toast(message, 'error');
+                }
+            }
+        }
+
+    } catch (error) {
         console.log(error);
     }
     return {
-        props: { brands: brands, categories: categories, products: products },
+        props: { brands: brands, categories: categories, products: products, query },
     }
 }
 
