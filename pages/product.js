@@ -195,7 +195,10 @@ const Product = ({ brands, categories, products, query }) => {
                                 </div>
                             </div>
 
-                            <Paginator first={first} rows={rows} totalRecords={120} onPageChange={onPageChange}></Paginator>
+                            {
+                                products.length > 9 &&
+                                <Paginator first={first} rows={rows} totalRecords={120} onPageChange={onPageChange}></Paginator>
+                            }
                         </div>
                     </div>
                 </div>

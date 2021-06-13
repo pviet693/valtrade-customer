@@ -34,7 +34,7 @@ const url = {
         deleteCart: () => `${baseUrl}/api/cart/removeItem`,
     },
     filter: {
-        search: () => `${baseUrl}/api/product/get`,
+        search: () => `${baseUrl}/api/product/search`,
     },
     ghn: {
         getProvince: () => "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province",

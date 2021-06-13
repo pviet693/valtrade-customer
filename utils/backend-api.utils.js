@@ -140,12 +140,8 @@ const api = {
     },
     filter: {
         search: (params) => {
-            const newConfig = {
-                params: {
-                    params
-                }
-            }
-            return axios.get(url.filter.search(), newConfig);
+            const param = new URLSearchParams(params).toString();
+            return axios.get(`${url.filter.search()}?${param}`);
         }
     },
     ghn: {
