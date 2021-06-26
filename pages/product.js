@@ -19,7 +19,7 @@ const Product = ({ brands, categories, products, query }) => {
         { label: 'TÊN (Z - A)', icon: 'pi pi-arrow-down' }
     ];
     const router = useRouter();
-    const [activeItem, setActiveItem] = useState({ label: 'GIÁ CAO', icon: 'pi pi-arrow-up' });
+    const [activeItem, setActiveItem] = useState(items[1]);
     const [first, setFirst] = useState(0);
     const [rows, setRows] = useState(10);
 
@@ -71,12 +71,12 @@ const Product = ({ brands, categories, products, query }) => {
     }
 
     const FilterPriceCard = (props) => {
-        const { from, to, gt, lt, value } = props;
+        const { from, to, gt, lt, checked, onChange} = props;
 
         if (gt) {
             return (
                 <div className="filter-price-row">
-                    <Checkbox onChange={(e) => { }} checked={true} value={value}></Checkbox>
+                    <Checkbox onChange={(e) => onChange(e)} checked={checked} />
                     <div className="price-value">
                         Trên {from}
                     </div>
@@ -85,7 +85,7 @@ const Product = ({ brands, categories, products, query }) => {
         } else if (lt) {
             return (
                 <div className="filter-price-row">
-                    <Checkbox onChange={(e) => { }} checked={true} value={value}></Checkbox>
+                    <Checkbox onChange={(e) => onChange(e)} checked={checked} />
                     <div className="price-value">
                         Dưới {from}
                     </div>
@@ -94,7 +94,7 @@ const Product = ({ brands, categories, products, query }) => {
         } else {
             return (
                 <div className="filter-price-row">
-                    <Checkbox onChange={(e) => { }} checked={true} value={value}></Checkbox>
+                    <Checkbox onChange={(e) => onChange(e)} checked={checked} />
                     <div className="price-value">
                         Từ {from} đến {to}
                     </div>
@@ -145,6 +145,10 @@ const Product = ({ brands, categories, products, query }) => {
         })
     }
 
+    const onChangeFilterPrice = (e) => {
+        console.log(e);
+    }
+
     return (
         <>
             <Head>
@@ -169,7 +173,7 @@ const Product = ({ brands, categories, products, query }) => {
                                     Giá tiền
                                 </div>
                                 <div className="filter-row-content">
-                                    <FilterPriceCard from="1000000" to="" gt={false} lt={true} value="1" />
+                                    <FilterPriceCard from="1000000" to="" gt={false} lt={true} onChange={onChangeFilterPrice} value={true} />
                                     <FilterPriceCard from="1000000" to="5000000" gt={false} lt={false} value="2" />
                                     <FilterPriceCard from="5000000" to="15000000" gt={false} lt={false} value="3" />
                                     <FilterPriceCard from="15000000" to="" gt={true} lt={false} value="4" />
@@ -258,66 +262,35 @@ export async function getServerSideProps(ctx) {
         }
         // call api list product
 
-        if (Object.keys(query).length === 0) {
-            const res2 = await api.buyer.getListProduct();
-            if (res2.status === 200) {
-                if (res2.data.code === 200) {
-                    res2.data.result.map(x => {
-                        let product = {
-                            id: "",
-                            name: "",
-                            price: "",
-                            brand: "",
-                            sku: "",
-                            oldPrice: "",
-                            image: "",
-                        };
-                        product.id = x._id || "";
-                        product.name = x.name || "";
-                        product.price = x.price || "";
-                        product.oldPrice = x.oldPrice || "";
-                        product.brand = x.brand || "";
-                        product.sku = x.sku || "";
-                        product.image = x.arrayImage[0].url || "";
-                        products.push(product);
-                    });
-                }
-                else {
-                    let message = res2.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
-                    common.Toast(message, 'error');
-                }
+        const res2 = await api.buyer.getListProduct(query);
+        if (res2.status === 200) {
+            if (res2.data.code === 200) {
+                console.log(res2.data.message);
+                res2.data.result.map(x => {
+                    let product = {
+                        id: "",
+                        name: "",
+                        price: "",
+                        brand: "",
+                        sku: "",
+                        oldPrice: "",
+                        image: "",
+                    };
+                    product.id = x._id || "";
+                    product.name = x.name || "";
+                    product.price = x.price || "";
+                    product.oldPrice = x.oldPrice || "";
+                    product.brand = x.brand || "";
+                    product.sku = x.sku || "";
+                    product.image = x.arrayImage[0].url || "";
+                    products.push(product);
+                });
             }
-        } else {
-            const res2 = await api.filter.search(query);
-            if (res2.status === 200) {
-                if (res2.data.code === 200) {
-                    res2.data.result.map(x => {
-                        let product = {
-                            id: "",
-                            name: "",
-                            price: "",
-                            brand: "",
-                            sku: "",
-                            oldPrice: "",
-                            image: "",
-                        };
-                        product.id = x._id || "";
-                        product.name = x.name || "";
-                        product.price = x.price || "";
-                        product.oldPrice = x.oldPrice || "";
-                        product.brand = x.brand || "";
-                        product.sku = x.sku || "";
-                        product.image = x.arrayImage[0].url || "";
-                        products.push(product);
-                    });
-                }
-                else {
-                    let message = res2.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
-                    common.Toast(message, 'error');
-                }
+            else {
+                let message = res2.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
+                common.Toast(message, 'error');
             }
         }
-
     } catch (error) {
         console.log(error);
     }

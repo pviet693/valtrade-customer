@@ -79,8 +79,9 @@ const api = {
         getListCategory: () => {
             return axios.get(url.buyer.getListCategory());
         },
-        getListProduct: () => {
-            return axios.get(url.buyer.getListProduct());
+        getListProduct: (params) => {
+            const param = new URLSearchParams(params).toString();
+            return axios.get(url.buyer.getListProduct() + `?${param}`);
         },
         getDetailProduct: (id) => {
             return axios.get(url.buyer.getDetailProduct().replace(':id', id));
@@ -137,12 +138,6 @@ const api = {
                 });
             }
         },
-    },
-    filter: {
-        search: (params) => {
-            const param = new URLSearchParams(params).toString();
-            return axios.get(`${url.filter.search()}?${param}`);
-        }
     },
     ghn: {
         getProvince: () => {

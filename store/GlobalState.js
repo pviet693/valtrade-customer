@@ -6,10 +6,15 @@ import { Toast } from 'primereact/toast';
 import * as common from '../utils/common';
 import Swal from 'sweetalert2';
 import { useRouter } from 'next/router';
+import { io } from "socket.io-client";
 
 export const DataContext = createContext();
 
 export const DataProvider = ({ children }) => {
+    const socket = io("http://3.142.207.62:5000", {
+        path: 'api/',
+        withCredentials: false
+    });
     const router = useRouter();
     const toast = useRef(null);
     const initialState = {
@@ -63,7 +68,7 @@ export const DataProvider = ({ children }) => {
     }, [])
 
     return (
-        <DataContext.Provider value={{ state, dispatch, toast, swal }}>
+        <DataContext.Provider value={{ state, dispatch, toast, swal, socket }}>
             <Toast ref={toast} />
             {children}
         </DataContext.Provider>
