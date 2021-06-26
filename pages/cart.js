@@ -242,20 +242,12 @@ const Cart = ({ listCards, recommendProducts }) => {
     const checkout = async () => {
         if (totalQuantity() > 0) {
             try {
-                // const res = await api.buyer.postCart(listCards);
-                // if (res.status === 200) {
-                //     if (res.data.code === 200) {
-                //         common.Notification("Thông báo", 'Bạn sẽ được chuyển sang trang thanh toán', 'success');
-                //         Router.push({
-                //             pathname: '/checkout',
-                //         })
-                //     } else {
-                //         common.ToastPrime("Lỗi")
-                //     }
-                // }
+                const cartCheckout = cards.filter(x => x.isChoose === false);
             } catch (e) {
                 common.ToastPrime('Lỗi', e, 'error', toast);
             }
+        } else {
+            common.ToastPrime('Lỗi', "Vui lòng chọn sản phẩm.", 'error', toast);
         }
     }
 
