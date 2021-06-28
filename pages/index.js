@@ -193,7 +193,11 @@ export async function getServerSideProps(ctx) {
             }
         }
         // call api list product
-        const res2 = await api.buyer.getListProduct();
+        let params = {
+            page: 0,
+            rows: 8
+        };
+        const res2 = await api.buyer.getListProduct(params);
         if (res2.status === 200) {
             if (res2.data.code === 200) {
                 res2.data.result.map(x => {

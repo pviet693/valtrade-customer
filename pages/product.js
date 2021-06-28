@@ -9,27 +9,76 @@ import { Paginator } from 'primereact/paginator';
 import { useState } from 'react';
 import ProductCard from '../components/ProductCard';
 import Router from 'next/router';
+import { useEffect, useContext } from 'react';
+import { DataContext } from '../store/GlobalState';
 
-const Product = ({ brands, categories, products, query }) => {
+const Product = ({ brands, categories, products, query, total }) => {
     const items = [
         { label: 'SẢN PHẨM MỚI', icon: 'pi pi-fw pi-home' },
-        { label: 'GIÁ CAO', icon: 'pi pi-arrow-up' },
-        { label: 'GIÁ THẤP', icon: 'pi pi-arrow-down' },
+        { label: 'GIÁ THẤP', icon: 'pi pi-arrow-up' },
+        { label: 'GIÁ CAO', icon: 'pi pi-arrow-down' },
         { label: 'TÊN (A - Z)', icon: 'pi pi-arrow-up' },
         { label: 'TÊN (Z - A)', icon: 'pi pi-arrow-down' }
     ];
     const router = useRouter();
-    const [activeItem, setActiveItem] = useState(items[1]);
-    const [first, setFirst] = useState(0);
-    const [rows, setRows] = useState(10);
+    const { state, dispatch, toast } = useContext(DataContext);
+    const [listProduct, setListProduct] = useState(products);
+    const [totalRecord, setTotalRecord] = useState(total);
+    const [filter, setFilter] = useState({
+        ...query,
+        page: 0,
+        first: 0,
+        rows: 12,
+        categoryId: "",
+        brand: "",
+        keysFrom: null,
+        keysTo: null,
+        activeItem: 0
+    });
 
     const onPageChange = (event) => {
-        setFirst(event.first);
-        setRows(event.rows);
+        setFilter((prevStates) => ({
+            ...prevStates,
+            ...event
+        }));
     }
 
     const onChangeTabMenu = (e) => {
-        setActiveItem({ ...e.value });
+        setFilter((prevStates) => ({
+            ...prevStates,
+            activeItem: e.index
+        }));
+    }
+
+    useEffect(() => {
+        filterListProduct();
+    }, [filter]);
+
+    const filterListProduct = async () => {
+        const res = await api.buyer.getListProduct(filter);
+        let productList = [];
+        if (res.status === 200) {
+            if (res.data.code === 200) {
+                const result = res.data.result;
+                result.map(x => {
+                    let product = {};
+                    product.id = x._id || "";
+                    product.name = x.name || "";
+                    product.price = x.price || "";
+                    product.oldPrice = x.oldPrice || "";
+                    product.brand = x.brand || "";
+                    product.sku = x.sku || "";
+                    product.image = x.arrayImage[0].url || "";
+                    productList.push(product);
+                });
+                setTotalRecord(res.data.total);
+                setListProduct(productList);
+            }
+            else {
+                let message = res2.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
+                common.ToastPrime('Lỗi', message, 'error', toast);
+            }
+        }
     }
 
     const CategoryCard = (props) => {
@@ -121,13 +170,11 @@ const Product = ({ brands, categories, products, query }) => {
         })
     }
 
-    const size = 10;
-
     const brand = brands.map((x, index) =>
         <BrandCard key={x.id} name={x.name} image={x.image} id={x.id} onClick={filterBrand} />
     );
 
-    const product = products.map((x, index) =>
+    const product = listProduct.map((x, index) =>
         <div className="col-md-4 d-flex align-items-center flex-column mb-4" key={x.id}>
             <ProductCard name={x.name} image={x.image} onClick={() => navigateToDetail(x)}
                 price={x.price} brand={x.brand.name} sku={x.sku} oldPrice={x.oldPrice} warrantyStatus={true} />
@@ -191,7 +238,7 @@ const Product = ({ brands, categories, products, query }) => {
                         <div className="content-list">
                             <div className="list-order">
                                 <div>Sắp xếp: </div>
-                                <TabMenu model={items} activeItem={activeItem} style={{ width: '100%' }} />
+                                <TabMenu model={items} activeIndex={filter.activeItem} onTabChange={onChangeTabMenu} style={{ width: '100%' }} />
                             </div>
                             <div className="list-container">
                                 <div className="row justify-content-start">
@@ -201,7 +248,7 @@ const Product = ({ brands, categories, products, query }) => {
 
                             {
                                 products.length > 9 &&
-                                <Paginator first={first} rows={rows} totalRecords={120} onPageChange={onPageChange}></Paginator>
+                                <Paginator first={filter.first} rows={filter.rows} totalRecords={totalRecord} onPageChange={onPageChange}></Paginator>
                             }
                         </div>
                     </div>
@@ -215,6 +262,7 @@ export async function getServerSideProps(ctx) {
     let brands = [];
     let categories = [];
     let products = [];
+    let total = 0;
     const query = ctx.query;
 
     try {
@@ -261,21 +309,18 @@ export async function getServerSideProps(ctx) {
             }
         }
         // call api list product
-
-        const res2 = await api.buyer.getListProduct(query);
+        let params = {
+            ...query,
+            page: 0,
+            rows: 12
+        }
+        const res2 = await api.buyer.getListProduct(params);
         if (res2.status === 200) {
             if (res2.data.code === 200) {
-                console.log(res2.data.message);
-                res2.data.result.map(x => {
-                    let product = {
-                        id: "",
-                        name: "",
-                        price: "",
-                        brand: "",
-                        sku: "",
-                        oldPrice: "",
-                        image: "",
-                    };
+                total = res2.data.total;
+                const result = res2.data.result;
+                result.map(x => {
+                    let product = {};
                     product.id = x._id || "";
                     product.name = x.name || "";
                     product.price = x.price || "";
@@ -295,7 +340,7 @@ export async function getServerSideProps(ctx) {
         console.log(error);
     }
     return {
-        props: { brands: brands, categories: categories, products: products, query },
+        props: { brands: brands, categories: categories, products: products, query, total },
     }
 }
 

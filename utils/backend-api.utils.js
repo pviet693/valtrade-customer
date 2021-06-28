@@ -80,8 +80,37 @@ const api = {
             return axios.get(url.buyer.getListCategory());
         },
         getListProduct: (params) => {
-            const param = new URLSearchParams(params).toString();
-            return axios.get(url.buyer.getListProduct() + `?${param}`);
+            let param = {};
+            let queryPrice = "";
+            param.page = params.page + 1;
+            param.perPage = params.rows;
+            if (params.search) param.search = params.search;
+            if (params.categoryId) param.categoryId = params.categoryId;
+            if (params.brand) param.brand = params.brand;
+            if (params.keysFrom && params.keysTo) {
+                queryPrice = `&keys=${params.keysFrom}&keys=${params.keysTo}`;
+            }
+            if (params.activeItem) {
+                if (params.activeItem === 1) {
+                    param.order = 1;
+                    param.sortBy = "price";
+                }
+                if (params.activeItem === 2) {
+                    param.order = -1;
+                    param.sortBy = "price";
+                }
+                if (params.activeItem === 3) {
+                    param.order = 1;
+                    param.sortBy = "name";
+                }
+                if (params.activeItem === 4) {
+                    param.order = -1;
+                    param.sortBy = "name";
+                }
+            }
+
+            const query = new URLSearchParams(param).toString();
+            return axios.get(url.buyer.getListProduct() + `?${query}`);
         },
         getDetailProduct: (id) => {
             return axios.get(url.buyer.getDetailProduct().replace(':id', id));
