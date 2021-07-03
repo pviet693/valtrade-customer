@@ -39,13 +39,17 @@ const url = {
     ghn: {
         getProvince: () => "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province",
         getWard: () => "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward",
-        getDistrict: () => "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district"
+        getDistrict: () => "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district",
+        calculateShippingFee: () => "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee"
     },
     address: {
         getListAddress: () => `${baseUrl}/api/buyer/getListAddress`,
         postCreate: () => `${baseUrl}/api/buyer/createAddress`,
         delete: () => `${baseUrl}/api/buyer/deleteAddress/:id`,
         update: () => `${baseUrl}/api/buyer/updateAddress`,
+    },
+    order: {
+        createOrder: () => `${baseUrl}/api/order/createOrder`,
     }
 }
 

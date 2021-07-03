@@ -8,7 +8,6 @@ import api from '../utils/backend-api.utils';
 import cookie from 'cookie';
 import Button from '@material-ui/core/Button';
 import { DataContext } from '../store/GlobalState';
-import { ContactlessOutlined } from '@material-ui/icons';
 
 const Cart = ({ listCards, recommendProducts }) => {
     const [cards, setCards] = useState(listCards);
@@ -157,7 +156,7 @@ const Cart = ({ listCards, recommendProducts }) => {
             }
         } catch (error) {
             swal.close();
-            common.ToastPrime('Lỗi', error, 'error', toast);
+            common.ToastPrime('Lỗi', error.message || error, 'error', toast);
         }
     }
 
@@ -195,7 +194,6 @@ const Cart = ({ listCards, recommendProducts }) => {
 
     const removeAll = async () => {
         if (numCartSelect() > 0) {
-
             swal.fire({
                 willOpen: () => {
                     swal.showLoading();
@@ -242,7 +240,12 @@ const Cart = ({ listCards, recommendProducts }) => {
     const checkout = async () => {
         if (totalQuantity() > 0) {
             try {
-                const cartCheckout = cards.filter(x => x.isChoose === false);
+                let cartCheckout = cards.filter(x => x.isChoose === true);
+                cartCheckout = cartCheckout.map(x => x.productId);
+                Router.push({
+                    pathname: '/checkout',
+                    query: { productCheckouts: cartCheckout },
+                })
             } catch (e) {
                 common.ToastPrime('Lỗi', e, 'error', toast);
             }

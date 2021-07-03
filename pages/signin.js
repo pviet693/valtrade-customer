@@ -89,7 +89,7 @@ const SigIn = () => {
                 }
             }
         } catch (err) {
-            comm.Toast(error, 'error');
+            common.Toast(error, 'error');
         }
     }
 
@@ -118,7 +118,7 @@ const SigIn = () => {
                 }
             }
         } catch (err) {
-            comm.Toast(error, 'error');
+            common.Toast(error, 'error');
         }
     }
 

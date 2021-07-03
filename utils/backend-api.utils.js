@@ -202,6 +202,16 @@ const api = {
             }
             return axios.get(url.ghn.getWard(), newConfig);
         },
+        calculateShippingFee: (params) => {
+            const newConfig = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': `${common.tokenGHN}`,
+                    ShopId: common.ghnShopId
+                },
+            }
+            return axios.post(url.ghn.calculateShippingFee(), params, newConfig);
+        }
     },
     address: {
         createAddress: (body) => {
@@ -223,6 +233,13 @@ const api = {
         update: (body) => {
             if (isEnable()) {
                 return axios.put(url.address.update(), body, config);
+            }
+        }
+    },
+    order: {
+        createOrder: (body) => {
+            if (isEnable()) {
+                return axios.post(url.order.createOrder(), body, config);
             }
         }
     }

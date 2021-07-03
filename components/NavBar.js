@@ -5,7 +5,6 @@ import { useRouter } from 'next/router';
 import classNames from 'classnames';
 import Cookie from 'js-cookie';
 import SearchIcon from '@material-ui/icons/Search';
-import api from '../utils/backend-api.utils';
 
 function NavBar() {
     const router = useRouter();
@@ -14,6 +13,14 @@ function NavBar() {
     const { auth, cart, searchQuery } = state;
 
     const logout = async () => {
+        if (window.gapi) {
+            const auth2 = gapi.auth2.getAuthInstance();
+            if (auth2) {
+                auth2.signOut().then(
+                    auth2.disconnect()
+                )
+            }
+        }
         Cookie.remove('access_token', { path: '/' });
         Cookie.remove();
         dispatch({
