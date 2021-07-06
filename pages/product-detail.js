@@ -1,10 +1,16 @@
 import Head from 'next/head';
 import { Galleria } from 'primereact/galleria';
+import { useContext } from 'react';
 import ProductCard from '../components/ProductCard';
+import { DataContext } from '../store/GlobalState';
 import api from '../utils/backend-api.utils';
 import * as common from './../utils/common';
 
-const ProductDetail = ({product, productRecommend}) => {
+const ProductDetail = ({ product, productRecommend }) => {
+
+    const { state, dispatch, toast, swal } = useContext(DataContext);
+    const { cart } = state;
+
     const responsiveOptions = [
         {
             breakpoint: '1024px',
@@ -26,6 +32,113 @@ const ProductDetail = ({product, productRecommend}) => {
 
     const thumbnailTemplate = (item) => {
         return <img src={item} alt={''} style={{ display: 'block', width: '80px', height: '60px' }} />;
+    }
+
+    const addToCart = async () => {
+
+        swal.fire({
+            onBeforeOpen: () => {
+                swal.showLoading();
+            },
+        })
+
+        try {
+            let cartTemp = cart;
+            if (cart.length > 0) {
+                let sameProduct = cartTemp.filter(x => x.productId === product.id);
+                if (sameProduct.length === 1) {
+                    if (product.countProduct === sameProduct[0].quantity) {
+                        swal.close();
+                        common.ToastPrime('Lỗi', 'Sản phẩm không đủ số lượng.', 'error', toast);
+                        return;
+                    } else {
+                        sameProduct[0].quantity++;
+                        let body = {
+                            cartItems: [
+                                {
+                                    inforProduct: sameProduct[0].productId,
+                                    quantity: sameProduct[0].quantity
+                                }
+                            ]
+                        }
+                        const res = await api.cart.postCart(body);
+                        swal.close();
+                        if (res.status === 200) {
+                            if (res.data.code === 200) {
+                                common.ToastPrime('Thành công', 'Thêm vào giỏ hàng thành công.', 'success', toast);
+                                dispatch({
+                                    type: 'ADD_CART', payload: cartTemp
+                                });
+                            } else {
+                                let message = res.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
+                                common.ToastPrime('Lỗi', message, 'error', toast);
+                            }
+                        }
+                    }
+                } else {
+                    let body = {
+                        cartItems: [
+                            {
+                                inforProduct: product.id,
+                                quantity: 1
+                            }
+                        ]
+                    }
+                    const res = await api.cart.postCart(body);
+                    swal.close();
+                    if (res.status === 200) {
+                        if (res.data.code === 200) {
+                            cartTemp.push({
+                                productName: product.name,
+                                productId: product.id,
+                                productImage: product.image,
+                                price: product.price,
+                                quantity: 1
+                            })
+                            dispatch({
+                                type: 'ADD_CART', payload: cartTemp
+                            });
+                            common.ToastPrime('Thành công', 'Thêm vào giỏ hàng thành công.', 'success', toast);
+                        } else {
+                            let message = res.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
+                            common.ToastPrime('Lỗi', message, 'error', toast);
+                        }
+                    }
+                }
+            } else {
+                let body = {
+                    cartItems: [
+                        {
+                            inforProduct: product.id,
+                            quantity: 1
+                        }
+                    ]
+                }
+                const res = await api.cart.postCart(body);
+                swal.close();
+                if (res.status === 200) {
+                    if (res.data.code === 200) {
+                        cartTemp.push({
+                            productName: product.name,
+                            productId: product.id,
+                            productImage: product.image,
+                            price: product.price,
+                            quantity: 1
+                        })
+                        dispatch({
+                            type: 'ADD_CART', payload: cartTemp
+                        });
+                        common.ToastPrime('Thành công', 'Thêm vào giỏ hàng thành công.', 'success', toast);
+                    } else {
+                        let message = res.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
+                        common.ToastPrime('Lỗi', message, 'error', toast);
+                    }
+                }
+            }
+        } catch (e) {
+            swal.close();
+            common.ToastPrime('Lỗi', e.message || e, 'error', toast);
+        }
     }
 
     return (
@@ -88,7 +201,7 @@ const ProductDetail = ({product, productRecommend}) => {
                     <div className="product-info-container">
                         <div className="product-info-image">
                             <Galleria id={product.id} value={product.arrayImage} responsiveOptions={responsiveOptions} numVisible={4} circular style={{ maxWidth: '640px' }}
-                                showItemNavigators showItemNavigatorsOnHover item={itemTemplate} thumbnail={thumbnailTemplate} /> 
+                                showItemNavigators showItemNavigatorsOnHover item={itemTemplate} thumbnail={thumbnailTemplate} />
                         </div>
                         <div className="product-info-detail">
                             <div className="detail-name">
@@ -115,7 +228,7 @@ const ProductDetail = ({product, productRecommend}) => {
                             </div>
 
                             <div className="detail-action">
-                                <button className="btn button-add-to-cart"><i className="pi pi-shopping-cart"></i> Thêm vào giỏ hàng</button>
+                                <button className="btn button-add-to-cart" onClick={addToCart}><i className="pi pi-shopping-cart"></i> Thêm vào giỏ hàng</button>
                                 <button className="btn button-buy-now">Mua ngay</button>
                             </div>
                         </div>
@@ -126,7 +239,7 @@ const ProductDetail = ({product, productRecommend}) => {
                         </div>
                         <div className="comment-row">
                             <div className="comment-row_img">
-                                <img src={'/static/avatar2.png'} alt="Avatar"/>
+                                <img src={'/static/avatar2.png'} alt="Avatar" />
                             </div>
                             <div className="comment-row_content">
                                 <div className="content_name">
@@ -193,7 +306,7 @@ const ProductDetail = ({product, productRecommend}) => {
 export async function getServerSideProps(ctx) {
     const { query } = ctx;
     const { id } = query;
-    
+
     let productDetail = {
         id: "",
         brand: "",
@@ -206,6 +319,7 @@ export async function getServerSideProps(ctx) {
         name: "",
         shopName: "",
         phone: "",
+        countProduct: 0
     };
     try {
         const res = await api.buyer.getDetailProduct(id);
@@ -216,13 +330,14 @@ export async function getServerSideProps(ctx) {
                 productDetail.arrayImage = data.arrayImage.map(x => x.url);
                 productDetail.name = data.name || "";
                 productDetail.description = data.description || "";
-                productDetail.sku = data.sku ||"";
+                productDetail.sku = data.sku || "";
                 productDetail.restWarrantyTime = data.restWarrantyTime || "";
                 productDetail.brand = data.brand.name || "";
                 productDetail.note = data.note || "";
                 productDetail.price = data.price || "";
                 productDetail.shopName = data.sellerInfor.nameShop || "";
-                productDetail.phone = data.sellerInfor.phone||"";                                                                                                                                                                                                                                                        
+                productDetail.phone = data.sellerInfor.phone || "";
+                productDetail.countProduct = data.countProduct || 0;
             }
         }
     } catch (error) {

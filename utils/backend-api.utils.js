@@ -1,11 +1,12 @@
 import axios from 'axios';
 import Cookie from 'js-cookie';
 import url from './url-api.utils';
+import * as common from './common';
 
 let token = Cookie.get('access_token');
 
 let config = {
-    headers: { 
+    headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'
@@ -42,8 +43,8 @@ const api = {
         checkAuth: (body) => {
             return axios.get(url.buyer.getCheckAuth(), body);
         },
-        getProfile: () => {
-            if (isEnable()) {
+        getProfile: (token = '') => {
+            if (isEnable(token)) {
                 return axios.get(url.buyer.getProfile(), config);
             }
         },
@@ -70,36 +71,33 @@ const api = {
                 ...config,
                 'Content-Type': 'multipart/form-data'
             }
-            return axios.put(url.buyer.putUpdateAvatar, body, newConfig);
+            return axios.put(url.buyer.putUpdateAvatar(), body, newConfig);
         },
         getListBrand: () => {
             return axios.get(url.buyer.getListBrand());
         },
         getListCategory: () => {
             return axios.get(url.buyer.getListCategory());
-        },  
+        },
         getListProduct: () => {
             return axios.get(url.buyer.getListProduct());
         },
-        getListProductFilter: (categoryId) => {
-            return axios.get(url.buyer.getListProductFilter().concat(categoryId));
-        },
         getDetailProduct: (id) => {
-            return axios.get(url.buyer.getDetailProduct().replace(':id',id));
+            return axios.get(url.buyer.getDetailProduct().replace(':id', id));
         },
-        postCart: (body) =>{
+        postCart: (body) => {
             const newConfig = {
                 ...config,
                 'Content-Type': 'multipart/form-data'
             }
             return axios.post(url.buyer.postCart(), body, newConfig);
         },
-        changePassword: (newPassword) => {
-            return axios.post(url.buyer.changePassword(), {password: newPassword}, config);
+        changePassword: (body) => {
+            return axios.post(url.buyer.changePassword(), body, config);
         }
     },
     product: {
-        create: (body)  => {
+        create: (body) => {
             return axios.post(url.product.postCreate(), body, config);
         },
         getDetail: (id) => {
@@ -112,6 +110,104 @@ const api = {
         },
         update: (body) => {
             return axios.put(url.product.putUpdate(), body, config);
+        }
+    },
+    cart: {
+        postCart: (body) => {
+            const newConfig = {
+                ...config,
+                'Content-Type': 'multipart/form-data'
+            }
+            return axios.post(url.cart.postCart(), body, newConfig)
+        },
+        getCart: (accessToken) => {
+            if (isEnable(accessToken)) {
+                return axios.get(url.cart.getCart(), config);
+            }
+        },
+        deleteCart: (id) => {
+            if (isEnable()) {
+                // return axios.delete(url.cart.deleteCart(), {
+                //     headers: {
+                //         Authorization: `Bearer ${token}`,
+                //         'Content-Type': 'application/json',
+                //         'Access-Control-Allow-Origin': '*'
+                //     },
+                //     data: {
+                //         productId: id
+                //     }
+                // });
+                return axios.delete(url.cart.deleteCart().replace(':productId', id), config);
+            }
+        },
+    },
+    filter: {
+        search: (params) => {
+            const newConfig = {
+                ...config,
+                params: {
+                    params
+                }
+            }
+            return axios.get(url.filter.search(), newConfig);
+        }
+    },
+    ghn: {
+        getProvince: () => {
+            const newConfig = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Token': `${common.tokenGHN}`,
+                },
+            }
+            return axios.get(url.ghn.getProvince(), newConfig);
+        },
+        getDistrict: (provinceId) => {
+            const newConfig = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': `${common.tokenGHN}`,
+                },
+                params: {
+                    province_id: provinceId
+                }
+            }
+            return axios.get(url.ghn.getDistrict(), newConfig);
+        },
+        getWard: (districtId) => {
+            const newConfig = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': `${common.tokenGHN}`
+                },
+                params: {
+                    district_id: districtId
+                }
+            }
+            return axios.get(url.ghn.getWard(), newConfig);
+        },
+    },
+    address: {
+        createAddress: (body) => {
+            if (isEnable()) {
+                return axios.post(url.address.postCreate(), body, config);
+            }
+        },
+        getListAddress: (accessToken) => {
+            if (isEnable(accessToken)) {
+                return axios.get(url.address.getListAddress(), config);
+            }
+        },
+        delete: (id) => {
+            if (isEnable()) {
+                let delete_url = url.address.delete().replace(":id", id)
+                return axios.delete(delete_url, config);
+            }
+        },
+        update: (body) => {
+            if (isEnable()) {
+                return axios.put(url.address.update(), body, config);
+            }
         }
     }
 };

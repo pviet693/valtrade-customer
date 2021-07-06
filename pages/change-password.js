@@ -2,29 +2,39 @@ import Head from 'next/head';
 import SlideNav from '../components/SlideNav';
 import Button from '@material-ui/core/Button';
 import SaveIcon from '@material-ui/icons/Save';
-import {useForm} from 'react-hook-form';
-import { classNames } from 'primereact/utils';
-import { useRef } from 'react';
-import api from '../utils/backend-api.utils';
+import { useForm } from 'react-hook-form';
+import { useRef, useState } from 'react';
+import { Toast } from 'primereact/toast';
 import * as common from './../utils/common';
+import api from '../utils/backend-api.utils';
+import classNames from 'classnames';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 function ChangePassword() {
-    const {register, handleSubmit, formState: {errors}, watch } = useForm();
-    const newPassword = useRef({});
-    newPassword.current = watch("newPassword", "");
-    const onSubmit = async () => {
-        try{
-            const res = await api.buyer.changePassword(newPassword.current);
-            if (res.status === 200){
-                if (res.data.code === 200){
-                    common.Toast('Thay đổi mật khẩu thành công', 'success');
+    const { register, handleSubmit, formState: { errors }, getValues } = useForm();
+    const toast = useRef(null);
+    const [loading, setLoading] = useState(false);
+
+    const onSubmit = async (data) => {
+        setLoading(true);
+        try {
+            let body = {
+                password: data.currentPassword,
+                newPassword: data.newPassword
+            }
+            const res = await api.buyer.changePassword(body);
+            setLoading(false);
+            if (res.status === 200) {
+                if (res.data.code === 200) {
+                    common.ToastPrime('Thành công', 'Thay đổi mật khẩu thành công.', 'success', toast);
                 } else {
                     const message = res.data.message || "Thay đổi mật khẩu thất bại.";
-                    common.Toast(message, 'error');
+                    common.ToastPrime('Lỗi', message, 'error', toast);
                 }
             }
-        } catch(e){
-            console.log(e);
+        } catch (e) {
+            setLoading(false);
+            common.ToastPrime('Lỗi', e.message || e, 'error', toast);
         }
     }
 
@@ -36,56 +46,74 @@ function ChangePassword() {
                 </title>
             </Head>
             <div className="change-password-container">
+                <Toast ref={toast} />
                 <div className="container">
                     <div className="d-flex pb-3">
                         <SlideNav />
                         <div className="change-password-content">
-                            <div className="profile-edit-title">Cập nhật mật khẩu</div>
+                            <div className="content-title">Cập nhật mật khẩu</div>
                             <hr />
 
                             <form onSubmit={handleSubmit(onSubmit)}>
                                 <div className="form-group row my-3">
                                     <label htmlFor="current-password" className="col-sm-3 col-form-label">Mật khẩu hiện tại</label>
                                     <div className="col-sm-9">
-                                        <input type="password" {...register("currentPassword", { required: true, minLength: 8 })}  name="currentPassword" className="form-control" id="current-password"  onChange={() => { }} placeholder="Mật khẩu hiện tại" />
-                                        {errors?.currentPassword?.type === "required" && <p className="text-dangerous">This field is required</p>}
-                                        {errors?.currentPassword?.type === "minLength" && (
-                                            <p className="text-dangerous">Current password must have at least 8 characters</p>
-                                        )}
+                                        <input type="password"
+                                            {...register('currentPassword', {
+                                                required: "Mật khẩu hiện tại không được trống.",
+                                                minLength: { value: 8, message: "Mật khẩu ít nhất 8 kí tự." }
+                                            })}
+                                            name="currentPassword"
+                                            className={classNames("form-control", { 'is-invalid': errors && errors.currentPassword })}
+                                            id="current-password" placeholder="Mật khẩu hiện tại" />
+                                        {errors && errors.currentPassword && <div className="invalid-feedback">{errors.currentPassword.message}</div>}
                                     </div>
                                 </div>
 
                                 <div className="form-group row my-3">
                                     <label htmlFor="new-password" className="col-sm-3 col-form-label">Mật khẩu mới</label>
                                     <div className="col-sm-9">
-                                        <input type="password" name="newPassword" {...register("newPassword", { required: true, minLength: 8 })} className="form-control" id="new-password" onChange={() => { }} placeholder="Mật khẩu mới" />
-                                        {errors?.newPassword?.type === "required" && <p className="text-dangerous">This field is required</p>}
-                                        {errors?.newPassword?.type === "minLength" && (
-                                            <p className="text-dangerous">New password must have at least 8 characters</p>
-                                        )}
+                                        <input type="password"
+                                            {...register('newPassword', {
+                                                required: "Mật khẩu mới không được trống.",
+                                                minLength: { value: 8, message: "Mật khẩu ít nhất 8 kí tự." }
+                                            })}
+                                            name="newPassword"
+                                            className={classNames("form-control", { 'is-invalid': errors && errors.newPassword })}
+                                            id="new-password" placeholder="Mật khẩu mới" />
+                                        {errors && errors.newPassword && <div className="invalid-feedback">{errors.newPassword.message}</div>}
                                     </div>
                                 </div>
 
                                 <div className="form-group row my-3">
                                     <label htmlFor="confirm-password" className="col-sm-3 col-form-label">Xác nhận mật khẩu</label>
                                     <div className="col-sm-9">
-                                        <input type="password" name="confirmPassword" {...register("confirmPassword", { required: true, minLength: 8 , validate: value => value === newPassword.current || "The passwords do not match"})} className="form-control" id="confirm-password" onChange={() => { }} placeholder="Xác nhận mật khẩu" />
-                                        {errors?.confirmPassword?.type === "required" && <p className="text-dangerous">This field is required</p>}
-                                        {errors?.confirmPassword?.type === "minLength" && (
-                                            <p className="text-dangerous">Current password must have at least 8 characters</p>
-                                        )}
-                                        {errors.confirmPassword && <p className="text-dangerous">{errors.confirmPassword.message}</p>}
+                                        <input type="password"
+                                            {...register('confirmPassword', {
+                                                required: "Mật khẩu không được trống.", minLength: { value: 8, message: "Mật khẩu ít nhất 8 kí tự." },
+                                                validate: value => {
+                                                    if (value === getValues('newPassword')) { return true } else { return "Mật khẩu không khớp." }
+                                                },
+                                            })}
+                                            name="confirmPassword"
+                                            className={classNames("form-control", { 'is-invalid': errors && errors.confirmPassword })}
+                                            id="confirm-password" placeholder="Xác nhận khẩu mới" />
+                                        {errors && errors.confirmPassword && <div className="invalid-feedback">{errors.confirmPassword.message}</div>}
                                     </div>
                                 </div>
 
-                                <Button
-                                    variant="contained"
-                                    type="submit"
-                                    className="button-save"
-                                    startIcon={<SaveIcon />}
-                                >
-                                    Lưu lại
-                                </Button>
+                                <div className="button-wrapper">
+                                    <Button
+                                        variant="contained"
+                                        type="submit"
+                                        className="button-save"
+                                        disabled={loading}
+                                        startIcon={<SaveIcon />}
+                                    >
+                                        Lưu lại
+                                    </Button>
+                                    {loading && <CircularProgress size={24} className='loading' />}
+                                </div>
                             </form>
                         </div>
                     </div>

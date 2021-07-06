@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import Link from 'next/link';
-import { useState, useContext, useEffect, useRef } from 'react';
+import { useState, useContext, useRef } from 'react';
 import { DataContext } from '../store/GlobalState';
 import { useRouter } from 'next/router';
 import LoadingBar from "react-top-loading-bar";
@@ -10,30 +10,28 @@ import * as common from './../utils/common';
 import GoogleLogin from 'react-google-login';
 import FacebookLogin from 'react-facebook-login';
 import cookie from "cookie";
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { useForm } from 'react-hook-form';
+import { Toast } from 'primereact/toast';
+import classNames from 'classnames';
 
 const Register = () => {
+    const { register, handleSubmit, formState: { errors }, getValues } = useForm();
     const refLoadingBar = useRef(null);
-    const initialState = { name: '', email: '', password: '', cf_password: '' };
-    const [userData, setUserData] = useState(initialState);
-    const { name, email, password, cf_password } = userData;
+    const toast = useRef(null);
+    const [loading, setLoading] = useState(false);
 
     const { state, dispatch } = useContext(DataContext);
-    const { auth } = state;
 
     const router = useRouter();
 
-    const handleChangeInput = event => {
-        const { name, value } = event.target;
-        setUserData({ ...userData, [name]: value });
-    }
-
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-
+    const onSubmit = async (data) => {
+        setLoading(true);
         const userRegisterBody = {
-            name: name,
-            email: email,
-            password: password
+            name: data.name,
+            email: data.email,
+            password: data.password
         };
 
         try {
@@ -53,13 +51,24 @@ const Register = () => {
                                     user: profileRes.data.information
                                 }
                             });
+                            setLoading(false);
+                            common.ToastPrime('Thành công', 'Đăng kí thành công.', 'success', toast);
                             router.push('/');
+                        } else {
+                            setLoading(false);
+                            const message = profileRes.data.message || "Error when get profile.";
+                            common.ToastPrime('Lỗi', message, 'error', toast);
                         }
                     }
+                } else {
+                    setLoading(false);
+                    const message = res.data.error || "Đăng kí thất bại.";
+                    common.ToastPrime('Lỗi', message, 'error', toast);
                 }
             }
-        } catch(error) {
-            common.Toast(error, 'error');
+        } catch (error) {
+            setLoading(false);
+            common.ToastPrime('Lỗi', error.message || error, 'error', toast);
         }
     }
 
@@ -117,7 +126,7 @@ const Register = () => {
                     }
                 }
             }
-        } catch(err) {
+        } catch (err) {
             ref.current.complete();
             comm.Toast(error, 'error');
         }
@@ -130,6 +139,7 @@ const Register = () => {
             </Head>
             <LoadingBar color="#00ac96" ref={refLoadingBar} />
             <div className="register">
+                <Toast ref={toast} />
                 <div className="container">
                     <div className="register-title">
                         <div>
@@ -148,37 +158,81 @@ const Register = () => {
                     <div className="register-content">
                         <div className="row mx-0">
                             <div className="col-lg-6 px-3">
-                                <form className="mx-auto my-4" style={{ maxWidth: '500px' }} onSubmit={handleSubmit}>
+                                <form className="mx-auto my-4" style={{ maxWidth: '500px' }} onSubmit={handleSubmit(onSubmit)}>
 
                                     <div className="form-group">
                                         <label htmlFor="name">Họ và tên</label>
-                                        <input type="text" className="form-control" id="name"
-                                            placeholder="Vui lòng nhập tên"
-                                            name="name" value={name} onChange={handleChangeInput} />
+                                        <input type="text"
+                                            className={classNames("form-control", { "is-invalid": errors && errors.name })}
+                                            id="name" placeholder="Vui lòng nhập tên"
+                                            name="name"
+                                            {...register('name', {
+                                                required: "Tên không được trống.",
+                                            })}
+                                        />
+                                        {errors && errors.name && <div className="invalid-feedback">{errors.name.message}</div>}
                                     </div>
 
                                     <div className="form-group">
                                         <label htmlFor="exampleInputEmail1">Địa chỉ email</label>
-                                        <input type="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
+                                        <input type="email"
+                                            className={classNames("form-control", { "is-invalid": errors && errors.email })}
+                                            id="exampleInputEmail1" aria-describedby="emailHelp"
                                             placeholder="Vui lòng nhập địa chỉ email"
-                                            name="email" value={email} onChange={handleChangeInput} />
+                                            name="email"
+                                            {...register('email', {
+                                                required: "Email không được trống.",
+                                                pattern: {
+                                                    value: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                                                    message: 'Email không hợp lệ.'
+                                                }
+                                            })}
+                                        />
+                                        {errors && errors.email && <div className="invalid-feedback">{errors.email.message}</div>}
                                     </div>
 
                                     <div className="form-group">
                                         <label htmlFor="exampleInputPassword1">Mật khẩu</label>
-                                        <input type="password" className="form-control" id="exampleInputPassword1"
-                                            placeholder="Vui lòng nhập mật khẩu"
-                                            name="password" value={password} onChange={handleChangeInput} />
+                                        <input type="password"
+                                            className={classNames("form-control", { "is-invalid": errors && errors.password })}
+                                            {...register('password', {
+                                                required: "Mật khẩu không được trống.",
+                                                minLength: { value: 8, message: "Mật khẩu ít nhất 8 kí tự." }
+                                            })}
+                                            id="exampleInputPassword1" placeholder="Vui lòng nhập mật khẩu"
+                                            name="password"
+                                        />
+                                        {errors && errors.password && <div className="invalid-feedback">{errors.password.message}</div>}
                                     </div>
 
                                     <div className="form-group">
                                         <label htmlFor="exampleInputPassword2">Xác nhận mật khẩu</label>
-                                        <input type="password" className="form-control" id="exampleInputPassword2"
+                                        <input type="password"
+                                            className={classNames("form-control", { 'is-invalid': errors && errors.confirm })}
+                                            id="exampleInputPassword2"
                                             placeholder="Vui lòng nhập lại mật khẩu"
-                                            name="cf_password" value={cf_password} onChange={handleChangeInput} />
+                                            name="confirm"
+                                            {...register('confirm', {
+                                                required: "Mật khẩu không được trống.", minLength: { value: 8, message: "Mật khẩu ít nhất 8 kí tự." },
+                                                validate: value => {
+                                                    if (value === getValues('password')) { return true } else { return "Mật khẩu không khớp." }
+                                                },
+                                            })}
+                                        />
+                                        {errors && errors.confirm && <div className="invalid-feedback">{errors.confirm.message}</div>}
                                     </div>
 
-                                    <button type="submit" className="btn btn-register w-100">Đăng kí</button>
+                                    <div className="button-wrapper">
+                                        <Button
+                                            variant="contained"
+                                            type="submit"
+                                            className="btn btn-register"
+                                            disabled={loading}
+                                        >
+                                            Đăng kí
+                                        </Button>
+                                        {loading && <CircularProgress size={24} className='loading' />}
+                                    </div>
                                 </form>
                             </div>
 

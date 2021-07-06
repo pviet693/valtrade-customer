@@ -3,13 +3,15 @@ import Link from 'next/link';
 import { DataContext } from '../store/GlobalState';
 import { useRouter } from 'next/router';
 import classNames from 'classnames';
-import Cookie from 'js-cookie'; 
+import Cookie from 'js-cookie';
+import api from '../utils/backend-api.utils';
 
 function NavBar() {
     const router = useRouter();
+    const [searchInput, setInput] = useState("");
     const isActive = (path) => path === router.pathname;
     const { state, dispatch } = useContext(DataContext);
-    const { auth } = state;
+    const { auth, cart } = state;
 
     const logout = async () => {
         Cookie.remove('access_token', { path: '/' });
@@ -17,6 +19,18 @@ function NavBar() {
         dispatch({
             type: 'AUTH', payload: {}
         });
+        dispatch({ type: 'ADD_CART', payload: [] });
+    }
+
+    const search = async (e) => {
+        e.preventDefault();
+
+        // const res = await api.filter.search({ search: searchInput });
+        // console.log(res);
+        router.push({
+            pathname: '/',
+            query: { search: searchInput },
+        })
     }
 
     return (
@@ -50,12 +64,15 @@ function NavBar() {
                             </a>
                         </Link>
                     </div>
-                
+
                     <div className="navbar-search-box">
-                        <div className="search-box">
-                            <input className="search-box-input" placeholder="Tìm kiếm..." />
-                            <button className="search-box-button" type="submit"><i className="fa fa-search" aria-hidden></i></button>
-                        </div>
+                        <form onSubmit={search}>
+                            <div className="search-box">
+                                <input className="search-box-input" placeholder="Tìm kiếm..." onChange={(e) => setInput(e.target.value)} value={searchInput} />
+                                <button className="search-box-button" type="submit"><i className="fa fa-search" aria-hidden></i></button>
+
+                            </div>
+                        </form>
                         <div className="search-suggestion">
                             <div className="suggestion-item">
                                 Đồng hồ
@@ -80,7 +97,7 @@ function NavBar() {
                                 <a>
                                     <i className="pi pi-shopping-cart" aria-hidden></i>
                                     <div>Giỏ hàng</div>
-                                    <div className="cart-quantity">3</div>
+                                    <div className="cart-quantity">{cart.length}</div>
                                 </a>
                             </Link>
                         </div>
@@ -95,7 +112,7 @@ function NavBar() {
                                 </Link>
                             </div>
                         }
-                        {   
+                        {
                             (Object.keys(auth).length === 0) &&
                             <div className="navbar-info-item">
                                 <i className="pi pi-user" aria-hidden></i>
@@ -112,11 +129,11 @@ function NavBar() {
                                 <div className="navbar-account">
                                     {
                                         (Object.keys(auth.user).length > 0)
-                                        ?
+                                            ?
                                             <div className="img-box">
                                                 <img src={Object.keys(auth.user.imageUrl).length > 0 ? auth.user.imageUrl.url : '/static/avatar2.png'} alt="avatar" />
                                             </div>
-                                        :
+                                            :
                                             <div className="img-box">
                                                 <img src="/static/avatar2.png" alt="avatar" />
                                             </div>

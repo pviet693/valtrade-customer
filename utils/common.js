@@ -45,19 +45,21 @@ export const Notification = (title, text, type) => {
     const swal = Swal.mixin({
         title: title,
         text: text,
-        showCancelButton: true,
+        showCancelButton: false,
         confirmButtonColor: type === 'success' ? '#3085d6' : '#d9534f',
         confirmButtonText: 'OK',
         customClass: {
             confirmButton: type === 'success' ? 'btn btn-swal-confirm' : 'btn btn-swal-confirm-error',
             header: 'swal-header',
             title: 'swal-title',
-            content: 'swal-content',
+            content: 'swal-content-notifi',
         },
         buttonsStyling: false
     })
 
-    return swal.fire({})
+    return swal.fire({
+        icon: type
+    })
 }
 
 export function numberWithCommas(x) {
@@ -68,3 +70,17 @@ export const formatPhone = (phone) => {
     phone = phone.toString();
     return phone.replace(/(\d{4})(\d{3})(\d{3})/, '$1 $2 $3');
 }
+
+export const ToastPrime = (title, message, type, ref, timer = 3000) => {
+    ref.current.show({ severity: type, summary: title, detail: message, life: timer });
+}
+
+// api ghn
+export const tokenGHN = "c76acf0e-9a1d-11eb-8be2-c21e19fc6803";
+
+export const ghnShopId = "78801"
+
+// api ghtk
+export const tokenGHTK = "9411aDE81fE602c4f3bE48Cd043f0D5c09893254"
+
+export const ghtkShopName = "S19125017 - Valtrade"
