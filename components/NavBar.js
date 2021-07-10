@@ -32,10 +32,12 @@ function NavBar() {
     const search = async (e) => {
         e.preventDefault();
 
-        router.push({
-            pathname: '/product',
-            query: { search: searchQuery },
-        })
+        if (searchQuery) {
+            router.push({
+                pathname: '/product',
+                query: { search: searchQuery },
+            })
+        }
     }
 
     return (
@@ -65,7 +67,7 @@ function NavBar() {
                     <div className="navbar-logo">
                         <Link href="/">
                             <a>
-                                <img src="/static/logo.png" alt="logo" />
+                                <img alt="image-logo" width="200px" height="68px" src="/static/logo.png" />
                             </a>
                         </Link>
                     </div>
@@ -135,11 +137,11 @@ function NavBar() {
                                         (Object.keys(auth.user).length > 0)
                                             ?
                                             <div className="img-box">
-                                                <img src={Object.keys(auth.user.imageUrl).length > 0 ? auth.user.imageUrl.url : '/static/avatar2.png'} alt="avatar" />
+                                                <img alt="image-profile" src={Object.keys(auth.user.imageUrl).length > 0 ? auth.user.imageUrl.url : '/static/avatar2.png'} />
                                             </div>
                                             :
                                             <div className="img-box">
-                                                <img src="/static/avatar2.png" alt="avatar" />
+                                                <img alt="image-profile" src="/static/avatar2.png" />
                                             </div>
                                     }
                                     <div className="name-profile">

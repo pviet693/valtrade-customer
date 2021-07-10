@@ -5,7 +5,7 @@ const AuctionCard = ({ name, time, image, currentPrice, winner, participantsNumb
     return (
         <div className="auction-card" onClick={onClick}>
             <div className="img-auction-box">
-                <img src={image} />
+                <img alt="image-auction" src={image} />
             </div>
             <div className="auction-info">
                 <div className="auction-name" title={name}>{name}</div>

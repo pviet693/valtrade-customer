@@ -3,7 +3,7 @@ const Category = ({image, name, id}) => {
         <div className="col-md-3 d-flex align-items-center flex-column">
             <div className="category-card">
                 <div className="img-category-box">
-                    <img src={image} />
+                    <img alt="image-category" src={image} />
                 </div>
                 <div className="category-name">{name}</div>
             </div>

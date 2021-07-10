@@ -20,11 +20,11 @@ const AuctionDetail = () => {
     ];
 
     const itemTemplate = (item) => {
-        return <img src={item} alt={''} style={{ width: '100%', display: 'block', objectFit: 'contain' }} />;
+        return <img src={item} alt={'item'} style={{ width: '100%', display: 'block', objectFit: 'contain' }} />;
     }
 
     const thumbnailTemplate = (item) => {
-        return <img src={item} alt={''} style={{ display: 'block', width: '80px', height: '60px' }} />;
+        return <img src={item} alt={'thumbnail'} style={{ display: 'block', width: '80px', height: '60px' }} />;
     }
 
     const navigateToDetailAuction = (auction) => {
@@ -126,7 +126,7 @@ const AuctionDetail = () => {
                                             +
                                         </button>
                                     </div>
-                                    <button className="btn btn-auction"><img src="/static/hammer.svg" />Đấu giá</button>
+                                    <button className="btn btn-auction"><img src="/static/hammer.svg" alt="hammer" />Đấu giá</button>
                                 </div>
                             </div>
                         </div>

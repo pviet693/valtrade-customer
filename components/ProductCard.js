@@ -3,7 +3,6 @@ import * as common from './../utils/common';
 import Button from '@material-ui/core/Button';
 import classNames from 'classnames';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { Toast } from 'primereact/toast';
 import { useContext, useRef, useState } from 'react';
 import { DataContext } from '../store/GlobalState';
 
@@ -115,9 +114,8 @@ const ProductCard = ({ id, name, price, brand, sku, oldPrice, image, warrantySta
 
     return (
         <div className="product-card">
-            {/* <Toast ref={toast} /> */}
             <div className="img-product-box">
-                <img src={image} />
+                <img alt={`image-product-${id}`} src={image} width="180px" height="180px"/>
             </div>
             <div className="product-info">
                 <div className="product-name" title={name}>{name}</div>

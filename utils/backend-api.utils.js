@@ -202,7 +202,7 @@ const api = {
             }
             return axios.get(url.ghn.getWard(), newConfig);
         },
-        calculateShippingFee: (params) => {
+        calculateShippingFee: (body) => {
             const newConfig = {
                 headers: {
                     'Content-Type': 'application/json',
@@ -210,7 +210,17 @@ const api = {
                     ShopId: common.ghnShopId
                 },
             }
-            return axios.post(url.ghn.calculateShippingFee(), params, newConfig);
+            return axios.post(url.ghn.calculateShippingFee(), body, newConfig);
+        }
+    },
+    ghtk: {
+        calculateShippingFee: (params) => {
+            let qs = Object.keys(params).map(function (key) {
+                return `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`
+            }).join('&');
+            console.log(qs);
+            const body = { data: qs };
+            return axios.post(url.ghtk.calculateShippingFee(), body);
         }
     },
     address: {

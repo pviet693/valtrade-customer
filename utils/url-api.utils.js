@@ -42,6 +42,9 @@ const url = {
         getDistrict: () => "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district",
         calculateShippingFee: () => "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee"
     },
+    ghtk: {
+        calculateShippingFee: () => `${baseUrl}/api/product/fee`
+    },
     address: {
         getListAddress: () => `${baseUrl}/api/buyer/getListAddress`,
         postCreate: () => `${baseUrl}/api/buyer/createAddress`,

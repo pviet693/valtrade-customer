@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Head from 'next/head';
-import Slider from "react-slick";
 import Link from 'next/link';
 import * as common from './../utils/common';
 import api from './../utils/backend-api.utils';

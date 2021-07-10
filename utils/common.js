@@ -78,9 +78,9 @@ export const ToastPrime = (title, message, type, ref, timer = 3000) => {
 // api ghn
 export const tokenGHN = "c76acf0e-9a1d-11eb-8be2-c21e19fc6803";
 
-export const ghnShopId = "78801"
+export const ghnShopId = "78801";
 
 // api ghtk
-export const tokenGHTK = "9411aDE81fE602c4f3bE48Cd043f0D5c09893254"
+export const tokenGHTK = "9411aDE81fE602c4f3bE48Cd043f0D5c09893254";
 
-export const ghtkShopName = "S19125017 - Valtrade"
+export const ghtkShopName = "S19125017 - Valtrade";
