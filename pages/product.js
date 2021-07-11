@@ -51,6 +51,7 @@ const Product = ({ brands, categories, products, query, total }) => {
     }
 
     useEffect(() => {
+        console.log(filter);
         filterListProduct();
     }, [filter]);
 

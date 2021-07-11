@@ -32,12 +32,10 @@ function NavBar() {
     const search = async (e) => {
         e.preventDefault();
 
-        if (searchQuery) {
-            router.push({
-                pathname: '/product',
-                query: { search: searchQuery },
-            })
-        }
+        router.push({
+            pathname: '/product',
+            query: { search: searchQuery },
+        })
     }
 
     return (
