@@ -24,7 +24,7 @@ const Home = ({ brands, categories, products }) => {
 
     const product = products.slice(0, size).map((x, index) =>
         <div key={x.id} className="col-md-3 d-flex align-items-center flex-column mb-4">
-            <ProductCard id={x.id} name={x.name} image={x.image} countProduct={x.countProduct}
+            <ProductCard id={x.id} name={x.name} image={x.image} imageId={x.imageId} countProduct={x.countProduct}
                 price={x.price} brand={x.brand.name} sku={x.sku} oldPrice={x.oldPrice} onClick={() => navigateToDetailProduct(x)} />
         </div>
     );
@@ -221,6 +221,7 @@ export async function getServerSideProps(ctx) {
                     product.oldPrice = x.oldPrice || "";
                     product.brand = x.brand || "";
                     product.sku = x.sku || "";
+                    product.imageId = x.arrayImage[0].id || "";
                     product.image = x.arrayImage[0].url || "";
                     product.countProduct = x.countProduct || 1;
                     products.push(product);

@@ -5,8 +5,9 @@ import classNames from 'classnames';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { useContext, useRef, useState } from 'react';
 import { DataContext } from '../store/GlobalState';
+import { Image } from 'cloudinary-react';
 
-const ProductCard = ({ id, name, price, brand, sku, oldPrice, image, warrantyStatus, onClick, countProduct }) => {
+const ProductCard = ({ id, name, price, brand, sku, oldPrice, image, imageId, warrantyStatus, onClick, countProduct }) => {
     const [loading, setLoading] = useState(false);
     const { state, dispatch, toast } = useContext(DataContext);
     const { auth, cart } = state;
@@ -112,10 +113,27 @@ const ProductCard = ({ id, name, price, brand, sku, oldPrice, image, warrantySta
         }
     }
 
+    const getVersionImage = (linkImage) => {
+        const arr = linkImage.split("/");
+        return arr[6].replace("v", "");
+    }
+
     return (
         <div className="product-card">
             <div className="img-product-box">
-                <img alt={`image-product-${id}`} src={image} width="180px" height="180px"/>
+                {/* <img alt={`image-product-${id}`} src={image} width="180px" height="180px"/> */}
+                <Image
+                    publicId={imageId}
+                    version={getVersionImage(image)}
+                    cloud_name="ktant"
+                    secure="true"
+                    alt="Image Product"
+                    height="180"
+                    width="180"
+                    crop="fill"
+                    loading="lazy"
+                >
+                </Image>
             </div>
             <div className="product-info">
                 <div className="product-name" title={name}>{name}</div>
