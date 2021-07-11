@@ -11,6 +11,7 @@ import ProductCard from '../components/ProductCard';
 import Router from 'next/router';
 import { useEffect, useContext } from 'react';
 import { DataContext } from '../store/GlobalState';
+import { Image } from 'cloudinary-react';
 
 const Product = ({ brands, categories, products, query, total }) => {
     const items = [
@@ -50,10 +51,10 @@ const Product = ({ brands, categories, products, query, total }) => {
         }));
     }
 
-    useEffect(() => {
-        console.log(filter);
-        filterListProduct();
-    }, [filter]);
+    // useEffect(() => {
+    //     console.log(filter);
+    //     filterListProduct();
+    // }, [filter]);
 
     const filterListProduct = async () => {
         const res = await api.buyer.getListProduct(filter);
@@ -84,6 +85,7 @@ const Product = ({ brands, categories, products, query, total }) => {
 
     const CategoryCard = (props) => {
         const { id, name, image, onClick } = props;
+        
         return (
             <a className="filter-category-row" onClick={() => onClick(id)}>
                 <div className="d-flex align-items-center justify-content-start w-100">
@@ -177,7 +179,7 @@ const Product = ({ brands, categories, products, query, total }) => {
 
     const product = listProduct.map((x, index) =>
         <div className="col-md-4 d-flex align-items-center flex-column mb-4" key={x.id}>
-            <ProductCard name={x.name} image={x.image} onClick={() => navigateToDetail(x)}
+            <ProductCard name={x.name} image={x.image} imageId={x.imageId} onClick={() => navigateToDetail(x)}
                 price={x.price} brand={x.brand.name} sku={x.sku} oldPrice={x.oldPrice} warrantyStatus={true} />
         </div>
     );
@@ -282,6 +284,7 @@ export async function getServerSideProps(ctx) {
                     brand.name = x.name || "";
                     brand.description = x.description || "";
                     brand.image = x.imageUrl.url || "";
+                    brand.imageId = x.imageUrl.id || "";
                     brands.push(brand);
                 })
             } else {
@@ -302,6 +305,7 @@ export async function getServerSideProps(ctx) {
                     category.id = x.childId || "";
                     category.name = x.childName || "";
                     category.image = x.imageUrl.url || "";
+                    category.imageId = x.imageUrl.id || "";
                     categories.push(category);
                 });
             } else {
@@ -328,6 +332,7 @@ export async function getServerSideProps(ctx) {
                     product.oldPrice = x.oldPrice || "";
                     product.brand = x.brand || "";
                     product.sku = x.sku || "";
+                    product.imageId = x.arrayImage[0].id || "";
                     product.image = x.arrayImage[0].url || "";
                     products.push(product);
                 });

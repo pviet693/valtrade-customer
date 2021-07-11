@@ -19,7 +19,7 @@ const Home = ({ brands, categories, products }) => {
     }
 
     const brandTemplate = (brand) => (
-        <Brand name={brand.name} image={brand.image} />
+        <Brand name={brand.name} image={brand.image} imageId={brand.imageId} />
     );
 
     const product = products.slice(0, size).map((x, index) =>
@@ -37,7 +37,7 @@ const Home = ({ brands, categories, products }) => {
     );
 
     const category = categories.slice(0, size).map((x, index) => (
-        <Category key={index.toString()} name={x.name} image={x.image} />
+        <Category key={index.toString()} name={x.name} image={x.image} imageId={x.imageId} />
     ));
 
     const settings = {
@@ -169,6 +169,7 @@ export async function getServerSideProps(ctx) {
                     brand.name = x.name || "";
                     brand.description = x.description || "";
                     brand.image = x.imageUrl.url || "";
+                    brand.imageId = x.imageUrl.id || "";
                     brands.push(brand);
                 })
             } else {
@@ -189,6 +190,7 @@ export async function getServerSideProps(ctx) {
                     category.id = x.childId || "";
                     category.name = x.childName || "";
                     category.image = x.imageUrl.url || "";
+                    category.imageId = x.imageUrl.id || "";
                     categories.push(category);
                 });
             } else {
