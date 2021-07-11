@@ -203,6 +203,41 @@
                 .detail-time {
                     
                 }
+
+                .detail-action {
+                    .action-price {
+                        div {
+                            .btn {
+                                box-shadow: unset;
+                            }
+
+                            .btn-change-price {
+                                background-color: #fff;
+                                color: #0795DF;
+                                border: 1px solid #0795DF;
+                                border-radius: 0;
+                            }
+
+                            .price-current {
+                                border: 1px solid #0795DF;
+                                padding: 5px;
+                            }
+
+                            display: flex;
+                            align-items: center;
+                        }
+
+                        .btn-auction {
+                            box-shadow: unset;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            border-radius: 4px;
+                            border: 1px solid #0795DF;
+                            margin-top: 20px;
+                        }
+                    }
+                }
             }
         }
 

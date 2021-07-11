@@ -119,14 +119,17 @@ const AuctionDetail = () => {
                                         <button className="btn btn-change-price">
                                             -
                                         </button>
-                                        <div className="price-current">
+                                        <div className="price-current px-2">
                                             {new Intl.NumberFormat().format(6550000)} VND
                                         </div>
                                         <button className="btn btn-change-price">
                                             +
                                         </button>
                                     </div>
-                                    <button className="btn btn-auction"><img src="/static/hammer.svg" alt="hammer" />Đấu giá</button>
+                                    <button className="btn btn-auction">
+                                        <img src="/static/hammer.svg" alt="icon-hammer" className="mr-2" />
+                                        Đấu giá
+                                    </button>
                                 </div>
                             </div>
                         </div>
