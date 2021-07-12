@@ -1,8 +1,18 @@
 import Head from 'next/head';
 import { Galleria } from 'primereact/galleria';
 import AuctionCard from './../components/AuctionCard';
+import api from '../utils/backend-api.utils';
+import { DataContext } from '../store/GlobalState';
+import { useContext, useEffect, useState } from 'react';
+import { io } from "socket.io-client";
+// import io from 'socket.io-client/dist/socket.io';
 
-const AuctionDetail = () => {
+const AuctionDetail = ({ auction }) => {
+
+    const [timeCountDown, setTimeCountDown] = useState(0);
+    const [currentPrice, setCurrentPrice] = useState(auction.price);
+    const { state, dispatch, toast, swal, socket } = useContext(DataContext);
+    const { auth } = state;
 
     const responsiveOptions = [
         {
@@ -30,8 +40,69 @@ const AuctionDetail = () => {
     const navigateToDetailAuction = (auction) => {
         Router.push({
             pathname: '/auction-detail',
-            query: { id: auction.id },
+            query: { id: auction.id }
         })
+    }
+
+    useEffect(() => {
+        if (Object.keys(auth).length > 0 && socket) {
+            socket.emit("createPrice", {
+                userId: auth.user.userId,
+                price: currentPrice,
+                bidId: auction.id
+            })
+        }
+    }, [socket, currentPrice, auth]);
+
+    useEffect(() => {
+        if (socket) {
+            console.log("123");
+            socket.on("countUser", (res) => {
+                console.log(res);
+            });
+            socket.on("countDownRoom", (res) => {
+                console.log("countDownRoom", res);
+                setTimeCountDown(res.timeDown);
+            });
+
+            return () => {
+                socket.off('countUser');
+                socket.off('countDownRoom');
+            }
+        }
+    }, [socket]);
+
+    useEffect(() => {
+        if (Object.keys(auth).length > 0 && socket) {
+            console.log("abc");
+            socket.emit("joinRoom", {
+                bidId: auction.id,
+                userId: auth.user.userId,
+            });
+        }
+    }, [auth]);
+
+    const increasePrice = () => {
+        let price = currentPrice;
+        price++;
+        setCurrentPrice(price);
+    }
+
+    const decreasePrice = () => {
+        let price = currentPrice;
+        price--;
+        setCurrentPrice(price);
+    }
+
+    function seconds2time(number) {
+        let hours = Math.floor(number / 3600);
+        let minutes = Math.floor((number - (hours * 3600)) / 60);
+        let seconds = number - (hours * 3600) - (minutes * 60);
+
+        if (hours < 10) { hours = "0" + hours; }
+        if (minutes < 10) { minutes = "0" + minutes; }
+        if (seconds < 10) { seconds = "0" + seconds; }
+        return hours + ':' + minutes + ':' + seconds;
     }
 
     return (
@@ -93,18 +164,20 @@ const AuctionDetail = () => {
                     </div>
                     <div className="auction-info-container">
                         <div className="auction-info-image">
-                            <Galleria value={['/static/adidas-3-la.jpg', '/static/adidas-3-la.jpg', '/static/adidas-3-la.jpg', '/static/adidas-3-la.jpg']} responsiveOptions={responsiveOptions} numVisible={4} circular style={{ maxWidth: '640px' }}
+                            {/* <Galleria value={['/static/adidas-3-la.jpg', '/static/adidas-3-la.jpg', '/static/adidas-3-la.jpg', '/static/adidas-3-la.jpg']} responsiveOptions={responsiveOptions} numVisible={4} circular style={{ maxWidth: '640px' }}
+                                showItemNavigators showItemNavigatorsOnHover item={itemTemplate} thumbnail={thumbnailTemplate} /> */}
+                            <Galleria id={auction.id} value={auction.arrayImage} responsiveOptions={responsiveOptions} numVisible={4} circular style={{ maxWidth: '640px' }}
                                 showItemNavigators showItemNavigatorsOnHover item={itemTemplate} thumbnail={thumbnailTemplate} />
                         </div>
                         <div className="auction-info-detail">
                             <div className="detail-name">
-                                Laptop Asus X509JA i3 1005G1 Ram 4GB
+                                {auction.name}
                             </div>
                             <div className="detail-time">
-                                00:03:29
+                                {seconds2time(timeCountDown)}
                             </div>
                             <div className="detail-starting-price">
-                                Giá khởi điểm:<span> {new Intl.NumberFormat().format(5000000)} VND</span>
+                                Giá khởi điểm:<span> {new Intl.NumberFormat().format(auction.price)} VND</span>
                             </div>
                             <div className="detail-current-price">
                                 Giá thầu hiện tại: <span>{new Intl.NumberFormat().format(6500000)} VND</span>
@@ -116,13 +189,17 @@ const AuctionDetail = () => {
                                 <div className="title">Đấu giá ngay</div>
                                 <div className="action-price">
                                     <div>
-                                        <button className="btn btn-change-price">
+                                        <button className="btn btn-change-price"
+                                            onClick={decreasePrice}
+                                        >
                                             -
                                         </button>
                                         <div className="price-current px-2">
-                                            {new Intl.NumberFormat().format(6550000)} VND
+                                            {new Intl.NumberFormat().format(currentPrice)} VND
                                         </div>
-                                        <button className="btn btn-change-price">
+                                        <button className="btn btn-change-price"
+                                            onClick={increasePrice}
+                                        >
                                             +
                                         </button>
                                     </div>
@@ -134,7 +211,32 @@ const AuctionDetail = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="comment-container">
+                    <div className="auction-history-container">
+                        <div className="title">
+                            LỊCH SỬ ĐẤU GIÁ
+                        </div>
+                        <div className="auction-history-table">
+                            <table className="table table-bordered table-striped">
+                                <thead className="table-light">
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Người đấu giá</th>
+                                        <th scope="col">Giá đấu</th>
+                                        <th scope="col">Thời gian đấu giá</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">1</th>
+                                        <td>ABC</td>
+                                        <td>10000</td>
+                                        <td>11/07/2021 - 21:02:23 PM</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {/* <div className="comment-container">
                         <div className="title">
                             Đánh giá sản phẩm
                         </div>
@@ -168,8 +270,8 @@ const AuctionDetail = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div className="auction-recommend-container">
+                    </div> */}
+                    {/* <div className="auction-recommend-container">
                         <div className="title">
                             Sản phẩm đấu giá tương tự
                         </div>
@@ -197,7 +299,7 @@ const AuctionDetail = () => {
                                 <i className="pi pi-angle-right"></i>
                             </button>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </div>
@@ -212,9 +314,47 @@ export async function getServerSideProps(ctx) {
     // call api get auction have same brand
     // call get info shop
 
+    let auctionDetail = {
+        id: "",
+        brand: "",
+        sku: "",
+        restWarrantyTime: "",
+        description: "",
+        note: "",
+        arrayImage: [],
+        price: "",
+        name: "",
+        shopName: "",
+        phone: "",
+        countProduct: 0
+    };
+
+    try {
+        const res = await api.auction.getDetail(id);
+        if (res.status === 200) {
+            if (res.data.code === 200) {
+                const data = res.data.result;
+                auctionDetail.id = id;
+                auctionDetail.arrayImage = data.arrayImage.map(x => x.url);
+                auctionDetail.name = data.name || "";
+                auctionDetail.description = data.description || "";
+                auctionDetail.sku = data.sku || "";
+                auctionDetail.restWarrantyTime = data.restWarrantyTime || "";
+                auctionDetail.brand = data.brand.name || "";
+                auctionDetail.note = data.note || "";
+                auctionDetail.price = data.price || "";
+                auctionDetail.shopName = data.sellerInfor.nameShop || "";
+                auctionDetail.phone = data.sellerInfor.phone || "";
+                auctionDetail.countProduct = data.countProduct || 0;
+            }
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
     return {
         props: {
-            auction: {},
+            auction: auctionDetail,
             shop: {},
             auctionRecommend: []
         }

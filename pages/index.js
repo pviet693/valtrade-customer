@@ -11,7 +11,7 @@ import cookie from "cookie";
 import Router from 'next/router';
 import { Carousel } from 'primereact/carousel';
 
-const Home = ({ brands, categories, products }) => {
+const Home = ({ brands, categories, products, auctions }) => {
     const size = 8;
 
     const filterCategory = async (categoryId) => {
@@ -29,9 +29,9 @@ const Home = ({ brands, categories, products }) => {
         </div>
     );
 
-    const auction = products.slice(0, size).map((x, index) =>
+    const auction = auctions.map((x, index) =>
         <div key={x.id} className="col-md-3 d-flex align-items-center flex-column mb-4">
-            <AuctionCard name={x.name} image={x.image} time={10} winner={'abc'}
+            <AuctionCard name={x.name} image={x.image} time={10} winner={'abc'} imageId={x.imageId}
                 participantsNumber={10} currentPrice={x.price} onClick={() => navigateToDetailAuction(x)} />
         </div>
     );
@@ -144,6 +144,7 @@ export async function getServerSideProps(ctx) {
     let brands = [];
     let categories = [];
     let products = [];
+    let auctions = [];
     let isSignin = false;
 
     // check token
@@ -234,13 +235,49 @@ export async function getServerSideProps(ctx) {
                 common.Toast(message, 'error');
             }
         }
+
+        let params2 = {
+            page: 0,
+            rows: 8
+        }
+        const resAuction = await api.auction.getList(params2);
+        if (resAuction.status === 200) {
+            if (resAuction.data.code === 200) {
+                resAuction.data.result.map(x => {
+                    let product = {
+                        id: "",
+                        name: "",
+                        price: "",
+                        brand: "",
+                        sku: "",
+                        oldPrice: "",
+                        image: "",
+                        countProduct: 1
+                    };
+                    product.id = x._id || "";
+                    product.name = x.name || "";
+                    product.price = x.price || "";
+                    product.oldPrice = x.oldPrice || "";
+                    product.brand = x.brand || "";
+                    product.sku = x.sku || "";
+                    product.imageId = x.arrayImage[0].id || "";
+                    product.image = x.arrayImage[0].url || "";
+                    product.countProduct = x.countProduct || 1;
+                    auctions.push(product);
+                });
+            }
+            else {
+                let message = res2.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
+                common.Toast(message, 'error');
+            }
+        }
     }
 
     catch (error) {
         console.log(error);
     }
     return {
-        props: { brands: brands, categories: categories, products: products, isSignin: isSignin }
+        props: { brands: brands, categories: categories, products: products, isSignin: isSignin, auctions }
     }
 }
 

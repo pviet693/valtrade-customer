@@ -1,15 +1,18 @@
 import Head from 'next/head';
 import { Galleria } from 'primereact/galleria';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import ProductCard from '../components/ProductCard';
 import { DataContext } from '../store/GlobalState';
 import api from '../utils/backend-api.utils';
 import * as common from './../utils/common';
+import { Image } from 'cloudinary-react';
 
 const ProductDetail = ({ product, productRecommend }) => {
 
     const { state, dispatch, toast, swal } = useContext(DataContext);
     const { cart } = state;
+    const [information] = useState(JSON.parse(product.information));
+    console.log(information);
 
     const responsiveOptions = [
         {
@@ -26,12 +29,43 @@ const ProductDetail = ({ product, productRecommend }) => {
         }
     ];
 
+    const getVersionImage = (linkImage) => {
+        const arr = linkImage.split("/");
+        return arr[6].replace("v", "");
+    }
+
     const itemTemplate = (item) => {
-        return <img src={item} alt={''} style={{ width: '100%', display: 'block', objectFit: 'contain' }} />;
+        return (
+            <Image
+                publicId={item.id}
+                version={getVersionImage(item.url)}
+                cloud_name="ktant"
+                secure="true"
+                alt="Image Product"
+                height="450"
+                width="400"
+                crop="fill"
+                loading="lazy"
+            >
+            </Image>
+        );
     }
 
     const thumbnailTemplate = (item) => {
-        return <img src={item} alt={''} style={{ display: 'block', width: '80px', height: '60px' }} />;
+        return (
+            <Image
+                publicId={item.id}
+                version={getVersionImage(item.url)}
+                cloud_name="ktant"
+                secure="true"
+                alt="Image Product"
+                height="70"
+                width="80"
+                crop="fill"
+                loading="lazy"
+            >
+            </Image>
+        );
     }
 
     const addToCart = async () => {
@@ -268,7 +302,7 @@ const ProductDetail = ({ product, productRecommend }) => {
                             </div>
                         </div>
                     </div>
-                    <div className="product-recommend-container">
+                    {/* <div className="product-recommend-container">
                         <div className="title">
                             Sản phẩm tương tự
                         </div>
@@ -296,7 +330,7 @@ const ProductDetail = ({ product, productRecommend }) => {
                                 <i className="pi pi-angle-right"></i>
                             </button>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </div>
@@ -327,7 +361,7 @@ export async function getServerSideProps(ctx) {
             if (res.data.code === 200) {
                 const data = res.data.result;
                 productDetail.id = id;
-                productDetail.arrayImage = data.arrayImage.map(x => x.url);
+                productDetail.arrayImage = data.arrayImage;
                 productDetail.name = data.name || "";
                 productDetail.description = data.description || "";
                 productDetail.sku = data.sku || "";
@@ -338,6 +372,7 @@ export async function getServerSideProps(ctx) {
                 productDetail.shopName = data.sellerInfor.nameShop || "";
                 productDetail.phone = data.sellerInfor.phone || "";
                 productDetail.countProduct = data.countProduct || 0;
+                productDetail.information = data.information;
             }
         }
     } catch (error) {

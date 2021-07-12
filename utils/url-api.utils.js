@@ -28,6 +28,10 @@ const url = {
         delete: () => `${baseUrl}/api/product/remove/:id`,
         putUpdate: () => `${baseUrl}/api/product/update`,
     },
+    auction: {
+        getList: () => `${baseUrl}/api/bid/get`,
+        getDetail: () => `${baseUrl}/api/bid/detail/:id`
+    },
     cart: {
         postCart: () => `${baseUrl}/api/cart/updateCart`,
         getCart: () => `${baseUrl}/api/cart/getCart`,

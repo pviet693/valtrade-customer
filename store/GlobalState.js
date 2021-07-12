@@ -1,4 +1,4 @@
-import { createContext, useReducer, useEffect, useRef } from 'react';
+import { createContext, useReducer, useEffect, useRef, useState } from 'react';
 import reducers from './Reducers';
 import Cookie from 'js-cookie';
 import api from '../utils/backend-api.utils';
@@ -11,12 +11,13 @@ import { io } from "socket.io-client";
 export const DataContext = createContext();
 
 export const DataProvider = ({ children }) => {
-    const socket = io("http://3.142.207.62:5000", {
-        path: 'api/',
-        withCredentials: false
-    });
+    // const socket = io("http://3.142.207.62:5000", {
+    //     path: 'api/',
+    //     withCredentials: false
+    // });
     const router = useRouter();
     const toast = useRef(null);
+    const [socket, setSocket] = useState(null);
     const initialState = {
         notify: {}, auth: {}, cart: [], modal: [], orders: [], users: [], categories: [], searchQuery: ""
     }
@@ -30,6 +31,14 @@ export const DataProvider = ({ children }) => {
     })
 
     useEffect(async () => {
+
+        const socket = io.connect("http://3.142.207.62:5000", {
+            // path: 'api/',
+            // withCredentials: false
+            transports: ["websocket", "polling"]
+        });
+        setSocket(socket);
+
         if (router.query.search) {
             dispatch({ type: 'SEARCH', payload: router.query.search });
         }
@@ -65,7 +74,7 @@ export const DataProvider = ({ children }) => {
                 common.ToastPrime('Lỗi', error.message + error.statusCode || error, 'error', toast);
             }
         }
-    }, [])
+    }, []);
 
     return (
         <DataContext.Provider value={{ state, dispatch, toast, swal, socket }}>

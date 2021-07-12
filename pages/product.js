@@ -25,6 +25,7 @@ const Product = ({ brands, categories, products, query, total }) => {
     const { state, dispatch, toast } = useContext(DataContext);
     const [listProduct, setListProduct] = useState(products);
     const [totalRecord, setTotalRecord] = useState(total);
+    const [count, setCount] = useState(0);
     const [filter, setFilter] = useState({
         ...query,
         page: 0,
@@ -32,8 +33,7 @@ const Product = ({ brands, categories, products, query, total }) => {
         rows: 12,
         categoryId: "",
         brand: "",
-        keysFrom: null,
-        keysTo: null,
+        keysOption: 0,
         activeItem: 0
     });
 
@@ -51,10 +51,14 @@ const Product = ({ brands, categories, products, query, total }) => {
         }));
     }
 
-    // useEffect(() => {
-    //     console.log(filter);
-    //     filterListProduct();
-    // }, [filter]);
+    useEffect(() => {
+        if (count) {
+            filterListProduct();
+        }
+        let newCount = count;
+        newCount += 1;
+        setCount(newCount);
+    }, [filter]);
 
     const filterListProduct = async () => {
         const res = await api.buyer.getListProduct(filter);
@@ -71,6 +75,7 @@ const Product = ({ brands, categories, products, query, total }) => {
                     product.brand = x.brand || "";
                     product.sku = x.sku || "";
                     product.image = x.arrayImage[0].url || "";
+                    product.imageId = x.arrayImage[0].id || "";
                     productList.push(product);
                 });
                 setTotalRecord(res.data.total);
@@ -125,10 +130,21 @@ const Product = ({ brands, categories, products, query, total }) => {
     const FilterPriceCard = (props) => {
         const { from, to, gt, lt, checked, onChange} = props;
 
+        if (!from && !to) {
+            return (
+                <div className="filter-price-row">
+                    <Checkbox onChange={onChange} checked={checked} />
+                    <div className="price-value">
+                        Tất cả
+                    </div>
+                </div>
+            )
+        }
+
         if (gt) {
             return (
                 <div className="filter-price-row">
-                    <Checkbox onChange={(e) => onChange(e)} checked={checked} />
+                    <Checkbox onChange={onChange} checked={checked} />
                     <div className="price-value">
                         Trên {from}
                     </div>
@@ -137,7 +153,7 @@ const Product = ({ brands, categories, products, query, total }) => {
         } else if (lt) {
             return (
                 <div className="filter-price-row">
-                    <Checkbox onChange={(e) => onChange(e)} checked={checked} />
+                    <Checkbox onChange={onChange} checked={checked} />
                     <div className="price-value">
                         Dưới {from}
                     </div>
@@ -146,7 +162,7 @@ const Product = ({ brands, categories, products, query, total }) => {
         } else {
             return (
                 <div className="filter-price-row">
-                    <Checkbox onChange={(e) => onChange(e)} checked={checked} />
+                    <Checkbox onChange={onChange} checked={checked} />
                     <div className="price-value">
                         Từ {from} đến {to}
                     </div>
@@ -195,8 +211,11 @@ const Product = ({ brands, categories, products, query, total }) => {
         })
     }
 
-    const onChangeFilterPrice = (e) => {
-        console.log(e);
+    const onChangeFilterPrice = (option) => {
+        setFilter((prevStates) => ({
+            ...prevStates,
+            keysOption: option
+        }))
     }
 
     return (
@@ -223,10 +242,11 @@ const Product = ({ brands, categories, products, query, total }) => {
                                     Giá tiền
                                 </div>
                                 <div className="filter-row-content">
-                                    <FilterPriceCard from="1000000" to="" gt={false} lt={true} onChange={onChangeFilterPrice} value={true} />
-                                    <FilterPriceCard from="1000000" to="5000000" gt={false} lt={false} value="2" />
-                                    <FilterPriceCard from="5000000" to="15000000" gt={false} lt={false} value="3" />
-                                    <FilterPriceCard from="15000000" to="" gt={true} lt={false} value="4" />
+                                    <FilterPriceCard from="" to="" gt={true} lt={false} onChange={() => onChangeFilterPrice(0)} checked={filter.keysOption === 0} />
+                                    <FilterPriceCard from="1000000" to="" gt={false} lt={true} onChange={() => onChangeFilterPrice(1)} checked={filter.keysOption === 1} />
+                                    <FilterPriceCard from="1000000" to="5000000" gt={false} lt={false} onChange={() => onChangeFilterPrice(2)} checked={filter.keysOption === 2} />
+                                    <FilterPriceCard from="5000000" to="15000000" gt={false} lt={false} onChange={() => onChangeFilterPrice(3)} checked={filter.keysOption === 3} />
+                                    <FilterPriceCard from="15000000" to="" gt={true} lt={false} onChange={() => onChangeFilterPrice(4)} checked={filter.keysOption === 4} />
                                 </div>
                             </div>
                             <div className="filter-row">

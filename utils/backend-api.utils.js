@@ -87,8 +87,19 @@ const api = {
             if (params.search) param.search = params.search;
             if (params.categoryId) param.categoryId = params.categoryId;
             if (params.brand) param.brand = params.brand;
-            if (params.keysFrom && params.keysTo) {
-                queryPrice = `&keys=${params.keysFrom}&keys=${params.keysTo}`;
+            if (params.keysOption !== 0) {
+                if (params.keysOption === 1) {
+                    queryPrice = `&keys=${1000000}`;
+                }
+                if (params.keysOption === 2) {
+                    queryPrice = `&keys=${1000000}&keys=${5000000}`;
+                }
+                if (params.keysOption === 3) {
+                    queryPrice = `&keys=${5000000}&keys=${15000000}`;
+                }
+                if (params.keysOption === 4) {
+                    queryPrice = `&keys=${15000000}`;
+                }
             }
             if (params.activeItem) {
                 if (params.activeItem === 1) {
@@ -110,7 +121,7 @@ const api = {
             }
 
             const query = new URLSearchParams(param).toString();
-            return axios.get(url.buyer.getListProduct() + `?${query}`);
+            return axios.get(url.buyer.getListProduct() + `?${query}${queryPrice}`);
         },
         getDetailProduct: (id) => {
             return axios.get(url.buyer.getDetailProduct().replace(':id', id));
@@ -140,6 +151,20 @@ const api = {
         },
         update: (body) => {
             return axios.put(url.product.putUpdate(), body, config);
+        }
+    },
+    auction: {
+        getList: (params) => {
+            let param = {};
+            param.page = params.page + 1;
+            param.perPage = params.rows;
+
+            const query = new URLSearchParams(param).toString();
+            return axios.get(url.auction.getList() + `?${query}`);
+        },
+        getDetail: (id) => {
+            const url_api = url.auction.getDetail().replace(":id", id);
+            return axios.get(url_api);
         }
     },
     cart: {

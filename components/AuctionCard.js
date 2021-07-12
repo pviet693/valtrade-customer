@@ -1,11 +1,30 @@
 import AccessTimeIcon from '@material-ui/icons/AccessTime';
 import * as common from './../utils/common';
+import { Image } from 'cloudinary-react';
 
-const AuctionCard = ({ name, time, image, currentPrice, winner, participantsNumber, onClick }) => {
+const AuctionCard = ({ name, time, image, currentPrice, winner, participantsNumber, onClick, imageId }) => {
+
+    const getVersionImage = (linkImage) => {
+        const arr = linkImage.split("/");
+        return arr[6].replace("v", "");
+    }
+
     return (
         <div className="auction-card" onClick={onClick}>
             <div className="img-auction-box">
-                <img alt="image-auction" src={image} />
+                {/* <img alt="image-auction" src={image} /> */}
+                <Image
+                    publicId={imageId}
+                    version={getVersionImage(image)}
+                    cloud_name="ktant"
+                    secure="true"
+                    alt="Image Auction"
+                    height="180"
+                    width="180"
+                    crop="fill"
+                    loading="lazy"
+                >
+                </Image>
             </div>
             <div className="auction-info">
                 <div className="auction-name" title={name}>{name}</div>
