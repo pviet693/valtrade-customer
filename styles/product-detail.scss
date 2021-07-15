@@ -291,6 +291,12 @@
                 }
 
                 .comment-row_content {
+                    width: 100%;
+
+                    .MuiRating-icon {
+                        display: block;
+                    }
+
                     .content_name {
                         font-weight: 500;
                         font-size: 1.1rem;
@@ -329,6 +335,12 @@
                             margin-bottom: 10px;
                             margin-right: 10px;
                         }
+                    }
+
+                    .btn--send-comment {
+                        color: #fff;
+                        background-color: #0795DF;
+                        padding: 5px 20px;
                     }
                 }
             }

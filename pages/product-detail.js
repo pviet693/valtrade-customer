@@ -6,6 +6,9 @@ import { DataContext } from '../store/GlobalState';
 import api from '../utils/backend-api.utils';
 import * as common from './../utils/common';
 import { Image } from 'cloudinary-react';
+import { Rating } from '@material-ui/lab';
+import StarBorderIcon from '@material-ui/icons/StarBorder';
+import { InputTextarea } from 'primereact/inputtextarea';
 
 const ProductDetail = ({ product, productRecommend }) => {
 
@@ -13,6 +16,11 @@ const ProductDetail = ({ product, productRecommend }) => {
     const { cart } = state;
     const [information] = useState(JSON.parse(product.information));
     console.log(information);
+    const [bodyRate, setBodyRate] = useState({
+        productRate: product.id,
+        rate: 0,
+        comment: ""
+    });
 
     const responsiveOptions = [
         {
@@ -175,6 +183,10 @@ const ProductDetail = ({ product, productRecommend }) => {
         }
     }
 
+    const sendRateComment = () => {
+        console.log(bodyRate);
+    }
+
     return (
         <div className="product-detail-container">
             <Head>
@@ -272,7 +284,7 @@ const ProductDetail = ({ product, productRecommend }) => {
                             Đánh giá sản phẩm
                         </div>
                         <div className="comment-row">
-                            <div className="comment-row_img">
+                            {/* <div className="comment-row_img">
                                 <img src={'/static/avatar2.png'} alt="Avatar" />
                             </div>
                             <div className="comment-row_content">
@@ -298,6 +310,45 @@ const ProductDetail = ({ product, productRecommend }) => {
                                     <img src={'/static/adidas-3-la.jpg'} alt="Image" />
                                     <img src={'/static/adidas-3-la.jpg'} alt="Image" />
                                     <img src={'/static/adidas-3-la.jpg'} alt="Image" />
+                                </div>
+                            </div> */}
+
+                            <div className="comment-row_img">
+                                <img src={'/static/avatar2.png'} alt="Avatar" />
+                            </div>
+                            <div className="comment-row_content">
+                                <div className="content_name">
+                                    Name ABC
+                                </div>
+                                <Rating
+                                    name="customized-empty"
+                                    value={bodyRate.rate}
+                                    onChange={(e) => {
+                                        setBodyRate((prevStates) => ({
+                                            ...prevStates,
+                                            rate: Number(e.target.value)
+                                        }))
+                                    }}
+                                    precision={0.5}
+                                    emptyIcon={<StarBorderIcon fontSize="inherit" />}
+                                    size="large"
+                                />
+                                <InputTextarea
+                                    className="w-100"
+                                    rows={5}
+                                    value={bodyRate.comment}
+                                    onChange={(e) => {
+                                        setBodyRate((prevStates) => ({
+                                            ...prevStates,
+                                            comment: e.target.value
+                                        }))
+                                    }}
+                                    placeholder="Nhập nhận xét..."
+                                />
+                                <div className="row justify-content-end w-100 mx-0">
+                                    <button className="btn btn--send-comment" type="submit" onClick={sendRateComment}>
+                                        Gửi đi
+                                    </button>
                                 </div>
                             </div>
                         </div>

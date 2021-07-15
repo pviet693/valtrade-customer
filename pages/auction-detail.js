@@ -5,7 +5,6 @@ import api from '../utils/backend-api.utils';
 import { DataContext } from '../store/GlobalState';
 import { useContext, useEffect, useState } from 'react';
 import { io } from "socket.io-client";
-// import io from 'socket.io-client/dist/socket.io';
 
 const AuctionDetail = ({ auction }) => {
 
@@ -56,7 +55,6 @@ const AuctionDetail = ({ auction }) => {
 
     useEffect(() => {
         if (socket) {
-            console.log("123");
             socket.on("countUser", (res) => {
                 console.log(res);
             });
@@ -64,7 +62,12 @@ const AuctionDetail = ({ auction }) => {
                 console.log("countDownRoom", res);
                 setTimeCountDown(res.timeDown);
             });
-
+            socket.on("infonewBid", (res) => {
+                console.log(res, "listUser");
+            });
+            socket.on("reply_price", (res) => {
+                console.log(res, "price");
+            });
             return () => {
                 socket.off('countUser');
                 socket.off('countDownRoom');
@@ -84,7 +87,7 @@ const AuctionDetail = ({ auction }) => {
 
     const increasePrice = () => {
         let price = currentPrice;
-        price++;
+        price += 1000000;
         setCurrentPrice(price);
     }
 
@@ -236,70 +239,6 @@ const AuctionDetail = ({ auction }) => {
                             </table>
                         </div>
                     </div>
-                    {/* <div className="comment-container">
-                        <div className="title">
-                            Đánh giá sản phẩm
-                        </div>
-                        <div className="comment-row">
-                            <div className="comment-row_img">
-                                <img src={'/static/avatar2.png'} alt="Avatar" />
-                            </div>
-                            <div className="comment-row_content">
-                                <div className="content_name">
-                                    Name ABC
-                                </div>
-                                <div className="content_star">
-                                    <i className="pi pi-star"></i>
-                                    <i className="pi pi-star"></i>
-                                    <i className="pi pi-star"></i>
-                                    <i className="pi pi-star"></i>
-                                    <i className="pi pi-star"></i>
-                                </div>
-                                <div className="content_comment">
-                                    Space for a comment of product
-                                </div>
-                                <div className="content_img">
-                                    <img src={'/static/adidas-3-la.jpg'} alt="Image" />
-                                    <img src={'/static/adidas-3-la.jpg'} alt="Image" />
-                                    <img src={'/static/adidas-3-la.jpg'} alt="Image" />
-                                    <img src={'/static/adidas-3-la.jpg'} alt="Image" />
-                                    <img src={'/static/adidas-3-la.jpg'} alt="Image" />
-                                    <img src={'/static/adidas-3-la.jpg'} alt="Image" />
-                                    <img src={'/static/adidas-3-la.jpg'} alt="Image" />
-                                    <img src={'/static/adidas-3-la.jpg'} alt="Image" />
-                                </div>
-                            </div>
-                        </div>
-                    </div> */}
-                    {/* <div className="auction-recommend-container">
-                        <div className="title">
-                            Sản phẩm đấu giá tương tự
-                        </div>
-                        <div className="row">
-                            <div className="col-md-3 d-flex align-items-center flex-column mb-4">
-                                <AuctionCard name={"Điện thoại Samsung A12"} image={'/static/adidas-3-la.jpg'} time={10} winner={'abc'}
-                                    participantsNumber={10} currentPrice={100000000} onClick={() => navigateToDetailAuction({ id: 123 })} />
-                            </div>
-                            <div className="col-md-3 d-flex align-items-center flex-column mb-4">
-                                <AuctionCard name={"Điện thoại Samsung A12"} image={'/static/adidas-3-la.jpg'} time={10} winner={'abc'}
-                                    participantsNumber={10} currentPrice={100000000} onClick={() => navigateToDetailAuction({ id: 123 })} />
-                            </div>
-                            <div className="col-md-3 d-flex align-items-center flex-column mb-4">
-                                <AuctionCard name={"Điện thoại Samsung A12"} image={'/static/adidas-3-la.jpg'} time={10} winner={'abc'}
-                                    participantsNumber={10} currentPrice={100000000} onClick={() => navigateToDetailAuction({ id: 123 })} />
-                            </div>
-                            <div className="col-md-3 d-flex align-items-center flex-column mb-4">
-                                <AuctionCard name={"Điện thoại Samsung A12"} image={'/static/adidas-3-la.jpg'} time={10} winner={'abc'}
-                                    participantsNumber={10} currentPrice={100000000} onClick={() => navigateToDetailAuction({ id: 123 })} />
-                            </div>
-                        </div>
-                        <div className="d-flex align-items-center justify-content-center">
-                            <button className="btn button-see-more">
-                                <div>Xem thêm</div>
-                                <i className="pi pi-angle-right"></i>
-                            </button>
-                        </div>
-                    </div> */}
                 </div>
             </div>
         </div>
@@ -309,10 +248,6 @@ const AuctionDetail = ({ auction }) => {
 export async function getServerSideProps(ctx) {
     const { query } = ctx;
     const { id } = query;
-
-    // call api get auction detail
-    // call api get auction have same brand
-    // call get info shop
 
     let auctionDetail = {
         id: "",
@@ -334,6 +269,7 @@ export async function getServerSideProps(ctx) {
         if (res.status === 200) {
             if (res.data.code === 200) {
                 const data = res.data.result;
+                console.log(res.data);
                 auctionDetail.id = id;
                 auctionDetail.arrayImage = data.arrayImage.map(x => x.url);
                 auctionDetail.name = data.name || "";
