@@ -1,4 +1,4 @@
-export const baseUrl = "http://3.142.207.62:5000";
+export const baseUrl = "http://3.142.207.62";
 
 const url = {
     buyer: {
@@ -27,6 +27,8 @@ const url = {
         getDetail: () => `${baseUrl}/api/product/detail/:id`,
         delete: () => `${baseUrl}/api/product/remove/:id`,
         putUpdate: () => `${baseUrl}/api/product/update`,
+        createComment: () => `${baseUrl}/api/comment/createComment`,
+        getComment: () => `${baseUrl}/api/comment/getCommentProduct`
     },
     auction: {
         getList: () => `${baseUrl}/api/bid/get`,

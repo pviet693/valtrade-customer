@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { Galleria } from 'primereact/galleria';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import ProductCard from '../components/ProductCard';
 import { DataContext } from '../store/GlobalState';
 import api from '../utils/backend-api.utils';
@@ -9,18 +9,25 @@ import { Image } from 'cloudinary-react';
 import { Rating } from '@material-ui/lab';
 import StarBorderIcon from '@material-ui/icons/StarBorder';
 import { InputTextarea } from 'primereact/inputtextarea';
+import cookie from "cookie";
+import Moment from 'moment';
+Moment.locale('en');
 
-const ProductDetail = ({ product, productRecommend }) => {
+const ProductDetail = ({ product, productRecommend, comments }) => {
 
     const { state, dispatch, toast, swal } = useContext(DataContext);
-    const { cart } = state;
-    const [information] = useState(JSON.parse(product.information));
-    console.log(information);
+    const { cart, auth } = state;
+    const [loading, setLoading] = useState(true);
+    const [information] = useState(product.information);
     const [bodyRate, setBodyRate] = useState({
-        productRate: product.id,
+        productId: product.id,
         rate: 0,
         comment: ""
     });
+    const [listComments, setListComments] = useState(comments);
+
+    console.log(auth);
+    console.log(listComments);
 
     const responsiveOptions = [
         {
@@ -183,8 +190,40 @@ const ProductDetail = ({ product, productRecommend }) => {
         }
     }
 
-    const sendRateComment = () => {
-        console.log(bodyRate);
+    const sendRateComment = async () => {
+        swal.fire({
+            onBeforeOpen: () => {
+                swal.showLoading();
+            },
+        })
+
+        let body = {
+            ...bodyRate,
+            rate: bodyRate.rate * 20
+        }
+        try {
+            const res = await api.product.createComment(body);
+            if (res.data.code === 200) {
+                common.ToastPrime('Thành công', 'Gửi thành công.', 'success', toast);
+                setBodyRate((prevStates) => ({
+                    ...prevStates,
+                    rate: 0,
+                    comment: ""
+                }));
+                getListComment();
+            } else {
+                common.ToastPrime('Lỗi', response.data.message, 'error', toast);
+            }
+            swal.close();
+        } catch (error) {
+            swal.close();
+            common.ToastPrime('Lỗi', error.message || error, 'error', toast);
+        }
+    }
+
+    const getListComment = async () => {
+        const res2 = await api.product.getComment(product.id);
+        setListComments(res2.data.result);
     }
 
     return (
@@ -283,58 +322,34 @@ const ProductDetail = ({ product, productRecommend }) => {
                         <div className="title">
                             Đánh giá sản phẩm
                         </div>
-                        <div className="comment-row">
-                            {/* <div className="comment-row_img">
-                                <img src={'/static/avatar2.png'} alt="Avatar" />
-                            </div>
-                            <div className="comment-row_content">
-                                <div className="content_name">
-                                    Name ABC
-                                </div>
-                                <div className="content_star">
-                                    <i className="pi pi-star"></i>
-                                    <i className="pi pi-star"></i>
-                                    <i className="pi pi-star"></i>
-                                    <i className="pi pi-star"></i>
-                                    <i className="pi pi-star"></i>
-                                </div>
-                                <div className="content_comment">
-                                    Space for a comment of product
-                                </div>
-                                <div className="content_img">
-                                    <img src={'/static/adidas-3-la.jpg'} alt="Image" />
-                                    <img src={'/static/adidas-3-la.jpg'} alt="Image" />
-                                    <img src={'/static/adidas-3-la.jpg'} alt="Image" />
-                                    <img src={'/static/adidas-3-la.jpg'} alt="Image" />
-                                    <img src={'/static/adidas-3-la.jpg'} alt="Image" />
-                                    <img src={'/static/adidas-3-la.jpg'} alt="Image" />
-                                    <img src={'/static/adidas-3-la.jpg'} alt="Image" />
-                                    <img src={'/static/adidas-3-la.jpg'} alt="Image" />
-                                </div>
-                            </div> */}
 
+                        <div className="comment-row">
                             <div className="comment-row_img">
-                                <img src={'/static/avatar2.png'} alt="Avatar" />
+                                <img src={Object.keys(auth).length ? auth.user.imageUrl.url : ""} alt="Avatar" />
                             </div>
                             <div className="comment-row_content">
                                 <div className="content_name">
-                                    Name ABC
+                                    {Object.keys(auth).length ? auth.user.name : ""}
                                 </div>
-                                <Rating
-                                    name="customized-empty"
-                                    value={bodyRate.rate}
-                                    onChange={(e) => {
-                                        setBodyRate((prevStates) => ({
-                                            ...prevStates,
-                                            rate: Number(e.target.value)
-                                        }))
-                                    }}
-                                    precision={0.5}
-                                    emptyIcon={<StarBorderIcon fontSize="inherit" />}
-                                    size="large"
-                                />
+                                <div>
+                                    <Rating
+                                        name="customized-empty"
+                                        value={bodyRate.rate}
+                                        onChange={(e) => {
+                                            console.log(e.target.value);
+                                            setBodyRate((prevStates) => ({
+                                                ...prevStates,
+                                                rate: Number(e.target.value)
+                                            }))
+                                        }}
+                                        precision={0.5}
+                                        emptyIcon={<StarBorderIcon fontSize="inherit" />}
+                                        size="large"
+                                    />
+                                </div>
                                 <InputTextarea
                                     className="w-100"
+                                    style={{ maxWidth: "500px" }}
                                     rows={5}
                                     value={bodyRate.comment}
                                     onChange={(e) => {
@@ -345,13 +360,48 @@ const ProductDetail = ({ product, productRecommend }) => {
                                     }}
                                     placeholder="Nhập nhận xét..."
                                 />
-                                <div className="row justify-content-end w-100 mx-0">
+                                <div className="row justify-content-end mx-0" style={{ maxWidth: "500px" }}>
                                     <button className="btn btn--send-comment" type="submit" onClick={sendRateComment}>
                                         Gửi đi
                                     </button>
                                 </div>
                             </div>
                         </div>
+
+                        {
+                            listComments.map((comment, index) => (
+                                <div className="comment-row" key={index}>
+                                    <div className="comment-row_img">
+                                        <img src={comment.buyerRate.imageUrl.url} alt="Avatar" />
+                                    </div>
+                                    <div className="comment-row_content">
+                                        <div className="content_name">
+                                            {comment.buyerRate.name}
+                                        </div>
+                                        <Rating
+                                            disabled={true}
+                                            name="customized-empty"
+                                            defaultValue={comment.rate / 20}
+                                            precision={0.5}
+                                            emptyIcon={<StarBorderIcon fontSize="inherit" />}
+                                            size="large"
+                                        />
+                                        <div className="dialog-box">
+                                            <div className="dialog-box__body">
+                                                <span className="tip tip-up"></span>
+                                                <div className="message">
+                                                    <span>{comment.comment}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="comment-time">
+                                            {Moment(new Date(comment.createTime)).format("DD/MM/yyyy HH:mm:ss A")}
+                                        </div>    
+                                    </div>
+                                </div>
+                            ))
+                        }
+
                     </div>
                     {/* <div className="product-recommend-container">
                         <div className="title">
@@ -391,6 +441,15 @@ const ProductDetail = ({ product, productRecommend }) => {
 export async function getServerSideProps(ctx) {
     const { query } = ctx;
     const { id } = query;
+    let token = "";
+    let isSignin = false;
+
+    // check token
+    const cookies = ctx.req.headers.cookie;
+    if (cookies) {
+        token = cookie.parse(cookies).access_token;
+        isSignin = token ? true : false;
+    }
 
     let productDetail = {
         id: "",
@@ -406,6 +465,7 @@ export async function getServerSideProps(ctx) {
         phone: "",
         countProduct: 0
     };
+    let comments = []
     try {
         const res = await api.buyer.getDetailProduct(id);
         if (res.status === 200) {
@@ -426,15 +486,19 @@ export async function getServerSideProps(ctx) {
                 productDetail.information = data.information;
             }
         }
+
+        const res2 = await api.product.getComment(id, token);
+        comments = res2.data.result;
     } catch (error) {
-        common.Toast(error, 'error');
+        console.log(error.message);
     }
     // call api get product have same brand
 
     return {
         props: {
             product: productDetail,
-            productRecommend: []
+            productRecommend: [],
+            comments
         }
     }
 }

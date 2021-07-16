@@ -342,6 +342,50 @@
                         background-color: #0795DF;
                         padding: 5px 20px;
                     }
+
+                    .dialog-box {
+                        &__body {
+                            position: relative;
+                            max-width: 500px;
+                            height: auto;
+                            padding: 5px;
+                            background-color: #fff;
+                            border-radius: 3px;
+                            border: 2px solid #0795DF;
+
+                            .tip {
+                                width: 0px;
+                                height: 0px;
+                                position: absolute;
+                                background: transparent;
+                                border: 10px solid #0795DF;
+                            }
+
+                            .tip-up {
+                                top: -22px;
+                                left: 6px;
+                                border-right-color: transparent;
+                                border-left-color: transparent;
+                                border-top-color: transparent;
+                            }
+
+                            .message {
+                                border-radius: 3px;
+                                font-family: Arial;
+                                font-size: 1em;
+                                line-height: 1.5;
+                                color: #797979;
+                            }
+                        }
+                    }
+
+                    .comment-time {
+                        display: flex;
+                        max-width: 500px;
+                        justify-content: flex-end;
+                        font-size: 0.9em;
+                        margin-bottom: 10px;
+                    }
                 }
             }
         }

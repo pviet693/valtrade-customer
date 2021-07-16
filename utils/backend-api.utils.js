@@ -151,6 +151,22 @@ const api = {
         },
         update: (body) => {
             return axios.put(url.product.putUpdate(), body, config);
+        },
+        createComment: (body) => {
+            if (isEnable()) {
+                return axios.post(url.product.createComment(), body, config);
+            }
+        },
+        getComment: (id, token = '') => {
+            if (isEnable(token)) {
+                const newConfig = {
+                    ...config,
+                    params: {
+                        productId: id
+                    }
+                }
+                return axios.get(url.product.getComment(), newConfig);
+            }
         }
     },
     auction: {
