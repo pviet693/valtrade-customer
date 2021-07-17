@@ -8,26 +8,34 @@ import * as common from './../utils/common';
 import { Image } from 'cloudinary-react';
 import { Rating } from '@material-ui/lab';
 import StarBorderIcon from '@material-ui/icons/StarBorder';
+import LocalOfferIcon from '@material-ui/icons/LocalOffer';
+import BeenhereOutlinedIcon from '@material-ui/icons/BeenhereOutlined';
+import VerifiedUserOutlinedIcon from '@material-ui/icons/VerifiedUserOutlined';
+import LocalShippingOutlinedIcon from '@material-ui/icons/LocalShippingOutlined';
+import AlarmOnIcon from '@material-ui/icons/AlarmOn';
+import RestorePageOutlinedIcon from '@material-ui/icons/RestorePageOutlined';
+import LocationOnOutlinedIcon from '@material-ui/icons/LocationOnOutlined';
+import CheckOutlinedIcon from '@material-ui/icons/CheckOutlined';
 import { InputTextarea } from 'primereact/inputtextarea';
 import cookie from "cookie";
 import Moment from 'moment';
 Moment.locale('en');
 
-const ProductDetail = ({ product, productRecommend, comments }) => {
-
+const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
     const { state, dispatch, toast, swal } = useContext(DataContext);
     const { cart, auth } = state;
-    const [loading, setLoading] = useState(true);
-    const [information] = useState(product.information);
+    const [information] = useState(() => {
+        if (typeof product.information === "string") {
+            return JSON.parse(product.information);
+        }
+        return product.information;
+    });
     const [bodyRate, setBodyRate] = useState({
         productId: product.id,
         rate: 0,
         comment: ""
     });
     const [listComments, setListComments] = useState(comments);
-
-    console.log(auth);
-    console.log(listComments);
 
     const responsiveOptions = [
         {
@@ -57,7 +65,7 @@ const ProductDetail = ({ product, productRecommend, comments }) => {
                 cloud_name="ktant"
                 secure="true"
                 alt="Image Product"
-                height="450"
+                height="400"
                 width="400"
                 crop="fill"
                 loading="lazy"
@@ -226,6 +234,16 @@ const ProductDetail = ({ product, productRecommend, comments }) => {
         setListComments(res2.data.result);
     }
 
+    const checkWarranty = (time) => {
+        return (new Date(time)).getTime() > (new Date()).getTime();
+    }
+
+    const getDiffTime = (time) => {
+        const date = (new Date(time)).getTime();
+        const currentDate = (new Date()).getTime();
+        return Math.ceil((date - currentDate) / (24 * 3600 * 1000));
+    }
+
     return (
         <div className="product-detail-container">
             <Head>
@@ -292,31 +310,121 @@ const ProductDetail = ({ product, productRecommend, comments }) => {
                             <div className="detail-name">
                                 {product.name}
                             </div>
-                            <div className="detail-price">
-                                Giá:  {common.numberWithCommas(product.price)} VND
+                            <div className="detail-price d-flex align-items-center">
+                                <LocalOfferIcon className="mr-2" style={{ color: "#0795df" }}/>
+                                <div>Giá: {common.numberWithCommas(product.price)} VNĐ</div>
                             </div>
-                            <h5>Thông tin chi tiết</h5>
-                            <div className="detail-row">
-                                Thương hiệu: <span><strong>{product.brand}</strong></span>
+                            <div className="detail-primary d-flex align-items-center">
+                                <VerifiedUserOutlinedIcon className="mr-2" style={{ color: "#0795df" }} />
+                                <div>SKU: {product.sku}</div>
                             </div>
-                            <div className="detail-row">
-                                SKU: <span className="detail-sku">{product.sku}</span>
+                            <div className="detail-primary d-flex align-items-center">
+                                <BeenhereOutlinedIcon className="mr-2" style={{ color: "#0795df" }} />
+                                <div>
+                                    <span>Bảo hành: </span>
+                                    <span>
+                                        {
+                                            checkWarranty(product.restWarrantyTime)
+                                                ? (
+                                                    <span className="detail-warranty-active">
+                                                        Vẫn còn ({getDiffTime(product.restWarrantyTime)} ngày)
+                                                    </span>
+                                                ) : (
+                                                    <span className="detail-warranty-expired">
+                                                        Hết hạn
+                                                    </span>
+                                                )
+                                        }
+                                    </span>
+                                </div>
                             </div>
-                            <div className="detail-row">
-                                Tình trạng bảo hành: <span className="detail-warranty-status">{product.restWarrantyTime}</span>
+                            <div className="detail-primary d-flex align-items-center">
+                                <i className="pi pi-tags mr-2" style={{ color: "#0795df", fontSize: "1.2em" }}></i>
+                                <div>Thương hiệu: {product.brand}</div>
                             </div>
-                            <div className="detail-row">
-                                Mô tả: <span>{product.description}</span>
+                            <div className="detail-primary d-flex align-items-center">
+                                <i className="pi pi-tag mr-2" style={{ color: "#0795df", fontSize: "1.2em" }}></i>
+                                <div>Giá mua ban đầu: {common.numberWithCommas(product.oldPrice)} VNĐ</div>
                             </div>
-                            <div className="detail-row">
-                                Lưu ý: <span>{product.note}</span>
+                            <div className="detail-primary d-flex">
+                                <LocalShippingOutlinedIcon className="mr-2" style={{ color: "#0795df" }} />
+                                <div className="">
+                                    <span className="mr-2">Phương thức vận chuyển:</span>
+                                    <div>
+                                        {
+                                            product.arrayDelivery.map((delivery) => {
+                                                return (
+                                                    delivery === "ghn"
+                                                        ? (
+                                                            <div className="d-flex align-items-center" key={delivery}>
+                                                                <CheckOutlinedIcon className="mr-2" style={{ color: "#0795df" }} />
+                                                                <div style={{ minWidth: 180 }}>Giao hàng nhanh</div>
+                                                                <img src="/static/logo-ghn.png" alt="logo" width="100" height="55" className="mr-2" />
+                                                            </div>
+                                                        ) : delivery === "ghtk"
+                                                            ? (
+                                                                <div className="d-flex align-items-center" key={delivery}>
+                                                                    <CheckOutlinedIcon className="mr-2" style={{ color: "#0795df" }} />
+                                                                    <div style={{ minWidth: 180 }}>Giao hàng tiết kiệm</div>
+                                                                    <img src="/static/ghtk.png" alt="logo" width="100" height="55" className="mr-2" />
+                                                                </div>
+                                                            ) : (
+                                                                <div className="d-flex align-items-center" key={delivery}>
+                                                                    <CheckOutlinedIcon className="mr-2" style={{ color: "#0795df" }} />
+                                                                    <div>Nhận hàng tại shop</div>
+                                                                </div>
+                                                            )
+                                                )
+                                            })
+                                        }
+                                    </div>
+                                </div>
                             </div>
-
+                            <div className="detail-primary d-flex align-items-center">
+                                <AlarmOnIcon className="mr-2" style={{ color: "#0795df" }} />
+                                <div>Ngày đăng: {Moment(new Date(product.timePost)).format("DD/MM/yyyy - HH:mm:ss A")}</div>
+                            </div>
+                            <div className="detail-primary d-flex align-items-center">
+                                <RestorePageOutlinedIcon className="mr-2" style={{ color: "#0795df" }} />
+                                <div>Số lượng còn lại: {product.countProduct} sản phẩm</div>
+                            </div>
+                            {
+                                product.note
+                                && (
+                                    <div className="detail-row">
+                                        Lưu ý: <span>{product.note}</span>
+                                    </div>
+                                )
+                            }
                             <div className="detail-action">
                                 <button className="btn button-add-to-cart" onClick={addToCart}><i className="pi pi-shopping-cart"></i> Thêm vào giỏ hàng</button>
                                 <button className="btn button-buy-now">Mua ngay</button>
                             </div>
                         </div>
+                    </div>
+                    <div className="product-details-container">
+                        <h5>Thông tin chi tiết</h5>
+                        <div>
+                            <span>
+                                Mô tả:
+                            </span>
+                            <span>
+                                {product.description}
+                            </span>
+                        </div>
+                        {
+                            attributes.map(x => {
+                                return (
+                                    <div key={x.key}>
+                                        <span>{`${x.name}: `}</span>
+                                        {
+                                            information[x.key] &&
+                                            <span>{information[x.key]}</span>
+                                        }
+                                    </div>
+                                )
+                            })
+                        }
                     </div>
                     <div className="comment-container">
                         <div className="title">
@@ -325,7 +433,14 @@ const ProductDetail = ({ product, productRecommend, comments }) => {
 
                         <div className="comment-row">
                             <div className="comment-row_img">
-                                <img src={Object.keys(auth).length ? auth.user.imageUrl.url : ""} alt="Avatar" />
+                                <img
+                                    src={
+                                        Object.keys(auth).length
+                                            ? auth.user.imageUrl ? auth.user.imageUrl.url : "/static/avatar2.png"
+                                            : "/static/avatar2.png"
+                                    }
+                                    alt="Avatar"
+                                />
                             </div>
                             <div className="comment-row_content">
                                 <div className="content_name">
@@ -336,7 +451,6 @@ const ProductDetail = ({ product, productRecommend, comments }) => {
                                         name="customized-empty"
                                         value={bodyRate.rate}
                                         onChange={(e) => {
-                                            console.log(e.target.value);
                                             setBodyRate((prevStates) => ({
                                                 ...prevStates,
                                                 rate: Number(e.target.value)
@@ -372,7 +486,7 @@ const ProductDetail = ({ product, productRecommend, comments }) => {
                             listComments.map((comment, index) => (
                                 <div className="comment-row" key={index}>
                                     <div className="comment-row_img">
-                                        <img src={comment.buyerRate.imageUrl.url} alt="Avatar" />
+                                        <img src={comment.buyerRate.imageUrl ? comment.buyerRate.imageUrl.url : "/static/avatar2.png"} alt="Avatar" />
                                     </div>
                                     <div className="comment-row_content">
                                         <div className="content_name">
@@ -438,11 +552,18 @@ const ProductDetail = ({ product, productRecommend, comments }) => {
     )
 }
 
+function newFunction(delivery) {
+    return {
+        delivery
+    } === "ghn";
+}
+
 export async function getServerSideProps(ctx) {
     const { query } = ctx;
     const { id } = query;
     let token = "";
     let isSignin = false;
+    let listAttribute = [];
 
     // check token
     const cookies = ctx.req.headers.cookie;
@@ -463,7 +584,8 @@ export async function getServerSideProps(ctx) {
         name: "",
         shopName: "",
         phone: "",
-        countProduct: 0
+        countProduct: 0,
+        arrayDelivery: []
     };
     let comments = []
     try {
@@ -472,6 +594,8 @@ export async function getServerSideProps(ctx) {
             if (res.data.code === 200) {
                 const data = res.data.result;
                 productDetail.id = id;
+                productDetail.categoryId = data.categoryInfor._id;
+                productDetail.categoryName = data.categoryInfor.name;
                 productDetail.arrayImage = data.arrayImage;
                 productDetail.name = data.name || "";
                 productDetail.description = data.description || "";
@@ -484,11 +608,29 @@ export async function getServerSideProps(ctx) {
                 productDetail.phone = data.sellerInfor.phone || "";
                 productDetail.countProduct = data.countProduct || 0;
                 productDetail.information = data.information;
+                data.deliverArray.forEach((delivery) => {
+                    productDetail.arrayDelivery.push(Object.keys(delivery)[0]);
+                });
+                productDetail.oldPrice = data.oldPrice;
+                productDetail.timePost = data.timePost;
+                productDetail.countProduct = data.countProduct;
             }
         }
 
-        const res2 = await api.product.getComment(id, token);
+        const res2 = await api.product.getComment(id);
         comments = res2.data.result;
+
+        const resAttr = await api.category.getDetails(productDetail.categoryId);
+        if (resAttr.status === 200) {
+            if (resAttr.data.code === 200) {
+                let listKey = Object.keys(resAttr.data.result.information);
+                common.ListProperties.forEach(x => {
+                    if (listKey.includes(x.key)) {
+                        listAttribute.push(x);
+                    }
+                })
+            }
+        }
     } catch (error) {
         console.log(error.message);
     }
@@ -498,7 +640,8 @@ export async function getServerSideProps(ctx) {
         props: {
             product: productDetail,
             productRecommend: [],
-            comments
+            comments,
+            attributes: listAttribute
         }
     }
 }

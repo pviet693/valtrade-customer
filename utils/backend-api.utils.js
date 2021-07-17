@@ -157,16 +157,13 @@ const api = {
                 return axios.post(url.product.createComment(), body, config);
             }
         },
-        getComment: (id, token = '') => {
-            if (isEnable(token)) {
-                const newConfig = {
-                    ...config,
-                    params: {
-                        productId: id
-                    }
+        getComment: (id) => {
+            const newConfig = {
+                params: {
+                    productId: id
                 }
-                return axios.get(url.product.getComment(), newConfig);
             }
+            return axios.get(url.product.getComment(), newConfig);
         }
     },
     auction: {
@@ -292,6 +289,11 @@ const api = {
             if (isEnable()) {
                 return axios.post(url.order.createOrder(), body, config);
             }
+        }
+    },
+    category: {
+        getDetails: (id) => {
+            return axios.get(url.category.getDetails().replace(":id", id));
         }
     }
 };

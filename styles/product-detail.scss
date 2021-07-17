@@ -205,10 +205,19 @@
                 }
 
                 .detail-price {
-                    color: #FF0000;
+                    color: #DC4E41;
                     font-weight: 550;
                     font-size: 1.2rem;
                     margin-bottom: 1rem;
+                }
+
+                .detail-primary {
+                    font-size: 1.1rem;
+                    margin-bottom: 0.5rem;
+
+                    &:last-child {
+                        margin-bottom: 0;
+                    }
                 }
 
                 .detail-old-price {
@@ -224,9 +233,14 @@
                     font-weight: 600;
                 }
 
-                .detail-warranty-status {
+                .detail-warranty-active {
                     font-weight: 600;
                     color: #5CB85C;
+                }
+
+                .detail-warranty-expired {
+                    font-weight: 600;
+                    color: #DC4E41;
                 }
 
                 .detail-action {
@@ -265,6 +279,13 @@
                     }
                 }
             }
+        }
+
+        .product-details-container {
+            background-color: #fff;
+            box-shadow: 0 1px 1px 0 rgb(0 0 0 / 5%);
+            padding: 20px;
+            margin-bottom: 10px;
         }
 
         .comment-container {

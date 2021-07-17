@@ -56,7 +56,7 @@ const AuctionDetail = ({ auction }) => {
     useEffect(() => {
         if (socket) {
             socket.on("countUser", (res) => {
-                console.log(res);
+                console.log(res, "countUser");
             });
             socket.on("countDownRoom", (res) => {
                 console.log("countDownRoom", res);
@@ -77,7 +77,6 @@ const AuctionDetail = ({ auction }) => {
 
     useEffect(() => {
         if (Object.keys(auth).length > 0 && socket) {
-            console.log("abc");
             socket.emit("joinRoom", {
                 bidId: auction.id,
                 userId: auth.user.userId,
@@ -269,7 +268,6 @@ export async function getServerSideProps(ctx) {
         if (res.status === 200) {
             if (res.data.code === 200) {
                 const data = res.data.result;
-                console.log(res.data);
                 auctionDetail.id = id;
                 auctionDetail.arrayImage = data.arrayImage.map(x => x.url);
                 auctionDetail.name = data.name || "";
