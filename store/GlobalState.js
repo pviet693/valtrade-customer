@@ -32,7 +32,7 @@ export const DataProvider = ({ children }) => {
 
     useEffect(async () => {
 
-        const socket = io.connect("http://3.142.207.62:5000", {
+        const socket = io.connect("https://valtrade-api.tech", {
             // path: 'api/',
             // withCredentials: false
             transports: ["websocket", "polling"]
