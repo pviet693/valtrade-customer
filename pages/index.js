@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Head from 'next/head';
 import Link from 'next/link';
 import * as common from './../utils/common';
@@ -10,9 +10,25 @@ import Category from "../components/Category";
 import cookie from "cookie";
 import Router from 'next/router';
 import { Carousel } from 'primereact/carousel';
+import { DataContext } from "../store/GlobalState";
 
 const Home = ({ brands, categories, products, auctions }) => {
+    const { state, dispatch, toast, swal, socket } = useContext(DataContext);
+    const [listCountDown, setListCountDown] = useState({});
+    const { auth } = state;
+
     const size = 8;
+
+    function seconds2Time(number) {
+        let hours = Math.floor(number / 3600);
+        let minutes = Math.floor((number - (hours * 3600)) / 60);
+        let seconds = number - (hours * 3600) - (minutes * 60);
+
+        if (hours < 10) { hours = "0" + hours; }
+        if (minutes < 10) { minutes = "0" + minutes; }
+        if (seconds < 10) { seconds = "0" + seconds; }
+        return hours + ':' + minutes + ':' + seconds;
+    }
 
     const filterCategory = async (categoryId) => {
         const productCategory = await api.buyer.getListProductFilter(categoryId);
@@ -31,7 +47,7 @@ const Home = ({ brands, categories, products, auctions }) => {
 
     const auction = auctions.map((x, index) =>
         <div key={x.id} className="col-md-3 d-flex align-items-center flex-column mb-4">
-            <AuctionCard name={x.name} image={x.image} time={10} winner={'abc'} imageId={x.imageId}
+            <AuctionCard name={x.name} image={x.image} time={seconds2Time(listCountDown[x.id] || 0)} winner={'abc'} imageId={x.imageId}
                 participantsNumber={10} currentPrice={x.price} onClick={() => navigateToDetailAuction(x)} />
         </div>
     );
@@ -62,6 +78,22 @@ const Home = ({ brands, categories, products, auctions }) => {
             query: { id: auction.id },
         })
     }
+
+    useEffect(() => {
+        if (socket) {
+            socket.on("countListUser", (res) => {
+                console.log(res, "countListUser");
+            });
+            socket.on("listCountDown", (res) => {
+                console.log(listCountDown);
+                setListCountDown(res);
+            });
+            return () => {
+                socket.off('listCountUser');
+                socket.off('listCountDown');
+            }
+        }
+    }, [socket]);
 
     return (
         <>

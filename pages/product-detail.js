@@ -14,7 +14,6 @@ import VerifiedUserOutlinedIcon from '@material-ui/icons/VerifiedUserOutlined';
 import LocalShippingOutlinedIcon from '@material-ui/icons/LocalShippingOutlined';
 import AlarmOnIcon from '@material-ui/icons/AlarmOn';
 import RestorePageOutlinedIcon from '@material-ui/icons/RestorePageOutlined';
-import LocationOnOutlinedIcon from '@material-ui/icons/LocationOnOutlined';
 import CheckOutlinedIcon from '@material-ui/icons/CheckOutlined';
 import { InputTextarea } from 'primereact/inputtextarea';
 import cookie from "cookie";
@@ -384,10 +383,10 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
                                 <AlarmOnIcon className="mr-2" style={{ color: "#0795df" }} />
                                 <div>Ngày đăng: {Moment(new Date(product.timePost)).format("DD/MM/yyyy - HH:mm:ss A")}</div>
                             </div>
-                            <div className="detail-primary d-flex align-items-center">
+                            {/* <div className="detail-primary d-flex align-items-center">
                                 <RestorePageOutlinedIcon className="mr-2" style={{ color: "#0795df" }} />
                                 <div>Số lượng còn lại: {product.countProduct} sản phẩm</div>
-                            </div>
+                            </div> */}
                             {
                                 product.note
                                 && (
@@ -403,10 +402,12 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
                         </div>
                     </div>
                     <div className="product-details-container">
-                        <h5>Thông tin chi tiết</h5>
+                        <div className="title">
+                            Thông tin chi tiết
+                        </div>
                         <div>
                             <span>
-                                Mô tả:
+                                {`Mô tả: `}
                             </span>
                             <span>
                                 {product.description}
