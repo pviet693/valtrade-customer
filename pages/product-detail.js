@@ -113,7 +113,8 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
                             cartItems: [
                                 {
                                     inforProduct: sameProduct[0].productId,
-                                    quantity: sameProduct[0].quantity
+                                    quantity: sameProduct[0].quantity,
+                                    onProduct: "Product"
                                 }
                             ]
                         }
@@ -136,7 +137,8 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
                         cartItems: [
                             {
                                 inforProduct: product.id,
-                                quantity: 1
+                                quantity: 1,
+                                onProduct: "Product"
                             }
                         ]
                     }
@@ -166,7 +168,8 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
                     cartItems: [
                         {
                             inforProduct: product.id,
-                            quantity: 1
+                            quantity: 1,
+                            onProduct: "Product"
                         }
                     ]
                 }

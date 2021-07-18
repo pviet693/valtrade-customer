@@ -29,7 +29,8 @@ const ProductCard = ({ id, name, price, brand, sku, oldPrice, image, imageId, wa
                             cartItems: [
                                 {
                                     inforProduct: sameProduct[0].productId,
-                                    quantity: sameProduct[0].quantity
+                                    quantity: sameProduct[0].quantity,
+                                    onProduct: "Product"
                                 }
                             ]
                         }
@@ -52,7 +53,8 @@ const ProductCard = ({ id, name, price, brand, sku, oldPrice, image, imageId, wa
                         cartItems: [
                             {
                                 inforProduct: id,
-                                quantity: 1
+                                quantity: 1,
+                                onProduct: "Product"
                             }
                         ]
                     }
@@ -82,7 +84,8 @@ const ProductCard = ({ id, name, price, brand, sku, oldPrice, image, imageId, wa
                     cartItems: [
                         {
                             inforProduct: id,
-                            quantity: 1
+                            quantity: 1,
+                            onProduct: "Product"
                         }
                     ]
                 }

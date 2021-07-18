@@ -46,7 +46,7 @@ const Cart = ({ listCards, recommendProducts }) => {
 
         try {
             let body = { cartItems: [] };
-            body.cartItems = cartTemp.map(x => { return { inforProduct: x.productId, quantity: x.quantity } });
+            body.cartItems = cartTemp.map(x => { return { inforProduct: x.productId, quantity: x.quantity, onProduct: "Product" } });
             const res = await api.cart.postCart(body);
             if (res.status === 200) {
                 swal.close();
@@ -90,7 +90,7 @@ const Cart = ({ listCards, recommendProducts }) => {
 
         try {
             let body = { cartItems: [] };
-            body.cartItems = cartTemp.map(x => { return { inforProduct: x.productId, quantity: x.quantity } });
+            body.cartItems = cartTemp.map(x => { return { inforProduct: x.productId, quantity: x.quantity, onProduct: "Product" } });
             const res = await api.cart.postCart(body);
             if (res.status === 200) {
                 swal.close();
