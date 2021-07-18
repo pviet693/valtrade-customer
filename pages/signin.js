@@ -89,7 +89,7 @@ const SigIn = () => {
                 }
             }
         } catch (err) {
-            comm.Toast(error, 'error');
+            common.Toast(error, 'error');
         }
     }
 
@@ -204,7 +204,7 @@ const SigIn = () => {
                                     <div className="mb-2">Hoặc đăng nhập bằng</div>
                                     <GoogleLogin
                                         className="btn btn-signin-google w-100 mb-4"
-                                        clientId="752599971421-j7m6fl75uersjpre9jh4q1rjgcr6f912.apps.googleusercontent.com"
+                                        clientId="472816343412-ur81bi98s6dit0oo2h1bjqv56qonrsfc.apps.googleusercontent.com"
                                         buttonText="Đăng kí bằng tài khoản Google"
                                         onSuccess={responseGoogle}
                                         onFailure={responseGoogle}

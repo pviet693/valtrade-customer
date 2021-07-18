@@ -9,78 +9,123 @@ import { Paginator } from 'primereact/paginator';
 import { useState } from 'react';
 import ProductCard from '../components/ProductCard';
 import Router from 'next/router';
+import { useEffect, useContext } from 'react';
+import { DataContext } from '../store/GlobalState';
 
-const Product = ({brands, categories, products}) => {
+const Product = ({ brands, categories, products, query, total }) => {
     const items = [
-        { label: 'SẢN PHẨM MỚI', icon: 'pi pi-fw pi-home'},
-        { label: 'GIÁ CAO', icon: 'pi pi-arrow-up' },
-        { label: 'GIÁ THẤP', icon: 'pi pi-arrow-down' },
+        { label: 'SẢN PHẨM MỚI', icon: 'pi pi-fw pi-home' },
+        { label: 'GIÁ THẤP', icon: 'pi pi-arrow-up' },
+        { label: 'GIÁ CAO', icon: 'pi pi-arrow-down' },
         { label: 'TÊN (A - Z)', icon: 'pi pi-arrow-up' },
         { label: 'TÊN (Z - A)', icon: 'pi pi-arrow-down' }
     ];
     const router = useRouter();
-    const [activeItem, setActiveItem] = useState({ label: 'GIÁ CAO', icon: 'pi pi-arrow-up' });
-    const [first, setFirst] = useState(0);
-    const [rows, setRows] = useState(10);
+    const { state, dispatch, toast } = useContext(DataContext);
+    const [listProduct, setListProduct] = useState(products);
+    const [totalRecord, setTotalRecord] = useState(total);
+    const [filter, setFilter] = useState({
+        ...query,
+        page: 0,
+        first: 0,
+        rows: 12,
+        categoryId: "",
+        brand: "",
+        keysFrom: null,
+        keysTo: null,
+        activeItem: 0
+    });
 
     const onPageChange = (event) => {
-        setFirst(event.first);
-        setRows(event.rows);
+        setFilter((prevStates) => ({
+            ...prevStates,
+            ...event
+        }));
     }
 
     const onChangeTabMenu = (e) => {
-        setActiveItem({...e.value});
+        setFilter((prevStates) => ({
+            ...prevStates,
+            activeItem: e.index
+        }));
+    }
+
+    useEffect(() => {
+        filterListProduct();
+    }, [filter]);
+
+    const filterListProduct = async () => {
+        const res = await api.buyer.getListProduct(filter);
+        let productList = [];
+        if (res.status === 200) {
+            if (res.data.code === 200) {
+                const result = res.data.result;
+                result.map(x => {
+                    let product = {};
+                    product.id = x._id || "";
+                    product.name = x.name || "";
+                    product.price = x.price || "";
+                    product.oldPrice = x.oldPrice || "";
+                    product.brand = x.brand || "";
+                    product.sku = x.sku || "";
+                    product.image = x.arrayImage[0].url || "";
+                    productList.push(product);
+                });
+                setTotalRecord(res.data.total);
+                setListProduct(productList);
+            }
+            else {
+                let message = res2.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
+                common.ToastPrime('Lỗi', message, 'error', toast);
+            }
+        }
     }
 
     const CategoryCard = (props) => {
-        const { name, image } = props;
+        const { id, name, image, onClick } = props;
         return (
-            <Link href="/product">
-                <a className="filter-category-row">
-                    <div className="d-flex align-items-center justify-content-between w-100">
-                        <div className="d-flex align-items-center">
-                            <div className="img-box">
-                                <img src={image} alt="Image" />
-                            </div>
-                            <div className="category-name">
-                                {name}
-                            </div>
+            <a className="filter-category-row" onClick={() => onClick(id)}>
+                <div className="d-flex align-items-center justify-content-start w-100">
+                    <div className="d-flex align-items-center">
+                        <div className="img-box">
+                            <img src={image} alt="Image" />
                         </div>
-                        <i className="pi pi-angle-right" aria-hidden></i>
+                        <div className="category-name">
+                            {name}
+                        </div>
                     </div>
-                </a>
-            </Link>
+                    <i className="pi pi-angle-right" aria-hidden></i>
+                </div>
+            </a>
         )
     }
 
     const BrandCard = (props) => {
-        const { name, image } = props;
+        const { id, name, image, onClick } = props;
         return (
-            <Link href="/product">
-                <a className="filter-category-row">
-                    <div className="d-flex align-items-center justify-content-between w-100">
-                        <div className="d-flex align-items-center">
-                            <div className="img-box">
-                                <img src={image} alt="Image" />
-                            </div>
-                            <div className="category-name">
-                                {name}
-                            </div>
+            <a className="filter-category-row" onClick={() => onClick(id)}>
+                <div className="d-flex align-items-center justify-content-between w-100">
+                    <div className="d-flex align-items-center">
+                        <div className="img-box">
+                            <img src={image} alt="Image" />
                         </div>
-                        <i className="pi pi-angle-right" aria-hidden></i>
+                        <div className="category-name">
+                            {name}
+                        </div>
                     </div>
-                </a>
-            </Link>
+                    <i className="pi pi-angle-right" aria-hidden></i>
+                </div>
+            </a >
         )
     }
 
     const FilterPriceCard = (props) => {
-        const { from, to, gt, lt, value } = props;
-        
+        const { from, to, gt, lt, checked, onChange} = props;
+
         if (gt) {
             return (
                 <div className="filter-price-row">
-                    <Checkbox onChange={(e) => {}} checked={true} value={value}></Checkbox>
+                    <Checkbox onChange={(e) => onChange(e)} checked={checked} />
                     <div className="price-value">
                         Trên {from}
                     </div>
@@ -89,7 +134,7 @@ const Product = ({brands, categories, products}) => {
         } else if (lt) {
             return (
                 <div className="filter-price-row">
-                    <Checkbox onChange={(e) => { }} checked={true} value={value}></Checkbox>
+                    <Checkbox onChange={(e) => onChange(e)} checked={checked} />
                     <div className="price-value">
                         Dưới {from}
                     </div>
@@ -98,7 +143,7 @@ const Product = ({brands, categories, products}) => {
         } else {
             return (
                 <div className="filter-price-row">
-                    <Checkbox onChange={(e) => { }} checked={true} value={value}></Checkbox>
+                    <Checkbox onChange={(e) => onChange(e)} checked={checked} />
                     <div className="price-value">
                         Từ {from} đến {to}
                     </div>
@@ -108,24 +153,36 @@ const Product = ({brands, categories, products}) => {
     }
 
     const filterCategory = (categoryId) => {
-        
+        let queryTemp = query;
+        queryTemp = { ...queryTemp, categoryId: categoryId }
+        router.push({
+            pathname: '/product',
+            query: queryTemp
+        })
     }
 
-    const size=10;
+    const filterBrand = (brandId) => {
+        let queryTemp = query;
+        queryTemp = { ...queryTemp, brand: brandId }
+        router.push({
+            pathname: '/product',
+            query: queryTemp
+        })
+    }
 
-    const brand = brands.map((x,index) => 
-        <BrandCard key={index.toString()} name={x.name} image={x.image} />
+    const brand = brands.map((x, index) =>
+        <BrandCard key={x.id} name={x.name} image={x.image} id={x.id} onClick={filterBrand} />
     );
 
-    const product = products.map((x, index) => 
-        <div className="col-md-4 d-flex align-items-center flex-column mb-4">
-            <ProductCard key={index.toString()} name={x.name} image={x.image} onClick={() => navigateToDetail(x)}
-            price={x.price} brand={x.brand.name} sku={x.sku} oldPrice={x.oldPrice} warrantyStatus={true}/>
+    const product = listProduct.map((x, index) =>
+        <div className="col-md-4 d-flex align-items-center flex-column mb-4" key={x.id}>
+            <ProductCard name={x.name} image={x.image} onClick={() => navigateToDetail(x)}
+                price={x.price} brand={x.brand.name} sku={x.sku} oldPrice={x.oldPrice} warrantyStatus={true} />
         </div>
     );
 
     const category = categories.map((x, index) => (
-        <CategoryCard key={index.toString()} id={x.id} name={x.name} image={x.image} onClick={filterCategory} />
+        <CategoryCard key={x.id} id={x.id} name={x.name} image={x.image} onClick={filterCategory} />
     ));
 
     const navigateToDetail = (product) => {
@@ -133,6 +190,10 @@ const Product = ({brands, categories, products}) => {
             pathname: '/product-detail',
             query: { id: product.id },
         })
+    }
+
+    const onChangeFilterPrice = (e) => {
+        console.log(e);
     }
 
     return (
@@ -159,7 +220,7 @@ const Product = ({brands, categories, products}) => {
                                     Giá tiền
                                 </div>
                                 <div className="filter-row-content">
-                                    <FilterPriceCard from="1000000" to="" gt={false} lt={true} value="1" />
+                                    <FilterPriceCard from="1000000" to="" gt={false} lt={true} onChange={onChangeFilterPrice} value={true} />
                                     <FilterPriceCard from="1000000" to="5000000" gt={false} lt={false} value="2" />
                                     <FilterPriceCard from="5000000" to="15000000" gt={false} lt={false} value="3" />
                                     <FilterPriceCard from="15000000" to="" gt={true} lt={false} value="4" />
@@ -177,7 +238,7 @@ const Product = ({brands, categories, products}) => {
                         <div className="content-list">
                             <div className="list-order">
                                 <div>Sắp xếp: </div>
-                                <TabMenu model={items} activeItem={activeItem} style={{width: '100%'}}/>
+                                <TabMenu model={items} activeIndex={filter.activeItem} onTabChange={onChangeTabMenu} style={{ width: '100%' }} />
                             </div>
                             <div className="list-container">
                                 <div className="row justify-content-start">
@@ -185,7 +246,10 @@ const Product = ({brands, categories, products}) => {
                                 </div>
                             </div>
 
-                            <Paginator first={first} rows={rows} totalRecords={120} onPageChange={onPageChange}></Paginator>
+                            {
+                                products.length > 9 &&
+                                <Paginator first={filter.first} rows={filter.rows} totalRecords={totalRecord} onPageChange={onPageChange}></Paginator>
+                            }
                         </div>
                     </div>
                 </div>
@@ -198,6 +262,8 @@ export async function getServerSideProps(ctx) {
     let brands = [];
     let categories = [];
     let products = [];
+    let total = 0;
+    const query = ctx.query;
 
     try {
         // call api list brand
@@ -243,41 +309,38 @@ export async function getServerSideProps(ctx) {
             }
         }
         // call api list product
-
-        const res2 = await api.buyer.getListProduct();
-            if (res2.status === 200){
-                if (res2.data.code === 200){
-                    res2.data.result.map(x => {
-                        let product = {
-                            id: "",
-                            name: "",
-                            price: "",
-                            brand: "",
-                            sku: "",
-                            oldPrice: "",
-                            image: "",
-                        };
-                        product.id = x._id || "";
-                        product.name = x.name || "";
-                        product.price = x.price || "";
-                        product.oldPrice = x.oldPrice || "";
-                        product.brand = x.brand || "";
-                        product.sku = x.sku || "";  
-                        product.image = x.arrayImage[0].url || "";  
-                        products.push(product);          
-                    });
-                }
-                else {
-                    let message = res2.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
-                    common.Toast(message, 'error');
-                }
+        let params = {
+            ...query,
+            page: 0,
+            rows: 12
+        }
+        const res2 = await api.buyer.getListProduct(params);
+        if (res2.status === 200) {
+            if (res2.data.code === 200) {
+                total = res2.data.total;
+                const result = res2.data.result;
+                result.map(x => {
+                    let product = {};
+                    product.id = x._id || "";
+                    product.name = x.name || "";
+                    product.price = x.price || "";
+                    product.oldPrice = x.oldPrice || "";
+                    product.brand = x.brand || "";
+                    product.sku = x.sku || "";
+                    product.image = x.arrayImage[0].url || "";
+                    products.push(product);
+                });
             }
-        
-    } catch(error) {
+            else {
+                let message = res2.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
+                common.Toast(message, 'error');
+            }
+        }
+    } catch (error) {
         console.log(error);
     }
     return {
-        props: { brands: brands, categories: categories, products: products },
+        props: { brands: brands, categories: categories, products: products, query, total },
     }
 }
 

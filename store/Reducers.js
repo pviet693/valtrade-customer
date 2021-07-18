@@ -43,6 +43,11 @@ const reducers = (state, action) => {
                 ...state,
                 categories: action.payload
             };
+        case ACTIONS.SEARCH:
+            return {
+                ...state,
+                searchQuery: action.payload
+            };
         default:
             return state;
     }

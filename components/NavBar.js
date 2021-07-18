@@ -4,16 +4,23 @@ import { DataContext } from '../store/GlobalState';
 import { useRouter } from 'next/router';
 import classNames from 'classnames';
 import Cookie from 'js-cookie';
-import api from '../utils/backend-api.utils';
+import SearchIcon from '@material-ui/icons/Search';
 
 function NavBar() {
     const router = useRouter();
-    const [searchInput, setInput] = useState("");
     const isActive = (path) => path === router.pathname;
     const { state, dispatch } = useContext(DataContext);
-    const { auth, cart } = state;
+    const { auth, cart, searchQuery } = state;
 
     const logout = async () => {
+        if (window.gapi) {
+            const auth2 = gapi.auth2.getAuthInstance();
+            if (auth2) {
+                auth2.signOut().then(
+                    auth2.disconnect()
+                )
+            }
+        }
         Cookie.remove('access_token', { path: '/' });
         Cookie.remove();
         dispatch({
@@ -25,11 +32,9 @@ function NavBar() {
     const search = async (e) => {
         e.preventDefault();
 
-        // const res = await api.filter.search({ search: searchInput });
-        // console.log(res);
         router.push({
-            pathname: '/',
-            query: { search: searchInput },
+            pathname: '/product',
+            query: { search: searchQuery },
         })
     }
 
@@ -68,9 +73,8 @@ function NavBar() {
                     <div className="navbar-search-box">
                         <form onSubmit={search}>
                             <div className="search-box">
-                                <input className="search-box-input" placeholder="Tìm kiếm..." onChange={(e) => setInput(e.target.value)} value={searchInput} />
-                                <button className="search-box-button" type="submit"><i className="fa fa-search" aria-hidden></i></button>
-
+                                <input className="search-box-input" placeholder="Tìm kiếm..." onChange={(e) => dispatch({ type: 'SEARCH', payload: e.target.value })} value={searchQuery} />
+                                <button className="search-box-button" type="submit"><SearchIcon /></button>
                             </div>
                         </form>
                         <div className="search-suggestion">

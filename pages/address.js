@@ -519,37 +519,46 @@ export async function getServerSideProps(ctx) {
     const cookies = ctx.req.headers.cookie;
     token = cookies ? cookie.parse(cookies).access_token : "";
 
-    try {
-        const getProvince = await api.ghn.getProvince();
-        provinces = getProvince.data.data;
+    if (token) {
+        try {
+            const getProvince = await api.ghn.getProvince();
+            provinces = getProvince.data.data;
 
-        const getListAddress = await api.address.getListAddress(token);
-        if (getListAddress.data.code === 200) {
-            getListAddress.data.result.forEach(element => {
-                let address = {
-                    id: "",
-                    name: "",
-                    phone: "",
-                    address: {},
-                    isDefault: false
-                }
-                address.id = element._id || "";
-                address.name = element.name || "";
-                address.phone = element.phone || "";
-                address.address = element.address || {};
-                address.isDefault = element.isDefault;
+            const getListAddress = await api.address.getListAddress(token);
+            if (getListAddress.data.code === 200) {
+                getListAddress.data.result.forEach(element => {
+                    let address = {
+                        id: "",
+                        name: "",
+                        phone: "",
+                        address: {},
+                        isDefault: false
+                    }
+                    address.id = element._id || "";
+                    address.name = element.name || "";
+                    address.phone = element.phone || "";
+                    address.address = element.address || {};
+                    address.isDefault = element.isDefault;
 
-                listAddress.push(address);
-            });
+                    listAddress.push(address);
+                });
+            }
+        } catch (error) {
+            console.log(error);
         }
-    } catch (error) {
-        console.log(error);
-    }
 
-    return {
-        props: {
-            provinces,
-            listAddress
+        return {
+            props: {
+                provinces,
+                listAddress
+            }
+        }
+    } else {
+        return {
+            redirect: {
+                destination: '/signin',
+                permanent: false,
+            },
         }
     }
 }

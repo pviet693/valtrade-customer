@@ -10,6 +10,7 @@ import AuctionCard from "../components/AuctionCard";
 import Category from "../components/Category";
 import cookie from "cookie";
 import Router from 'next/router';
+import { Carousel } from 'primereact/carousel';
 
 const Home = ({ brands, categories, products }) => {
     const size = 8;
@@ -19,6 +20,10 @@ const Home = ({ brands, categories, products }) => {
     }
     const brand = brands.map((x,index) => 
         <Brand key={index.toString()} name={x.name} image={x.image} />
+    );
+
+    const brandTemplate = (brand) => (
+        <Brand name={brand.name} image={brand.image} />
     );
 
     const product = products.slice(0, size).map((x, index) =>
@@ -76,9 +81,13 @@ const Home = ({ brands, categories, products }) => {
                                     Thương hiệu sản phẩm
                                 </div>
                             </div>
-                            <Slider {...settings}>
-                                {brand}
-                            </Slider>
+                            <Carousel
+                                value={brands}
+                                itemTemplate={brandTemplate}
+                                numVisible={4}
+                                numScroll={2}
+                                autoplayInterval={3000}
+                            />
                         </div>
                         <div className="content-category">
                             <div className="category-header">
@@ -171,7 +180,7 @@ export async function getServerSideProps(ctx) {
                 common.Toast(message, 'error');
             }
         }
-        // call api list category
+        // // call api list category
         const res1 = await api.buyer.getListCategory();
         if (res1.status === 200) {
             if (res1.data.code === 200) {
@@ -191,8 +200,12 @@ export async function getServerSideProps(ctx) {
                 common.Toast(message, 'error');
             }
         }
-        // call api list product
-        const res2 = await api.buyer.getListProduct();
+        // // call api list product
+        let params = {
+            page: 0,
+            rows: 8
+        };
+        const res2 = await api.buyer.getListProduct(params);
         if (res2.status === 200) {
             if (res2.data.code === 200) {
                 res2.data.result.map(x => {

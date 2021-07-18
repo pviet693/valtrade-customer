@@ -1,4 +1,4 @@
-const baseUrl = "http://3.142.207.62:5000";
+export const baseUrl = "https://valtrade-api.tech";
 
 const url = {
     buyer: {
@@ -34,18 +34,22 @@ const url = {
         deleteCart: () => `${baseUrl}/api/cart/removeItem/:productId`,
     },
     filter: {
-        search: () => `${baseUrl}/api/product/get`,
+        search: () => `${baseUrl}/api/product/search`,
     },
     ghn: {
         getProvince: () => "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province",
         getWard: () => "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward",
-        getDistrict: () => "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district"
+        getDistrict: () => "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district",
+        calculateShippingFee: () => "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee"
     },
     address: {
         getListAddress: () => `${baseUrl}/api/buyer/getListAddress`,
         postCreate: () => `${baseUrl}/api/buyer/createAddress`,
         delete: () => `${baseUrl}/api/buyer/deleteAddress/:id`,
         update: () => `${baseUrl}/api/buyer/updateAddress`,
+    },
+    order: {
+        createOrder: () => `${baseUrl}/api/order/createOrder`,
     }
 }
 

@@ -79,8 +79,38 @@ const api = {
         getListCategory: () => {
             return axios.get(url.buyer.getListCategory());
         },
-        getListProduct: () => {
-            return axios.get(url.buyer.getListProduct());
+        getListProduct: (params) => {
+            let param = {};
+            let queryPrice = "";
+            param.page = params.page + 1;
+            param.perPage = params.rows;
+            if (params.search) param.search = params.search;
+            if (params.categoryId) param.categoryId = params.categoryId;
+            if (params.brand) param.brand = params.brand;
+            if (params.keysFrom && params.keysTo) {
+                queryPrice = `&keys=${params.keysFrom}&keys=${params.keysTo}`;
+            }
+            if (params.activeItem) {
+                if (params.activeItem === 1) {
+                    param.order = 1;
+                    param.sortBy = "price";
+                }
+                if (params.activeItem === 2) {
+                    param.order = -1;
+                    param.sortBy = "price";
+                }
+                if (params.activeItem === 3) {
+                    param.order = 1;
+                    param.sortBy = "name";
+                }
+                if (params.activeItem === 4) {
+                    param.order = -1;
+                    param.sortBy = "name";
+                }
+            }
+
+            const query = new URLSearchParams(param).toString();
+            return axios.get(url.buyer.getListProduct() + `?${query}`);
         },
         getDetailProduct: (id) => {
             return axios.get(url.buyer.getDetailProduct().replace(':id', id));
@@ -125,7 +155,7 @@ const api = {
                 return axios.get(url.cart.getCart(), config);
             }
         },
-        deleteCart: (id) => {
+        deleteCart: (body) => {
             if (isEnable()) {
                 // return axios.delete(url.cart.deleteCart(), {
                 //     headers: {
@@ -138,19 +168,16 @@ const api = {
                 //     }
                 // });
                 return axios.delete(url.cart.deleteCart().replace(':productId', id), config);
+                return axios.delete(url.cart.deleteCart(), {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    data: body
+                });
             }
         },
-    },
-    filter: {
-        search: (params) => {
-            const newConfig = {
-                ...config,
-                params: {
-                    params
-                }
-            }
-            return axios.get(url.filter.search(), newConfig);
-        }
     },
     ghn: {
         getProvince: () => {
@@ -186,6 +213,16 @@ const api = {
             }
             return axios.get(url.ghn.getWard(), newConfig);
         },
+        calculateShippingFee: (params) => {
+            const newConfig = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': `${common.tokenGHN}`,
+                    ShopId: common.ghnShopId
+                },
+            }
+            return axios.post(url.ghn.calculateShippingFee(), params, newConfig);
+        }
     },
     address: {
         createAddress: (body) => {
@@ -207,6 +244,13 @@ const api = {
         update: (body) => {
             if (isEnable()) {
                 return axios.put(url.address.update(), body, config);
+            }
+        }
+    },
+    order: {
+        createOrder: (body) => {
+            if (isEnable()) {
+                return axios.post(url.order.createOrder(), body, config);
             }
         }
     }
