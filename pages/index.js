@@ -32,10 +32,6 @@ const Home = ({ brands, categories, products, auctions }) => {
         return hours + ':' + minutes + ':' + seconds;
     }
 
-    const filterCategory = async (categoryId) => {
-        const productCategory = await api.buyer.getListProductFilter(categoryId);
-    }
-
     const brandTemplate = (brand) => (
         <Brand name={brand.name} image={brand.image} imageId={brand.imageId} onClick={() => filterBrand(brand.id)} />
     );
