@@ -2,83 +2,162 @@ import Link from 'next/link';
 import Head from 'next/head';
 import * as common from './../utils/common';
 import api from './../utils/backend-api.utils';
+import { useRouter } from 'next/router';
 import { Checkbox } from 'primereact/checkbox';
 import { TabMenu } from 'primereact/tabmenu';
 import { Paginator } from 'primereact/paginator';
 import { useState } from 'react';
-import AuctionCard from '../components/AuctionCard';
 import Router from 'next/router';
+import { useEffect, useContext } from 'react';
+import { DataContext } from '../store/GlobalState';
+import AuctionCard from "../components/AuctionCard";
 
-const Auction = ({ brands, categories, auctions }) => {
+const Auction = ({ brands, categories, products, query, total }) => {
     const items = [
         { label: 'SẢN PHẨM MỚI', icon: 'pi pi-fw pi-home' },
-        { label: 'GIÁ CAO', icon: 'pi pi-arrow-up' },
-        { label: 'GIÁ THẤP', icon: 'pi pi-arrow-down' },
+        { label: 'GIÁ THẤP', icon: 'pi pi-arrow-up' },
+        { label: 'GIÁ CAO', icon: 'pi pi-arrow-down' },
         { label: 'TÊN (A - Z)', icon: 'pi pi-arrow-up' },
         { label: 'TÊN (Z - A)', icon: 'pi pi-arrow-down' }
     ];
-    const [activeItem, setActiveItem] = useState({ label: 'GIÁ CAO', icon: 'pi pi-arrow-up' });
-    const [first, setFirst] = useState(0);
-    const [rows, setRows] = useState(10);
+    const router = useRouter();
+    const [listCountDown, setListCountDown] = useState({});
+    const [listCountUser, setListCountUser] = useState({});
+    const [listPrice, setListPrice] = useState({});
+    const { state, dispatch, toast, socket } = useContext(DataContext);
+    const [listProduct, setListProduct] = useState(products);
+    const [totalRecord, setTotalRecord] = useState(total);
+    const [count, setCount] = useState(0);
+    const [filter, setFilter] = useState({
+        ...query,
+        page: 0,
+        first: 0,
+        rows: 12,
+        categoryId: "",
+        brand: "",
+        keysOption: 0,
+        activeItem: 0
+    });
+
+    function seconds2Time(number) {
+        let hours = Math.floor(number / 3600);
+        let minutes = Math.floor((number - (hours * 3600)) / 60);
+        let seconds = number - (hours * 3600) - (minutes * 60);
+
+        if (hours < 10) { hours = "0" + hours; }
+        if (minutes < 10) { minutes = "0" + minutes; }
+        if (seconds < 10) { seconds = "0" + seconds; }
+        return hours + ':' + minutes + ':' + seconds;
+    }
 
     const onPageChange = (event) => {
-        setFirst(event.first);
-        setRows(event.rows);
+        setFilter((prevStates) => ({
+            ...prevStates,
+            ...event
+        }));
     }
 
     const onChangeTabMenu = (e) => {
-        setActiveItem({ ...e.value });
+        setFilter((prevStates) => ({
+            ...prevStates,
+            activeItem: e.index
+        }));
+    }
+
+    useEffect(() => {
+        if (count) {
+            filterListProduct();
+        }
+        let newCount = count;
+        newCount += 1;
+        setCount(newCount);
+    }, [filter]);
+
+    const filterListProduct = async () => {
+        const res = await api.auction.getList(filter);
+        let productList = [];
+        if (res.status === 200) {
+            if (res.data.code === 200) {
+                const result = res.data.result;
+                result.map(x => {
+                    let product = {};
+                    product.id = x._id || "";
+                    product.name = x.name || "";
+                    product.price = x.price || "";
+                    product.oldPrice = x.oldPrice || "";
+                    product.brand = x.brand || "";
+                    product.sku = x.sku || "";
+                    product.image = x.arrayImage[0].url || "";
+                    product.imageId = x.arrayImage[0].id || "";
+                    productList.push(product);
+                });
+                setTotalRecord(res.data.total);
+                setListProduct(productList);
+            }
+            else {
+                let message = res2.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
+                common.ToastPrime('Lỗi', message, 'error', toast);
+            }
+        }
     }
 
     const CategoryCard = (props) => {
-        const { name, image } = props;
+        const { id, name, image, onClick } = props;
+
         return (
-            <Link href="/auction">
-                <a className="filter-category-row">
-                    <div className="d-flex align-items-center justify-content-between w-100">
-                        <div className="d-flex align-items-center">
-                            <div className="img-box">
-                                <img src={image} alt="Image" />
-                            </div>
-                            <div className="category-name">
-                                {name}
-                            </div>
+            <a className="filter-category-row" onClick={() => onClick(id)}>
+                <div className="d-flex align-items-center justify-content-start w-100">
+                    <div className="d-flex align-items-center">
+                        <div className="img-box">
+                            <img src={image} alt="Image" />
                         </div>
-                        <i className="pi pi-angle-right" aria-hidden></i>
+                        <div className="category-name">
+                            {name}
+                        </div>
                     </div>
-                </a>
-            </Link>
+                    <i className="pi pi-angle-right" aria-hidden></i>
+                </div>
+            </a>
         )
     }
 
     const BrandCard = (props) => {
-        const { name, image } = props;
+        const { id, name, image, onClick } = props;
         return (
-            <Link href="/auction">
-                <a className="filter-category-row">
-                    <div className="d-flex align-items-center justify-content-between w-100">
-                        <div className="d-flex align-items-center">
-                            <div className="img-box">
-                                <img src={image} alt="Image" />
-                            </div>
-                            <div className="category-name">
-                                {name}
-                            </div>
+            <a className="filter-category-row" onClick={() => onClick(id)}>
+                <div className="d-flex align-items-center justify-content-between w-100">
+                    <div className="d-flex align-items-center">
+                        <div className="img-box">
+                            <img src={image} alt="Image" />
                         </div>
-                        <i className="pi pi-angle-right" aria-hidden></i>
+                        <div className="category-name">
+                            {name}
+                        </div>
                     </div>
-                </a>
-            </Link>
+                    <i className="pi pi-angle-right" aria-hidden></i>
+                </div>
+            </a >
         )
     }
 
     const FilterPriceCard = (props) => {
-        const { from, to, gt, lt, value } = props;
+        const { from, to, gt, lt, checked, onChange } = props;
+
+        if (!from && !to) {
+            return (
+                <div className="filter-price-row">
+                    <Checkbox onChange={onChange} checked={checked} />
+                    <div className="price-value">
+                        Tất cả
+                    </div>
+                </div>
+            )
+        }
 
         if (gt) {
             return (
                 <div className="filter-price-row">
-                    <Checkbox onChange={(e) => { }} checked={true} value={value}></Checkbox>
+                    <Checkbox onChange={onChange} checked={checked} />
                     <div className="price-value">
                         Trên {from}
                     </div>
@@ -87,7 +166,7 @@ const Auction = ({ brands, categories, auctions }) => {
         } else if (lt) {
             return (
                 <div className="filter-price-row">
-                    <Checkbox onChange={(e) => { }} checked={true} value={value}></Checkbox>
+                    <Checkbox onChange={onChange} checked={checked} />
                     <div className="price-value">
                         Dưới {from}
                     </div>
@@ -96,7 +175,7 @@ const Auction = ({ brands, categories, auctions }) => {
         } else {
             return (
                 <div className="filter-price-row">
-                    <Checkbox onChange={(e) => { }} checked={true} value={value}></Checkbox>
+                    <Checkbox onChange={onChange} checked={checked} />
                     <div className="price-value">
                         Từ {from} đến {to}
                     </div>
@@ -106,43 +185,78 @@ const Auction = ({ brands, categories, auctions }) => {
     }
 
     const filterCategory = (categoryId) => {
-
+        let queryTemp = query;
+        queryTemp = { ...queryTemp, categoryId: categoryId }
+        setFilter(queryTemp);
     }
 
-    const size = 10;
+    const filterBrand = (brandId) => {
+        let queryTemp = query;
+        queryTemp = { ...queryTemp, brand: brandId }
+        setFilter(queryTemp);
+    }
 
     const brand = brands.map((x, index) =>
-        <BrandCard key={index.toString()} name={x.name} image={x.image} />
+        <BrandCard key={x.id} name={x.name} image={x.image} id={x.id} onClick={filterBrand} />
     );
 
-    const auction = auctions.map((x, index) =>
-        <div className="col-md-4 d-flex align-items-center flex-column mb-4">
-            <AuctionCard key={index.toString()} name={x.name} image={x.image} time={10} winner={'abc'}
-                participantsNumber={10} currentPrice={x.price} onClick={() => navigateToDetailAuction(x)} />
+    const product = listProduct.map((x, index) =>
+        <div key={x.id} className="col-md-4 d-flex align-items-center flex-column mb-4">
+            <AuctionCard name={x.name} image={x.image} time={seconds2Time(listCountDown[x.id] || 0)} winner={listPrice[x.id] ? listPrice[x.id].userName : ""} imageId={x.imageId}
+                participantsNumber={listCountUser[x.id] || 0} currentPrice={listPrice[x.id] ? listPrice[x.id].price : x.price} onClick={() => navigateToDetail(x)} />
         </div>
     );
 
     const category = categories.map((x, index) => (
-        <CategoryCard key={index.toString()} id={x.id} name={x.name} image={x.image} onClick={filterCategory} />
+        <CategoryCard key={x.id} id={x.id} name={x.name} image={x.image} onClick={filterCategory} />
     ));
 
-    const navigateToDetailAuction = (auction) => {
+    const navigateToDetail = (product) => {
         Router.push({
             pathname: '/auction-detail',
-            query: { id: auction.id },
+            query: { id: product.id },
         })
     }
+
+    const onChangeFilterPrice = (option) => {
+        setFilter((prevStates) => ({
+            ...prevStates,
+            keysOption: option
+        }))
+    }
+
+    useEffect(() => {
+        if (socket) {
+            socket.on("countListUser", (res) => {
+                console.log(res, "countListUser");
+                setListCountUser(res);
+            });
+            socket.on("listPrice", (res) => {
+                console.log(res, "listPrice");
+                setListPrice(res);
+            });
+            socket.on("listCountDown", (res) => {
+                setListCountDown(res);
+                console.log(res);
+            });
+            return () => {
+                socket.off('countListUser');
+                socket.off('listPrice');
+                socket.off('listCountDown');
+            }
+        }
+    }, [socket]);
 
     return (
         <>
             <Head>
                 <title>
-                    Danh sách đấu giá
+                    Danh sách sản phẩm đấu giá
                 </title>
             </Head>
-            <div className="auction">
+            <div className="product">
                 <div className="container">
-                    <div className="auction-content">
+                    <div className="product-content">
                         <div className="content-filter">
                             <div className="filter-row">
                                 <div className="filter-row-title">
@@ -157,10 +271,11 @@ const Auction = ({ brands, categories, auctions }) => {
                                     Giá tiền
                                 </div>
                                 <div className="filter-row-content">
-                                    <FilterPriceCard from="1000000" to="" gt={false} lt={true} value="1" />
-                                    <FilterPriceCard from="1000000" to="5000000" gt={false} lt={false} value="2" />
-                                    <FilterPriceCard from="5000000" to="15000000" gt={false} lt={false} value="3" />
-                                    <FilterPriceCard from="15000000" to="" gt={true} lt={false} value="4" />
+                                    <FilterPriceCard from="" to="" gt={true} lt={false} onChange={() => onChangeFilterPrice(0)} checked={filter.keysOption === 0} />
+                                    <FilterPriceCard from="1000000" to="" gt={false} lt={true} onChange={() => onChangeFilterPrice(1)} checked={filter.keysOption === 1} />
+                                    <FilterPriceCard from="1000000" to="5000000" gt={false} lt={false} onChange={() => onChangeFilterPrice(2)} checked={filter.keysOption === 2} />
+                                    <FilterPriceCard from="5000000" to="15000000" gt={false} lt={false} onChange={() => onChangeFilterPrice(3)} checked={filter.keysOption === 3} />
+                                    <FilterPriceCard from="15000000" to="" gt={true} lt={false} onChange={() => onChangeFilterPrice(4)} checked={filter.keysOption === 4} />
                                 </div>
                             </div>
                             <div className="filter-row">
@@ -175,31 +290,18 @@ const Auction = ({ brands, categories, auctions }) => {
                         <div className="content-list">
                             <div className="list-order">
                                 <div>Sắp xếp: </div>
-                                <TabMenu model={items} activeItem={activeItem} style={{ width: '100%' }} />
+                                <TabMenu model={items} activeIndex={filter.activeItem} onTabChange={onChangeTabMenu} style={{ width: '100%' }} />
                             </div>
                             <div className="list-container">
                                 <div className="row justify-content-start">
-                                    {/* {auction} */}
-                                    <div className="col-md-4 d-flex align-items-center flex-column mb-4">
-                                        <AuctionCard name={'Adidas'} image={'static/adidas-3-la.jpg'} time={10} winner={'abc'}
-                                            participantsNumber={10} currentPrice={1000000} onClick={() => navigateToDetailAuction({ id: 123 })} />
-                                    </div>
-                                    <div className="col-md-4 d-flex align-items-center flex-column mb-4">
-                                        <AuctionCard name={'Adidas'} image={'static/adidas-3-la.jpg'} time={10} winner={'abc'}
-                                            participantsNumber={10} currentPrice={1000000} onClick={() => navigateToDetailAuction({ id: 123 })} />
-                                    </div>
-                                    <div className="col-md-4 d-flex align-items-center flex-column mb-4">
-                                        <AuctionCard name={'Adidas'} image={'static/adidas-3-la.jpg'} time={10} winner={'abc'}
-                                            participantsNumber={10} currentPrice={1000000} onClick={() => navigateToDetailAuction({ id: 123 })} />
-                                    </div>
-                                    <div className="col-md-4 d-flex align-items-center flex-column mb-4">
-                                        <AuctionCard name={'Adidas'} image={'static/adidas-3-la.jpg'} time={10} winner={'abc'}
-                                            participantsNumber={10} currentPrice={1000000} onClick={() => navigateToDetailAuction({ id: 123 })} />
-                                    </div>
+                                    {product}
                                 </div>
                             </div>
 
-                            <Paginator first={first} rows={rows} totalRecords={120} onPageChange={onPageChange}></Paginator>
+                            {
+                                totalRecord > 12 &&
+                                <Paginator first={filter.first} rows={filter.rows} totalRecords={totalRecord} onPageChange={onPageChange}></Paginator>
+                            }
                         </div>
                     </div>
                 </div>
@@ -211,7 +313,9 @@ const Auction = ({ brands, categories, auctions }) => {
 export async function getServerSideProps(ctx) {
     let brands = [];
     let categories = [];
-    let auctions = [];
+    let products = [];
+    let total = 0;
+    const query = ctx.query;
 
     try {
         // call api list brand
@@ -229,6 +333,7 @@ export async function getServerSideProps(ctx) {
                     brand.name = x.name || "";
                     brand.description = x.description || "";
                     brand.image = x.imageUrl.url || "";
+                    brand.imageId = x.imageUrl.id || "";
                     brands.push(brand);
                 })
             } else {
@@ -236,7 +341,6 @@ export async function getServerSideProps(ctx) {
                 common.Toast(message, 'error');
             }
         }
-
         // call api list category
         const res1 = await api.buyer.getListCategory();
         if (res1.status === 200) {
@@ -250,6 +354,7 @@ export async function getServerSideProps(ctx) {
                     category.id = x.childId || "";
                     category.name = x.childName || "";
                     category.image = x.imageUrl.url || "";
+                    category.imageId = x.imageUrl.id || "";
                     categories.push(category);
                 });
             } else {
@@ -257,14 +362,50 @@ export async function getServerSideProps(ctx) {
                 common.Toast(message, 'error');
             }
         }
-
-        // call api list auction
-
+        // call api list product
+        let params = {
+            ...query,
+            page: 0,
+            rows: 12
+        }
+        const res2 = await api.auction.getList(params);
+        if (res2.status === 200) {
+            if (res2.data.code === 200) {
+                total = res2.data.total;
+                const result = res2.data.result;
+                result.map(x => {
+                    let product = {
+                        id: "",
+                        name: "",
+                        price: "",
+                        brand: "",
+                        sku: "",
+                        oldPrice: "",
+                        image: "",
+                        countProduct: 1
+                    };
+                    product.id = x._id || "";
+                    product.name = x.name || "";
+                    product.price = x.price || "";
+                    product.oldPrice = x.oldPrice || "";
+                    product.brand = x.brand || "";
+                    product.sku = x.sku || "";
+                    product.imageId = x.arrayImage[0].id || "";
+                    product.image = x.arrayImage[0].url || "";
+                    product.countProduct = x.countProduct || 1;
+                    products.push(product);
+                });
+            }
+            else {
+                let message = res2.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
+                common.Toast(message, 'error');
+            }
+        }
     } catch (error) {
-        console.log(error);
+        console.log(error.message);
     }
     return {
-        props: { brands: brands, categories: categories, auctions: auctions },
+        props: { brands: brands, categories: categories, products: products, query, total },
     }
 }
 

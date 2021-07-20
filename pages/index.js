@@ -15,6 +15,8 @@ import { DataContext } from "../store/GlobalState";
 const Home = ({ brands, categories, products, auctions }) => {
     const { state, dispatch, toast, swal, socket } = useContext(DataContext);
     const [listCountDown, setListCountDown] = useState({});
+    const [listCountUser, setListCountUser] = useState({});
+    const [listPrice, setListPrice] = useState({});
     const { auth } = state;
 
     const size = 8;
@@ -47,23 +49,14 @@ const Home = ({ brands, categories, products, auctions }) => {
 
     const auction = auctions.map((x, index) =>
         <div key={x.id} className="col-md-3 d-flex align-items-center flex-column mb-4">
-            <AuctionCard name={x.name} image={x.image} time={seconds2Time(listCountDown[x.id] || 0)} winner={'abc'} imageId={x.imageId}
-                participantsNumber={10} currentPrice={x.price} onClick={() => navigateToDetailAuction(x)} />
+            <AuctionCard name={x.name} image={x.image} time={seconds2Time(listCountDown[x.id] || 0)} winner={listPrice[x.id] ? listPrice[x.id].userName : ""} imageId={x.imageId}
+                participantsNumber={listCountUser[x.id] || 0} currentPrice={listPrice[x.id] ? listPrice[x.id].price : x.price} onClick={() => navigateToDetailAuction(x)} />
         </div>
     );
 
     const category = categories.slice(0, size).map((x, index) => (
         <Category key={index.toString()} name={x.name} image={x.image} imageId={x.imageId} />
     ));
-
-    const settings = {
-        className: "text-center",
-        centerMode: true,
-        infinite: true,
-        centerPadding: "0",
-        slidesToShow: 5,
-        speed: 0
-    };
 
     const navigateToDetailProduct = (product) => {
         Router.push({
@@ -83,13 +76,19 @@ const Home = ({ brands, categories, products, auctions }) => {
         if (socket) {
             socket.on("countListUser", (res) => {
                 console.log(res, "countListUser");
+                setListCountUser(res);
+            });
+            socket.on("listPrice", (res) => {
+                console.log(res, "listPrice");
+                setListPrice(res);
             });
             socket.on("listCountDown", (res) => {
-                console.log(listCountDown);
                 setListCountDown(res);
+                console.log(res);
             });
             return () => {
-                socket.off('listCountUser');
+                socket.off('countListUser');
+                socket.off('listPrice');
                 socket.off('listCountDown');
             }
         }
@@ -306,7 +305,7 @@ export async function getServerSideProps(ctx) {
     }
 
     catch (error) {
-        console.log(error);
+        console.log(error.message);
     }
     return {
         props: { brands: brands, categories: categories, products: products, isSignin: isSignin, auctions }
