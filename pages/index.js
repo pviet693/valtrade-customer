@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Head from 'next/head';
-import Slider from "react-slick";
 import Link from 'next/link';
 import * as common from './../utils/common';
 import api from './../utils/backend-api.utils';
@@ -11,9 +10,26 @@ import Category from "../components/Category";
 import cookie from "cookie";
 import Router from 'next/router';
 import { Carousel } from 'primereact/carousel';
+import { DataContext } from "../store/GlobalState";
 
-const Home = ({ brands, categories, products }) => {
+const Home = ({ brands, categories, products, auctions }) => {
+    const { state, dispatch, toast, swal, socket } = useContext(DataContext);
+    const [listCountDown, setListCountDown] = useState({});
+    const { auth } = state;
+
     const size = 8;
+
+    function seconds2Time(number) {
+        let hours = Math.floor(number / 3600);
+        let minutes = Math.floor((number - (hours * 3600)) / 60);
+        let seconds = number - (hours * 3600) - (minutes * 60);
+
+        if (hours < 10) { hours = "0" + hours; }
+        if (minutes < 10) { minutes = "0" + minutes; }
+        if (seconds < 10) { seconds = "0" + seconds; }
+        return hours + ':' + minutes + ':' + seconds;
+    }
+
     const filterCategory = async (categoryId) => {
         const productCategory = await api.buyer.getListProductFilter(categoryId);
         
@@ -23,25 +39,25 @@ const Home = ({ brands, categories, products }) => {
     );
 
     const brandTemplate = (brand) => (
-        <Brand name={brand.name} image={brand.image} />
+        <Brand name={brand.name} image={brand.image} imageId={brand.imageId} />
     );
 
     const product = products.slice(0, size).map((x, index) =>
         <div key={x.id} className="col-md-3 d-flex align-items-center flex-column mb-4">
-            <ProductCard id={x.id} name={x.name} image={x.image} countProduct={x.countProduct}
+            <ProductCard id={x.id} name={x.name} image={x.image} imageId={x.imageId} countProduct={x.countProduct}
                 price={x.price} brand={x.brand.name} sku={x.sku} oldPrice={x.oldPrice} onClick={() => navigateToDetailProduct(x)} />
         </div>
     );
 
-    const auction = products.slice(0, size).map((x, index) =>
+    const auction = auctions.map((x, index) =>
         <div key={x.id} className="col-md-3 d-flex align-items-center flex-column mb-4">
-            <AuctionCard name={x.name} image={x.image} time={10} winner={'abc'}
+            <AuctionCard name={x.name} image={x.image} time={seconds2Time(listCountDown[x.id] || 0)} winner={'abc'} imageId={x.imageId}
                 participantsNumber={10} currentPrice={x.price} onClick={() => navigateToDetailAuction(x)} />
         </div>
     );
 
     const category = categories.slice(0, size).map((x, index) => (
-        <Category key={index.toString()} name={x.name} image={x.image} />
+        <Category key={index.toString()} name={x.name} image={x.image} imageId={x.imageId} />
     ));
 
     const settings = {
@@ -66,6 +82,22 @@ const Home = ({ brands, categories, products }) => {
             query: { id: auction.id },
         })
     }
+
+    useEffect(() => {
+        if (socket) {
+            socket.on("countListUser", (res) => {
+                console.log(res, "countListUser");
+            });
+            socket.on("listCountDown", (res) => {
+                console.log(listCountDown);
+                setListCountDown(res);
+            });
+            return () => {
+                socket.off('listCountUser');
+                socket.off('listCountDown');
+            }
+        }
+    }, [socket]);
 
     return (
         <>
@@ -148,6 +180,7 @@ export async function getServerSideProps(ctx) {
     let brands = [];
     let categories = [];
     let products = [];
+    let auctions = [];
     let isSignin = false;
 
     // check token
@@ -173,6 +206,7 @@ export async function getServerSideProps(ctx) {
                     brand.name = x.name || "";
                     brand.description = x.description || "";
                     brand.image = x.imageUrl.url || "";
+                    brand.imageId = x.imageUrl.id || "";
                     brands.push(brand);
                 })
             } else {
@@ -193,6 +227,7 @@ export async function getServerSideProps(ctx) {
                     category.id = x.childId || "";
                     category.name = x.childName || "";
                     category.image = x.imageUrl.url || "";
+                    category.imageId = x.imageUrl.id || "";
                     categories.push(category);
                 });
             } else {
@@ -225,9 +260,46 @@ export async function getServerSideProps(ctx) {
                     product.oldPrice = x.oldPrice || "";
                     product.brand = x.brand || "";
                     product.sku = x.sku || "";
+                    product.imageId = x.arrayImage[0].id || "";
                     product.image = x.arrayImage[0].url || "";
                     product.countProduct = x.countProduct || 1;
                     products.push(product);
+                });
+            }
+            else {
+                let message = res2.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
+                common.Toast(message, 'error');
+            }
+        }
+
+        let params2 = {
+            page: 0,
+            rows: 8
+        }
+        const resAuction = await api.auction.getList(params2);
+        if (resAuction.status === 200) {
+            if (resAuction.data.code === 200) {
+                resAuction.data.result.map(x => {
+                    let product = {
+                        id: "",
+                        name: "",
+                        price: "",
+                        brand: "",
+                        sku: "",
+                        oldPrice: "",
+                        image: "",
+                        countProduct: 1
+                    };
+                    product.id = x._id || "";
+                    product.name = x.name || "";
+                    product.price = x.price || "";
+                    product.oldPrice = x.oldPrice || "";
+                    product.brand = x.brand || "";
+                    product.sku = x.sku || "";
+                    product.imageId = x.arrayImage[0].id || "";
+                    product.image = x.arrayImage[0].url || "";
+                    product.countProduct = x.countProduct || 1;
+                    auctions.push(product);
                 });
             }
             else {
@@ -241,7 +313,7 @@ export async function getServerSideProps(ctx) {
         console.log(error);
     }
     return {
-        props: { brands: brands, categories: categories, products: products, isSignin: isSignin }
+        props: { brands: brands, categories: categories, products: products, isSignin: isSignin, auctions }
     }
 }
 

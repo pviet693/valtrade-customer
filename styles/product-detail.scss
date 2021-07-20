@@ -205,10 +205,19 @@
                 }
 
                 .detail-price {
-                    color: #FF0000;
+                    color: #DC4E41;
                     font-weight: 550;
                     font-size: 1.2rem;
                     margin-bottom: 1rem;
+                }
+
+                .detail-primary {
+                    font-size: 1.1rem;
+                    margin-bottom: 0.5rem;
+
+                    &:last-child {
+                        margin-bottom: 0;
+                    }
                 }
 
                 .detail-old-price {
@@ -224,9 +233,14 @@
                     font-weight: 600;
                 }
 
-                .detail-warranty-status {
+                .detail-warranty-active {
                     font-weight: 600;
                     color: #5CB85C;
+                }
+
+                .detail-warranty-expired {
+                    font-weight: 600;
+                    color: #DC4E41;
                 }
 
                 .detail-action {
@@ -267,6 +281,13 @@
             }
         }
 
+        .product-details-container {
+            background-color: #fff;
+            box-shadow: 0 1px 1px 0 rgb(0 0 0 / 5%);
+            padding: 20px;
+            margin-bottom: 10px;
+        }
+
         .comment-container {
             background-color: #fff;
             box-shadow: 0 1px 1px 0 rgb(0 0 0 / 5%);
@@ -291,6 +312,12 @@
                 }
 
                 .comment-row_content {
+                    width: 100%;
+
+                    .MuiRating-icon {
+                        display: block;
+                    }
+
                     .content_name {
                         font-weight: 500;
                         font-size: 1.1rem;
@@ -329,6 +356,56 @@
                             margin-bottom: 10px;
                             margin-right: 10px;
                         }
+                    }
+
+                    .btn--send-comment {
+                        color: #fff;
+                        background-color: #0795DF;
+                        padding: 5px 20px;
+                    }
+
+                    .dialog-box {
+                        &__body {
+                            position: relative;
+                            max-width: 500px;
+                            height: auto;
+                            padding: 5px;
+                            background-color: #fff;
+                            border-radius: 3px;
+                            border: 2px solid #0795DF;
+
+                            .tip {
+                                width: 0px;
+                                height: 0px;
+                                position: absolute;
+                                background: transparent;
+                                border: 10px solid #0795DF;
+                            }
+
+                            .tip-up {
+                                top: -22px;
+                                left: 6px;
+                                border-right-color: transparent;
+                                border-left-color: transparent;
+                                border-top-color: transparent;
+                            }
+
+                            .message {
+                                border-radius: 3px;
+                                font-family: Arial;
+                                font-size: 1em;
+                                line-height: 1.5;
+                                color: #797979;
+                            }
+                        }
+                    }
+
+                    .comment-time {
+                        display: flex;
+                        max-width: 500px;
+                        justify-content: flex-end;
+                        font-size: 0.9em;
+                        margin-bottom: 10px;
                     }
                 }
             }

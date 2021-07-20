@@ -39,7 +39,7 @@ export const CartItem = (props) => {
             <div className="cart-item__product">
                 <div className="cart-item__product-info">
                     <Checkbox inputId="123" checked={isChoose} onChange={() => selectCard(productId)} />
-                    <img src={productImage} alt="image" />
+                    <img alt="image-footer" src={productImage} />
                     <div className="name" title={productName}>{productName}</div>
                 </div>
                 <div className="cart-item__product-price">

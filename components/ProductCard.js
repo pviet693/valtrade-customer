@@ -3,11 +3,11 @@ import * as common from './../utils/common';
 import Button from '@material-ui/core/Button';
 import classNames from 'classnames';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { Toast } from 'primereact/toast';
 import { useContext, useRef, useState } from 'react';
 import { DataContext } from '../store/GlobalState';
+import { Image } from 'cloudinary-react';
 
-const ProductCard = ({ id, name, price, brand, sku, oldPrice, image, warrantyStatus, onClick, countProduct }) => {
+const ProductCard = ({ id, name, price, brand, sku, oldPrice, image, imageId, warrantyStatus, onClick, countProduct }) => {
     const [loading, setLoading] = useState(false);
     const { state, dispatch, toast } = useContext(DataContext);
     const { auth, cart } = state;
@@ -29,7 +29,8 @@ const ProductCard = ({ id, name, price, brand, sku, oldPrice, image, warrantySta
                             cartItems: [
                                 {
                                     inforProduct: sameProduct[0].productId,
-                                    quantity: sameProduct[0].quantity
+                                    quantity: sameProduct[0].quantity,
+                                    onProduct: "Product"
                                 }
                             ]
                         }
@@ -52,7 +53,8 @@ const ProductCard = ({ id, name, price, brand, sku, oldPrice, image, warrantySta
                         cartItems: [
                             {
                                 inforProduct: id,
-                                quantity: 1
+                                quantity: 1,
+                                onProduct: "Product"
                             }
                         ]
                     }
@@ -82,7 +84,8 @@ const ProductCard = ({ id, name, price, brand, sku, oldPrice, image, warrantySta
                     cartItems: [
                         {
                             inforProduct: id,
-                            quantity: 1
+                            quantity: 1,
+                            onProduct: "Product"
                         }
                     ]
                 }
@@ -113,11 +116,27 @@ const ProductCard = ({ id, name, price, brand, sku, oldPrice, image, warrantySta
         }
     }
 
+    const getVersionImage = (linkImage) => {
+        const arr = linkImage.split("/");
+        return arr[6].replace("v", "");
+    }
+
     return (
         <div className="product-card">
-            {/* <Toast ref={toast} /> */}
             <div className="img-product-box">
-                <img src={image} />
+                {/* <img alt={`image-product-${id}`} src={image} width="180px" height="180px"/> */}
+                <Image
+                    publicId={imageId}
+                    version={getVersionImage(image)}
+                    cloud_name="ktant"
+                    secure="true"
+                    alt="Image Product"
+                    height="180"
+                    width="180"
+                    crop="fill"
+                    loading="lazy"
+                >
+                </Image>
             </div>
             <div className="product-info">
                 <div className="product-name" title={name}>{name}</div>

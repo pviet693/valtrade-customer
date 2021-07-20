@@ -6,17 +6,19 @@ import * as common from './../utils/common';
 import api from '../utils/backend-api.utils';
 import { v4 as uuidv4 } from "uuid";
 import { Dropdown } from 'primereact/dropdown';
+import { RadioButton } from 'primereact/radiobutton';
 import dynamic from "next/dynamic";
-
 const Paypal = dynamic(() => import("../components/Paypal"), {
-  ssr: false,
-});
+    ssr: false,
+  });
+import PaypalBtn from '../components/Paypal';
 
-const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckout }) => {
-
+const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckout, user }) => {
+    // console.log(buyer);
     // console.log(groupCartBySeller);
-    // console.log(listAddress);
+    //console.log(listAddress);
     // console.log(productCheckouts);
+    const [editAddress, setEditAddress] = useState(false);
     const [deliveryAddresses, setDeliveryAddresses] = useState(listAddress);
     const [deliveryAddress, setDeliveryAddress] = useState(() => deliveryAddresses.find(address => address.isDefault === true));
     const [cartCheckouts, setCartCheckouts] = useState(groupCartBySeller);
@@ -24,45 +26,82 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
 
     const onChangeShippingMethod = async (event, id) => {
         const { value } = event;
-        let params = {
-            from_district_id: value.ghn.district.district_id,
-            service_id: null,
-            service_type_id: 2,
-            to_district_id: deliveryAddress.address.district.district_id,
-            to_ward_code: deliveryAddress.address.ward.ward_code,
-            height: Math.ceil(cartCheckouts[id].height),
-            length: Math.ceil(cartCheckouts[id].length),
-            weight: Math.ceil(cartCheckouts[id].weight),
-            width: Math.ceil(cartCheckouts[id].width),
-            insurance_fee: cartCheckouts[id].totalPrice,
-            coupon: null
-        }
+        const type = Object.keys(value)[0];
+        let body = {};
 
-        const res = await api.ghn.calculateShippingFee(params);
-        if (res.data.code === 200) {
-            const listCartCheckout = { ...cartCheckouts };
-            const checkoutTotal = { ...totalCheckout };
-            checkoutTotal.shippingFee = 0;
-            checkoutTotal.total = 0;
+        if (type === "ghn") {
+            body = {
+                from_district_id: value.ghn.district.district_id,
+                service_id: null,
+                service_type_id: 2,
+                to_district_id: deliveryAddress.address.district.district_id,
+                to_ward_code: deliveryAddress.address.ward.ward_code,
+                height: Math.ceil(cartCheckouts[id].height),
+                length: Math.ceil(cartCheckouts[id].length),
+                weight: Math.ceil(cartCheckouts[id].weight),
+                width: Math.ceil(cartCheckouts[id].width),
+                insurance_fee: cartCheckouts[id].totalPrice,
+                coupon: null
+            }
 
-            listCartCheckout[id].shippingMethod = value;
-            listCartCheckout[id].shippingFee = res.data.data.total;
+            const res = await api.ghn.calculateShippingFee(body);
+            if (res.data.code === 200) {
+                const listCartCheckout = { ...cartCheckouts };
+                const checkoutTotal = { ...totalCheckout };
+                checkoutTotal.shippingFee = 0;
+                checkoutTotal.total = 0;
 
-            Object.keys(listCartCheckout).forEach(id => {
-                checkoutTotal.shippingFee += listCartCheckout[id].shippingFee;
-                listCartCheckout[id].total = listCartCheckout[id].totalPrice + listCartCheckout[id].shippingFee;
-            });
-            checkoutTotal.total = checkoutTotal.shippingFee + checkoutTotal.totalPrice;
+                listCartCheckout[id].shippingMethod = value;
+                listCartCheckout[id].shippingFee = res.data.data.total;
 
-            setCartCheckouts(listCartCheckout);
-            setTotalCheckout(checkoutTotal);
+                Object.keys(listCartCheckout).forEach(id => {
+                    checkoutTotal.shippingFee += listCartCheckout[id].shippingFee;
+                    listCartCheckout[id].total = listCartCheckout[id].totalPrice + listCartCheckout[id].shippingFee;
+                });
+                checkoutTotal.total = checkoutTotal.shippingFee + checkoutTotal.totalPrice;
+
+                setCartCheckouts(listCartCheckout);
+                setTotalCheckout(checkoutTotal);
+            }
+        } else {
+            body = {
+                pick_province: value.ghtk.pick_province,
+                pick_district: value.ghtk.pick_district,
+                province: deliveryAddress.address.province.name,
+                district: deliveryAddress.address.district.name,
+                address: deliveryAddress.address.full_address,
+                weight: Math.ceil(cartCheckouts[id].weight),
+                value: cartCheckouts[id].totalPrice,
+                transport: "road",
+                deliver_option: "none"
+            }
+
+            const res = await api.ghtk.calculateShippingFee(body);
+            if (res.data.code === 200) {
+                const listCartCheckout = { ...cartCheckouts };
+                const checkoutTotal = { ...totalCheckout };
+                checkoutTotal.shippingFee = 0;
+                checkoutTotal.total = 0;
+
+                listCartCheckout[id].shippingMethod = value;
+                listCartCheckout[id].shippingFee = res.data.result.fee.fee;
+
+                Object.keys(listCartCheckout).forEach(id => {
+                    checkoutTotal.shippingFee += listCartCheckout[id].shippingFee;
+                    listCartCheckout[id].total = listCartCheckout[id].totalPrice + listCartCheckout[id].shippingFee;
+                });
+                checkoutTotal.total = checkoutTotal.shippingFee + checkoutTotal.totalPrice;
+
+                setCartCheckouts(listCartCheckout);
+                setTotalCheckout(checkoutTotal);
+            }
         }
     }
 
     const createOrder = async () => {
         const arrayOrder = [];
         console.log(deliveryAddress);
-        console.log(cartCheckouts)
+        console.log(cartCheckouts);
         Object.keys(cartCheckouts).forEach(id => {
             const { arrayCart } = cartCheckouts[id];
             let order = {
@@ -73,8 +112,10 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
                 total: cartCheckouts[id].total,
                 shipType: cartCheckouts[id].shippingMethod,
                 payment: "local",
-                contact: cartCheckouts[id].seller.phone,
-                sellerId: cartCheckouts[id].seller._id
+                sellerId: cartCheckouts[id].seller._id,
+                nameRecei: "",
+                contact: "",
+                note: ""
             }
 
             arrayCart.forEach(cart => {
@@ -87,41 +128,61 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
             arrayOrder.push(order);
         })
 
-        const res = await api.order.createOrder({ arrayOrder });
-        if (res.data.code === 200) {
-            let body = { listProductId: productCheckouts };
-            const res = await api.cart.deleteCart(body);
-            if (res.status === 200) {
-                swal.close();
-                if (res.data.code === 200) {
-                    common.ToastPrime('Thành công', 'Xóa giỏ hàng thành công.', 'success', toast);
-                } else {
-                    let message = res.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
-                    common.ToastPrime('Lỗi', message, 'error', toast);
-                }
-            }
-        }
+        console.log(arrayOrder);
+
+        // const res = await api.order.createOrder({ arrayOrder });
+        // if (res.data.code === 200) {
+        //     let body = { listProductId: productCheckouts };
+        //     const res = await api.cart.deleteCart(body);
+        //     if (res.status === 200) {
+        //         swal.close();
+        //         if (res.data.code === 200) {
+        //             common.ToastPrime('Thành công', 'Xóa giỏ hàng thành công.', 'success', toast);
+        //         } else {
+        //             let message = res.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
+        //             common.ToastPrime('Lỗi', message, 'error', toast);
+        //         }
+        //     }
+        // }
     }
+
+    const onChangeAddress = (id) => {
+        setDeliveryAddress(() => deliveryAddresses.find(address => address.id === id));
+    }
+
+    useEffect(() => {
+        console.log(deliveryAddress);
+    }, [deliveryAddress]);
 
     const transactionSuccess = async () => {
         try{
-            // let transaction = {
-            //     cartDetail: 
-            // }
-            const res = await api.buyer.successBuy(transaction);
-
+            let transaction = {
+                onUser: user.id,
+                onModel: 'Buyer',
+                typePay: 'paypal',
+                onPro: 'Product',
+                inforProduct: '60ef1ca8a5ddd802f1dfa07a',
+                isPay: True,
+                balance: 111111
+            }
+            const res = await api.order.createOrder(transaction);
+            if (res.data.code === 200) {
+                console.log("hello");
+            }
+    
         }catch(err){
             console.log(err);
         }
     };
-
+    
     const transactionError = () => {
         console.log('Paypal error');
     }
-
+    
     const transactionCanceled = () => {
         console.log('Transaction Canceled');
     }
+    let currency_total = Math.round(totalCheckout.total/23000);
 
     return (
         <>
@@ -137,20 +198,40 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
                             <div className="title">
                                 Địa chỉ nhận hàng
                             </div>
-                            <div className="address-delivery__content">
-                                <div className="address-delivery__content-info">
-                                    <div className="address-delivery__content-row">
-                                        Tên người nhận: <span>Phạm Văn Việt</span>
+                            {
+                                !editAddress && (
+                                    <div className="address-delivery__content">
+                                        <div className="address-delivery__content-info">
+                                            <div className="address-delivery__content-row">
+                                                Tên người nhận: <span>{deliveryAddress.name}</span>
+                                            </div>
+                                            <div className="address-delivery__content-row">
+                                                Số điện thoại: <span>{deliveryAddress.phone}</span>
+                                            </div>
+                                            <div className="address-delivery__content-row">
+                                                Địa chỉ: <span>{deliveryAddress.address.full_address}</span>
+                                            </div>
+                                        </div>
+                                        <button className="btn btn-change-address" onClick={() => setEditAddress(true)}>Thay đổi địa chỉ</button>
                                     </div>
-                                    <div className="address-delivery__content-row">
-                                        Số điện thoại: <span>{common.formatPhone('0968250823')}</span>
-                                    </div>
-                                    <div className="address-delivery__content-row">
-                                        Địa chỉ: <span>KTX khu A, phường Linh Trung, quận Thủ Đức, TP.HCM</span>
-                                    </div>
-                                </div>
-                                <button className="btn btn-change-address"><EditIcon /></button>
-                            </div>
+                                )
+                            }
+                            {
+                                editAddress && (
+                                    deliveryAddresses.map((address) => {
+                                        return (
+                                            <div key={address.id} className="address-card">
+                                                <RadioButton inputId={address.id} name="category" value={deliveryAddress} onChange={() => onChangeAddress(address.id)} checked={deliveryAddress.id === address.id} />
+                                                <div className="address-card__info" htmlFor={address.id}>
+                                                    <div>{`Tên người nhận: ${address.name}`}</div>
+                                                    <div>{`Số điện thoại: ${address.phone}`}</div>
+                                                    <div>{address.address.full_address}</div>
+                                                </div>
+                                            </div>
+                                        )
+                                    })
+                                )
+                            }
                         </div>
                         <div className="checkout-item__container">
                             {
@@ -202,7 +283,6 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
                                             <div className="checkout-item__delivery-setting">
                                                 <div className="checkout-item__delivery-setting__method">
                                                     <div>Đơn vị vận chuyển: </div>
-                                                    {/* <button className="btn btn--change-delivery">Thay đổi</button> */}
                                                     <Dropdown
                                                         value={cartCheckouts[id].shippingMethod}
                                                         options={cartCheckouts[id].shipMethods}
@@ -244,14 +324,17 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
                                 <div className="d-flex justify-content-end">
                                     <button className="btn sum-checkout__btn-checkout" onClick={createOrder}>Đặt hàng</button>
                                 </div>
-
-                                <Paypal 
-                                    toPay={totalCheckout}
-                                    onSuccess={transactionSuccess}
-                                    transactionError={transactionError}
-                                    transactionCanceled={transactionCanceled}
-                                />
                             </div>
+                            {/* <PaypalBtn 
+                                total = {currency_total}
+                                
+                            /> */}
+                            <Paypal 
+                                toPay = {currency_total}
+                                transactionSuccess={transactionSuccess}
+                                transactionError = {transactionError}
+                                transactionCanceled = {transactionCanceled}
+                            />
                         </div>
                     </div>
                 </div>
@@ -272,6 +355,7 @@ export async function getServerSideProps(ctx) {
     };
     let listAddress = [];
     let groupCartBySeller = {};
+    let user = { id: ""};
 
     const cookies = ctx.req.headers.cookie;
     if (cookies) {
@@ -303,6 +387,9 @@ export async function getServerSideProps(ctx) {
                         if (nameDeliveryMethods.indexOf("local") !== -1) key += "local";
                         if (!groupCartBySeller[key]) {
                             groupCartBySeller[key] = {};
+                            groupCartBySeller[key].nameRecei = "";
+                            groupCartBySeller[key].contact = "";
+                            groupCartBySeller[key].note = "";
                             groupCartBySeller[key].shippingMethod = null;
                             groupCartBySeller[key].seller = seller;
                             groupCartBySeller[key].shippingFee = 0;
@@ -371,6 +458,13 @@ export async function getServerSideProps(ctx) {
                         listAddress.push(address);
                     });
                 }
+                
+                const infoBuyer = await api.buyer.getProfile(token);
+                if (infoBuyer.status === 200){
+                    if (infoBuyer.data.code === 200){
+                        user.id  = infoBuyer.data.information.userId
+                    }
+                }
             } catch (error) {
                 console.log(error);
             }
@@ -380,7 +474,8 @@ export async function getServerSideProps(ctx) {
                     groupCartBySeller,
                     listAddress,
                     productCheckouts,
-                    sumCheckout
+                    sumCheckout,
+                    user
                 }
             }
         } else {
@@ -394,4 +489,4 @@ export async function getServerSideProps(ctx) {
     }
 }
 
-export default Checkout;
+export default Checkout;                              

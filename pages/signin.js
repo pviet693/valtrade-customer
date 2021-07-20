@@ -33,7 +33,7 @@ const SigIn = () => {
                     const token = loginRes.data.token;
                     Cookie.set('access_token', token, {
                         path: '/',
-                        expires: 30
+                        expires: 1
                     })
 
                     const profileRes = await api.buyer.getProfile();
@@ -73,7 +73,7 @@ const SigIn = () => {
                 if (res.data.code === 200) {
                     Cookie.set('access_token', res.data.token, {
                         path: '/',
-                        expires: 30
+                        expires: 1
                     })
                     const profileRes = await api.buyer.getProfile();
                     if (profileRes.status === 200) {
@@ -100,7 +100,7 @@ const SigIn = () => {
                 if (res.data.code === 200) {
                     Cookie.set('access_token', res.data.token, {
                         path: '/',
-                        expires: 30
+                        expires: 1
                     })
                     const profileRes = await api.buyer.getProfile();
 

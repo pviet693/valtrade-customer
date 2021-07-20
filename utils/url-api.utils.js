@@ -27,6 +27,12 @@ const url = {
         getDetail: () => `${baseUrl}/api/product/detail/:id`,
         delete: () => `${baseUrl}/api/product/remove/:id`,
         putUpdate: () => `${baseUrl}/api/product/update`,
+        createComment: () => `${baseUrl}/api/comment/createComment`,
+        getComment: () => `${baseUrl}/api/comment/getCommentProduct`
+    },
+    auction: {
+        getList: () => `${baseUrl}/api/bid/get`,
+        getDetail: () => `${baseUrl}/api/bid/detail/:id`
     },
     cart: {
         postCart: () => `${baseUrl}/api/cart/updateCart`,
@@ -42,6 +48,9 @@ const url = {
         getDistrict: () => "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district",
         calculateShippingFee: () => "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee"
     },
+    ghtk: {
+        calculateShippingFee: () => `${baseUrl}/api/product/fee`
+    },
     address: {
         getListAddress: () => `${baseUrl}/api/buyer/getListAddress`,
         postCreate: () => `${baseUrl}/api/buyer/createAddress`,
@@ -50,6 +59,9 @@ const url = {
     },
     order: {
         createOrder: () => `${baseUrl}/api/order/createOrder`,
+    },
+    category: {
+        getDetails: () => `${baseUrl}/api/category/detail/:id`,
     }
 }
 
