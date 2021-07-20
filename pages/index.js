@@ -37,8 +37,17 @@ const Home = ({ brands, categories, products, auctions }) => {
     }
 
     const brandTemplate = (brand) => (
-        <Brand name={brand.name} image={brand.image} imageId={brand.imageId} />
+        <Brand name={brand.name} image={brand.image} imageId={brand.imageId} onClick={() => filterBrand(brand.id)} />
     );
+
+    const filterBrand = (brandId) => {
+        router.push({
+            pathname: '/product',
+            query: {
+                brand: brandId
+            }
+        })
+    }
 
     const product = products.slice(0, size).map((x, index) =>
         <div key={x.id} className="col-md-3 d-flex align-items-center flex-column mb-4">
@@ -55,8 +64,17 @@ const Home = ({ brands, categories, products, auctions }) => {
     );
 
     const category = categories.slice(0, size).map((x, index) => (
-        <Category key={index.toString()} name={x.name} image={x.image} imageId={x.imageId} />
+        <Category key={index.toString()} name={x.name} image={x.image} imageId={x.imageId} onClick={() => filterCategory(x.id)} />
     ));
+
+    const filterCategory = (id) => {
+        router.push({
+            pathname: '/product',
+            query: {
+                categoryId: id
+            }
+        })
+    }
 
     const navigateToDetailProduct = (product) => {
         Router.push({
