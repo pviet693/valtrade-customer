@@ -37,7 +37,7 @@ const url = {
     cart: {
         postCart: () => `${baseUrl}/api/cart/updateCart`,
         getCart: () => `${baseUrl}/api/cart/getCart`,
-        deleteCart: () => `${baseUrl}/api/cart/removeItem/:productId`,
+        deleteCart: () => `${baseUrl}/api/cart/removeItem/`,
     },
     filter: {
         search: () => `${baseUrl}/api/product/search`,
@@ -62,6 +62,9 @@ const url = {
     },
     category: {
         getDetails: () => `${baseUrl}/api/category/detail/:id`,
+    },
+    transfer: {
+        postTransfer: () => `${baseUrl}/api/transfer/createTransfer`
     }
 }
 

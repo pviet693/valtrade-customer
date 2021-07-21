@@ -195,17 +195,6 @@ const api = {
         },
         deleteCart: (body) => {
             if (isEnable()) {
-                // return axios.delete(url.cart.deleteCart(), {
-                //     headers: {
-                //         Authorization: `Bearer ${token}`,
-                //         'Content-Type': 'application/json',
-                //         'Access-Control-Allow-Origin': '*'
-                //     },
-                //     data: {
-                //         productId: id
-                //     }
-                // });
-                return axios.delete(url.cart.deleteCart().replace(':productId', id), config);
                 return axios.delete(url.cart.deleteCart(), {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -306,6 +295,11 @@ const api = {
         getDetails: (id) => {
             return axios.get(url.category.getDetails().replace(":id", id));
         }
+    },
+    transfer: {
+        postTransfer: (body) => {
+            return axios.post(url.transfer.postTransfer(), body, config);
+        } 
     }
 };
 

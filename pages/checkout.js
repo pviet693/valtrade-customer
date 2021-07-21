@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import EditIcon from '@material-ui/icons/Edit';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router'
 import cookie from 'cookie';
 import * as common from './../utils/common';
 import api from '../utils/backend-api.utils';
@@ -8,10 +9,10 @@ import { v4 as uuidv4 } from "uuid";
 import { Dropdown } from 'primereact/dropdown';
 import { RadioButton } from 'primereact/radiobutton';
 import dynamic from "next/dynamic";
-const Paypal = dynamic(() => import("../components/Paypal"), {
+const PaypalBtn = dynamic(() => import("../components/Paypal"), {
     ssr: false,
   });
-import PaypalBtn from '../components/Paypal';
+// import PaypalBtn from '../components/Paypal';
 
 const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckout, user }) => {
     // console.log(buyer);
@@ -23,7 +24,7 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
     const [deliveryAddress, setDeliveryAddress] = useState(() => deliveryAddresses.find(address => address.isDefault === true));
     const [cartCheckouts, setCartCheckouts] = useState(groupCartBySeller);
     const [totalCheckout, setTotalCheckout] = useState(sumCheckout);
-
+    const router = useRouter();
     const onChangeShippingMethod = async (event, id) => {
         const { value } = event;
         const type = Object.keys(value)[0];
@@ -145,7 +146,7 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
         //     }
         // }
     }
-
+    
     const onChangeAddress = (id) => {
         setDeliveryAddress(() => deliveryAddresses.find(address => address.id === id));
     }
@@ -156,18 +157,45 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
 
     const transactionSuccess = async () => {
         try{
+            let arr = [];
+            let arrProduct = [];
+            Object.keys(cartCheckouts).forEach(key=>{
+                arr = arr.concat(cartCheckouts[key].arrayCart);
+                arr.forEach(x => {
+                    let objProduct = {
+                        onPro: x.typeProduct,
+                        inforProduct: x._id
+                    }
+                    arrProduct.push(objProduct);
+                })
+            });
             let transaction = {
                 onUser: user.id,
                 onModel: 'Buyer',
                 typePay: 'paypal',
-                onPro: 'Product',
-                inforProduct: '60ef1ca8a5ddd802f1dfa07a',
-                isPay: True,
-                balance: 111111
+                arrayProduct: arrProduct,
+                isPay: true,
+                balance: totalCheckout.total
             }
-            const res = await api.order.createOrder(transaction);
-            if (res.data.code === 200) {
-                console.log("hello");
+            const res = await api.transfer.postTransfer(transaction);
+            if (res.status === 200) {
+                if (res.data.code === 200) {
+                    common.Toast("Thanh toán thành công", 'success');
+                    let body = { listProductId: productCheckouts };
+                    const res1 = await api.cart.deleteCart(body);
+                    if (res1.status === 200) {
+                        if (res1.data.code === 200) {
+                            // common.ToastPrime('Thành công', 'Xóa giỏ hàng thành công.', 'success', toast);
+                            router.push('/cart');
+                        } else {
+                            let message = res.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
+                            common.ToastPrime('Lỗi', message, 'error', toast);
+                        }
+                    }
+                } else {
+                    const message = res.data.message || "Thanh toán thất bại.";
+                    common.Toast(message, 'error');
+                }
             }
     
         }catch(err){
@@ -329,7 +357,7 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
                                 total = {currency_total}
                                 
                             /> */}
-                            <Paypal 
+                            <PaypalBtn 
                                 toPay = {currency_total}
                                 transactionSuccess={transactionSuccess}
                                 transactionError = {transactionError}
