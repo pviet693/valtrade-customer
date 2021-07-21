@@ -169,11 +169,47 @@ const api = {
     auction: {
         getList: (params) => {
             let param = {};
+            let queryPrice = "";
             param.page = params.page + 1;
             param.perPage = params.rows;
+            if (params.search) param.search = params.search;
+            if (params.categoryId) param.categoryId = params.categoryId;
+            if (params.brand) param.brand = params.brand;
+            if (params.keysOption !== 0) {
+                if (params.keysOption === 1) {
+                    queryPrice = `&keys=${1000000}`;
+                }
+                if (params.keysOption === 2) {
+                    queryPrice = `&keys=${1000000}&keys=${5000000}`;
+                }
+                if (params.keysOption === 3) {
+                    queryPrice = `&keys=${5000000}&keys=${15000000}`;
+                }
+                if (params.keysOption === 4) {
+                    queryPrice = `&keys=${15000000}`;
+                }
+            }
+            if (params.activeItem) {
+                if (params.activeItem === 1) {
+                    param.order = 1;
+                    param.sortBy = "price";
+                }
+                if (params.activeItem === 2) {
+                    param.order = -1;
+                    param.sortBy = "price";
+                }
+                if (params.activeItem === 3) {
+                    param.order = 1;
+                    param.sortBy = "name";
+                }
+                if (params.activeItem === 4) {
+                    param.order = -1;
+                    param.sortBy = "name";
+                }
+            }
 
             const query = new URLSearchParams(param).toString();
-            return axios.get(url.auction.getList() + `?${query}`);
+            return axios.get(url.auction.getList() + `?${query}${queryPrice}`);
         },
         getDetail: (id) => {
             const url_api = url.auction.getDetail().replace(":id", id);

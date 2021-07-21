@@ -1,6 +1,6 @@
 import { Image } from 'cloudinary-react';
 
-const Category = ({ image, imageId, name, id }) => {
+const Category = ({ image, imageId, name, id, onClick }) => {
     
     const getVersionImage = (linkImage) => {
         const arr = linkImage.split("/");
@@ -8,7 +8,7 @@ const Category = ({ image, imageId, name, id }) => {
     }
 
     return (
-        <div className="col-md-3 d-flex align-items-center flex-column">
+        <div className="col-md-3 d-flex align-items-center flex-column" onClick={onClick}>
             <div className="category-card">
                 <div className="img-category-box">
                     {/* <img alt="image-category" src={image} /> */}

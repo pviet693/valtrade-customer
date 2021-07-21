@@ -1,6 +1,6 @@
 import { Image } from 'cloudinary-react';
 
-const Brand = ({ name, image, imageId }) => {
+const Brand = ({ name, image, imageId, onClick }) => {
 
     const getVersionImage = (linkImage) => {
         const arr = linkImage.split("/");
@@ -8,9 +8,8 @@ const Brand = ({ name, image, imageId }) => {
     }
 
     return (
-        <div className="brand-card">
+        <div className="brand-card" onClick={onClick}>
             <div className="img-brand-box">
-                {/* <img alt="image-brand" src={image} /> */}
                 <Image
                     publicId={imageId}
                     version={getVersionImage(image)}

@@ -30,8 +30,8 @@ const AuctionCard = ({ name, time, image, currentPrice, winner, participantsNumb
                 <div className="auction-name" title={name}>{name}</div>
                 <div className="auction-time"><AccessTimeIcon /> {time}</div>
                 <div className="auction-price"><img src="/static/hammer.svg" alt="icon-hammer" />{common.numberWithCommas(currentPrice)} VND</div>
-                <div className="auction-winner">Người thắng hiện tại: <span>Tin123</span></div>
-                <div className="auction-participant-number">Số người tham gia: <span>20 người</span></div>
+                <div className="auction-winner">Người thắng hiện tại: <span>{winner}</span></div>
+                <div className="auction-participant-number">Số người tham gia: <span>{participantsNumber} người</span></div>
             </div>
         </div>
     )

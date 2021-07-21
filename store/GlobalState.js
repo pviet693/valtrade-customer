@@ -11,10 +11,6 @@ import { io } from "socket.io-client";
 export const DataContext = createContext();
 
 export const DataProvider = ({ children }) => {
-    // const socket = io("http://3.142.207.62:5000", {
-    //     path: 'api/',
-    //     withCredentials: false
-    // });
     const router = useRouter();
     const toast = useRef(null);
     const [socket, setSocket] = useState(null);
@@ -71,7 +67,7 @@ export const DataProvider = ({ children }) => {
 
                 dispatch({ type: 'ADD_CART', payload: carts });
             } catch (error) {
-                common.ToastPrime('Lỗi', error.message + error.statusCode || error, 'error', toast);
+                common.ToastPrime('Lỗi', error.response.data.message || error, 'error', toast);
             }
         }
     }, []);

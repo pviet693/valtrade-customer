@@ -4,13 +4,16 @@ import AuctionCard from './../components/AuctionCard';
 import api from '../utils/backend-api.utils';
 import { DataContext } from '../store/GlobalState';
 import { useContext, useEffect, useState } from 'react';
-import { io } from "socket.io-client";
+import * as common from "../utils/common";
+import cookie from "cookie";
+import Moment from 'moment';
+Moment.locale('en');
 
-const AuctionDetail = ({ auction }) => {
-
+const AuctionDetail = ({ auction, logBidUser, currentPriceAuction }) => {
     const [timeCountDown, setTimeCountDown] = useState(0);
-    const [currentPrice, setCurrentPrice] = useState(auction.price);
-    const { state, dispatch, toast, swal, socket } = useContext(DataContext);
+    const [currentPrice, setCurrentPrice] = useState(currentPriceAuction || auction.price);
+    const { state, socket } = useContext(DataContext);
+    const [logAuction, setLogAuction] = useState(logBidUser);
     const { auth } = state;
 
     const responsiveOptions = [
@@ -63,6 +66,10 @@ const AuctionDetail = ({ auction }) => {
                 setTimeCountDown(res.timeDown);
             });
             socket.on("infonewBid", (res) => {
+                let newLogAuction = [...logAuction, {...res}];
+                newLogAuction.sort((a, b) => b.priceBid - a.priceBid);
+                setLogAuction([...newLogAuction]);
+                setCurrentPrice(newLogAuction[0].priceBid);
                 console.log(res, "listUser");
             });
             socket.on("reply_price", (res) => {
@@ -71,9 +78,27 @@ const AuctionDetail = ({ auction }) => {
             return () => {
                 socket.off('countUser');
                 socket.off('countDownRoom');
+                socket.off('reply_price');
+                socket.off('infonewBid');
             }
         }
     }, [socket]);
+
+    useEffect(() => {
+        console.log(logAuction);
+    }, [logAuction]);
+
+    useEffect(() => {
+        return () => {
+            if (Object.keys(auth).length) {
+                socket.emit("leaveRoom", {
+                    bidId: auction.id,
+                    userId: auth.user.userId,
+                });
+                socket.off('leaveRoom');
+            }
+        }
+    }, [])
 
     useEffect(() => {
         if (Object.keys(auth).length > 0 && socket) {
@@ -166,8 +191,6 @@ const AuctionDetail = ({ auction }) => {
                     </div>
                     <div className="auction-info-container">
                         <div className="auction-info-image">
-                            {/* <Galleria value={['/static/adidas-3-la.jpg', '/static/adidas-3-la.jpg', '/static/adidas-3-la.jpg', '/static/adidas-3-la.jpg']} responsiveOptions={responsiveOptions} numVisible={4} circular style={{ maxWidth: '640px' }}
-                                showItemNavigators showItemNavigatorsOnHover item={itemTemplate} thumbnail={thumbnailTemplate} /> */}
                             <Galleria id={auction.id} value={auction.arrayImage} responsiveOptions={responsiveOptions} numVisible={4} circular style={{ maxWidth: '640px' }}
                                 showItemNavigators showItemNavigatorsOnHover item={itemTemplate} thumbnail={thumbnailTemplate} />
                         </div>
@@ -228,12 +251,16 @@ const AuctionDetail = ({ auction }) => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <th scope="row">1</th>
-                                        <td>ABC</td>
-                                        <td>10000</td>
-                                        <td>11/07/2021 - 21:02:23 PM</td>
-                                    </tr>
+                                    {
+                                        logAuction.map((log, index) => (
+                                            <tr key={index}>
+                                                <th scope="row">{index + 1}</th>
+                                                <td>{log.name}</td>
+                                                <td>{common.numberWithCommas(log.priceBid)} VND</td>
+                                                <td>{Moment(new Date(log.createTime)).format("DD/MM/yyyy HH:mm:ss A")}</td>
+                                            </tr>
+                                        ))
+                                    }
                                 </tbody>
                             </table>
                         </div>
@@ -247,6 +274,16 @@ const AuctionDetail = ({ auction }) => {
 export async function getServerSideProps(ctx) {
     const { query } = ctx;
     const { id } = query;
+    let isSignin = false;
+    const logBidUser = [];
+    let currentPrice = 0;
+
+    // check token
+    const cookies = ctx.req.headers.cookie;
+    if (cookies) {
+        const token = cookie.parse(cookies).seller_token;
+        isSignin = token ? true : false;
+    }
 
     let auctionDetail = {
         id: "",
@@ -267,19 +304,29 @@ export async function getServerSideProps(ctx) {
         const res = await api.auction.getDetail(id);
         if (res.status === 200) {
             if (res.data.code === 200) {
-                const data = res.data.result;
+                const { logBid } = res.data;
+                const result = res.data.result;
                 auctionDetail.id = id;
-                auctionDetail.arrayImage = data.arrayImage.map(x => x.url);
-                auctionDetail.name = data.name || "";
-                auctionDetail.description = data.description || "";
-                auctionDetail.sku = data.sku || "";
-                auctionDetail.restWarrantyTime = data.restWarrantyTime || "";
-                auctionDetail.brand = data.brand.name || "";
-                auctionDetail.note = data.note || "";
-                auctionDetail.price = data.price || "";
-                auctionDetail.shopName = data.sellerInfor.nameShop || "";
-                auctionDetail.phone = data.sellerInfor.phone || "";
-                auctionDetail.countProduct = data.countProduct || 0;
+                auctionDetail.arrayImage = result.arrayImage.map(x => x.url);
+                auctionDetail.name = result.name || "";
+                auctionDetail.description = result.description || "";
+                auctionDetail.sku = result.sku || "";
+                auctionDetail.restWarrantyTime = result.restWarrantyTime || "";
+                auctionDetail.brand = result.brand.name || "";
+                auctionDetail.note = result.note || "";
+                auctionDetail.price = result.price || "";
+                auctionDetail.shopName = result.sellerInfor.nameShop || "";
+                auctionDetail.phone = result.sellerInfor.phone || "";
+                auctionDetail.countProduct = result.countProduct || 0;
+                logBid.forEach(element => {
+                    const user = {};
+                    user.name = element.inforBuyer.name;
+                    user.priceBid = element.priceBid;
+                    user.createTime = element.createTime;
+                    logBidUser.push(user);
+                });
+                logBidUser.sort((a, b) => b.priceBid - a.priceBid);
+                currentPrice = logBidUser[0].priceBid
             }
         }
     } catch (error) {
@@ -290,7 +337,9 @@ export async function getServerSideProps(ctx) {
         props: {
             auction: auctionDetail,
             shop: {},
-            auctionRecommend: []
+            auctionRecommend: [],
+            logBidUser,
+            currentPriceAuction: currentPrice
         }
     }
 }

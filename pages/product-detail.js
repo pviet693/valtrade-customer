@@ -440,7 +440,7 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
                                 <img
                                     src={
                                         Object.keys(auth).length
-                                            ? auth.user.imageUrl ? auth.user.imageUrl.url : "/static/avatar2.png"
+                                            ? auth.user.imageUrl ? (auth.user.imageUrl.url || "/static/avatar2.png") : "/static/avatar2.png"
                                             : "/static/avatar2.png"
                                     }
                                     alt="Avatar"
