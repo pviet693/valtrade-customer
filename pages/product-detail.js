@@ -596,6 +596,7 @@ export async function getServerSideProps(ctx) {
         const res = await api.buyer.getDetailProduct(id);
         if (res.status === 200) {
             if (res.data.code === 200) {
+                console.log(res.data);
                 const data = res.data.result;
                 productDetail.id = id;
                 productDetail.categoryId = data.categoryInfor._id;

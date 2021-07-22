@@ -6,13 +6,30 @@ import { DataContext } from '../store/GlobalState';
 import { useContext, useEffect, useState } from 'react';
 import * as common from "../utils/common";
 import cookie from "cookie";
+import StarBorderIcon from '@material-ui/icons/StarBorder';
+import LocalOfferIcon from '@material-ui/icons/LocalOffer';
+import BeenhereOutlinedIcon from '@material-ui/icons/BeenhereOutlined';
+import VerifiedUserOutlinedIcon from '@material-ui/icons/VerifiedUserOutlined';
+import LocalShippingOutlinedIcon from '@material-ui/icons/LocalShippingOutlined';
+import AlarmOnIcon from '@material-ui/icons/AlarmOn';
+import CheckOutlinedIcon from '@material-ui/icons/CheckOutlined';
+import _ from "lodash";
+import { uuid } from 'uuidv4';
 import Moment from 'moment';
 Moment.locale('en');
 
-const AuctionDetail = ({ auction, logBidUser, currentPriceAuction }) => {
+const AuctionDetail = ({ product, logBidUser, currentPriceAuction, attributes }) => {
     const [timeCountDown, setTimeCountDown] = useState(0);
-    const [currentPrice, setCurrentPrice] = useState(currentPriceAuction || auction.price);
-    const { state, socket } = useContext(DataContext);
+    const [isSell, setIsSell] = useState(product.selled);
+    const [currentPrice, setCurrentPrice] = useState(currentPriceAuction || product.price);
+    const [priceAuction, setPriceAuction] = useState(currentPriceAuction)
+    const [information] = useState(() => {
+        if (typeof product.information === "string") {
+            return JSON.parse(product.information);
+        }
+        return product.information;
+    });
+    const { state, socket, toast } = useContext(DataContext);
     const [logAuction, setLogAuction] = useState(logBidUser);
     const { auth } = state;
 
@@ -32,29 +49,12 @@ const AuctionDetail = ({ auction, logBidUser, currentPriceAuction }) => {
     ];
 
     const itemTemplate = (item) => {
-        return <img src={item} alt={'item'} style={{ width: '100%', display: 'block', objectFit: 'contain' }} />;
+        return <img src={item.url} alt={'item'} style={{ width: "400px", height: "400px", display: 'block', objectFit: 'contain' }} />;
     }
 
     const thumbnailTemplate = (item) => {
-        return <img src={item} alt={'thumbnail'} style={{ display: 'block', width: '80px', height: '60px' }} />;
+        return <img src={item.url} alt={'thumbnail'} style={{ display: 'block', width: '80px', height: '60px' }} />;
     }
-
-    const navigateToDetailAuction = (auction) => {
-        Router.push({
-            pathname: '/auction-detail',
-            query: { id: auction.id }
-        })
-    }
-
-    useEffect(() => {
-        if (Object.keys(auth).length > 0 && socket) {
-            socket.emit("createPrice", {
-                userId: auth.user.userId,
-                price: currentPrice,
-                bidId: auction.id
-            })
-        }
-    }, [socket, currentPrice, auth]);
 
     useEffect(() => {
         if (socket) {
@@ -64,11 +64,20 @@ const AuctionDetail = ({ auction, logBidUser, currentPriceAuction }) => {
             socket.on("countDownRoom", (res) => {
                 console.log("countDownRoom", res);
                 setTimeCountDown(res.timeDown);
+                if (res.timeDown === 0 && logAuction.length > 0) {
+                    setIsSell(true);
+                    socket.off('countDownRoom');
+                    common.Notification("Thông báo", "Phiên đấu giá đã kết thúc.", "success");
+                }
             });
             socket.on("infonewBid", (res) => {
-                let newLogAuction = [...logAuction, {...res}];
+                let newLogAuction = [...logAuction];
+                newLogAuction.push({
+                    ...res,
+                    uuid: uuid()
+                })
                 newLogAuction.sort((a, b) => b.priceBid - a.priceBid);
-                setLogAuction([...newLogAuction]);
+                setLogAuction(newLogAuction);
                 setCurrentPrice(newLogAuction[0].priceBid);
                 console.log(res, "listUser");
             });
@@ -92,7 +101,7 @@ const AuctionDetail = ({ auction, logBidUser, currentPriceAuction }) => {
         return () => {
             if (Object.keys(auth).length) {
                 socket.emit("leaveRoom", {
-                    bidId: auction.id,
+                    bidId: product.id,
                     userId: auth.user.userId,
                 });
                 socket.off('leaveRoom');
@@ -103,22 +112,22 @@ const AuctionDetail = ({ auction, logBidUser, currentPriceAuction }) => {
     useEffect(() => {
         if (Object.keys(auth).length > 0 && socket) {
             socket.emit("joinRoom", {
-                bidId: auction.id,
+                bidId: product.id,
                 userId: auth.user.userId,
             });
         }
     }, [auth]);
 
     const increasePrice = () => {
-        let price = currentPrice;
-        price += 1000000;
-        setCurrentPrice(price);
+        let price = priceAuction;
+        price += 100000;
+        setPriceAuction(price);
     }
 
     const decreasePrice = () => {
-        let price = currentPrice;
-        price--;
-        setCurrentPrice(price);
+        let price = priceAuction;
+        price -= 100000;
+        setPriceAuction(price);
     }
 
     function seconds2time(number) {
@@ -129,7 +138,41 @@ const AuctionDetail = ({ auction, logBidUser, currentPriceAuction }) => {
         if (hours < 10) { hours = "0" + hours; }
         if (minutes < 10) { minutes = "0" + minutes; }
         if (seconds < 10) { seconds = "0" + seconds; }
-        return hours + ':' + minutes + ':' + seconds;
+        return { hours, minutes, seconds };
+    }
+
+    const checkWarranty = (time) => {
+        return (new Date(time)).getTime() > (new Date()).getTime();
+    }
+
+    const getDiffTime = (time) => {
+        const date = (new Date(time)).getTime();
+        const currentDate = (new Date()).getTime();
+        return Math.ceil((date - currentDate) / (24 * 3600 * 1000));
+    }
+
+    const createPrice = () => {
+        if (Object.keys(auth).length > 0 && socket) {
+            if (priceAuction <= currentPrice) {
+                common.ToastPrime("Cảnh báo",
+                    `Giá của bạn đang thấp hơn hoặc bằng giá hiện tại: ${common.numberWithCommas(currentPrice)}`,
+                    "warn",
+                    toast
+                );
+                return;
+            }
+            socket.emit("createPrice", {
+                userId: auth.user.userId,
+                price: priceAuction,
+                bidId: product.id
+            });
+
+            common.ToastPrime("Thành công",
+                `Đấu giá thành công`,
+                "success",
+                toast
+            );
+        }
     }
 
     return (
@@ -189,7 +232,7 @@ const AuctionDetail = ({ auction, logBidUser, currentPriceAuction }) => {
                             </div>
                         </div>
                     </div>
-                    <div className="auction-info-container">
+                    {/* <div className="auction-info-container">
                         <div className="auction-info-image">
                             <Galleria id={auction.id} value={auction.arrayImage} responsiveOptions={responsiveOptions} numVisible={4} circular style={{ maxWidth: '640px' }}
                                 showItemNavigators showItemNavigatorsOnHover item={itemTemplate} thumbnail={thumbnailTemplate} />
@@ -235,6 +278,138 @@ const AuctionDetail = ({ auction, logBidUser, currentPriceAuction }) => {
                                 </div>
                             </div>
                         </div>
+                    </div> */}
+                    <div className="auction-info-container">
+                        <div className="auction-info-image">
+                            <Galleria id={product.id} value={product.arrayImage} responsiveOptions={responsiveOptions} numVisible={4} circular style={{ maxWidth: '640px' }}
+                                showItemNavigators showItemNavigatorsOnHover item={itemTemplate} thumbnail={thumbnailTemplate} />
+                        </div>
+                        <div className="auction-info-detail">
+                            <div className="detail-name">
+                                {product.name}
+                            </div>
+                            <div className="detail-price d-flex align-items-center">
+                                <LocalOfferIcon className="mr-2" style={{ color: "#0795df" }} />
+                                <div>Giá khởi điểm: {common.numberWithCommas(product.price)} VNĐ</div>
+                            </div>
+                            <div className="detail-primary d-flex align-items-center">
+                                <VerifiedUserOutlinedIcon className="mr-2" style={{ color: "#0795df" }} />
+                                <div>SKU: {product.sku}</div>
+                            </div>
+                            <div className="detail-primary d-flex align-items-center">
+                                <BeenhereOutlinedIcon className="mr-2" style={{ color: "#0795df" }} />
+                                <div>
+                                    <span>Bảo hành: </span>
+                                    <span>
+                                        {
+                                            checkWarranty(product.restWarrantyTime)
+                                                ? (
+                                                    <span className="detail-warranty-active">
+                                                        Vẫn còn ({getDiffTime(product.restWarrantyTime)} ngày)
+                                                    </span>
+                                                ) : (
+                                                    <span className="detail-warranty-expired">
+                                                        Hết hạn
+                                                    </span>
+                                                )
+                                        }
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="detail-primary d-flex align-items-center">
+                                <i className="pi pi-tags mr-2" style={{ color: "#0795df", fontSize: "1.2em" }}></i>
+                                <div>Thương hiệu: {product.brand}</div>
+                            </div>
+                            <div className="detail-primary d-flex align-items-center">
+                                <i className="pi pi-tag mr-2" style={{ color: "#0795df", fontSize: "1.2em" }}></i>
+                                <div>Giá mua ban đầu: {common.numberWithCommas(product.oldPrice)} VNĐ</div>
+                            </div>
+                            <div className="detail-primary d-flex">
+                                <LocalShippingOutlinedIcon className="mr-2" style={{ color: "#0795df" }} />
+                                <div className="">
+                                    <span className="mr-2">Phương thức vận chuyển:</span>
+                                    <div>
+                                        {
+                                            product.arrayDelivery.map((delivery) => {
+                                                return (
+                                                    delivery === "ghn"
+                                                        ? (
+                                                            <div className="d-flex align-items-center" key={delivery}>
+                                                                <CheckOutlinedIcon className="mr-2" style={{ color: "#0795df" }} />
+                                                                <div style={{ minWidth: 180 }}>Giao hàng nhanh</div>
+                                                                <img src="/static/logo-ghn.png" alt="logo" width="100" height="55" className="mr-2" />
+                                                            </div>
+                                                        ) : delivery === "ghtk"
+                                                            ? (
+                                                                <div className="d-flex align-items-center" key={delivery}>
+                                                                    <CheckOutlinedIcon className="mr-2" style={{ color: "#0795df" }} />
+                                                                    <div style={{ minWidth: 180 }}>Giao hàng tiết kiệm</div>
+                                                                    <img src="/static/ghtk.png" alt="logo" width="100" height="55" className="mr-2" />
+                                                                </div>
+                                                            ) : (
+                                                                <div className="d-flex align-items-center" key={delivery}>
+                                                                    <CheckOutlinedIcon className="mr-2" style={{ color: "#0795df" }} />
+                                                                    <div>Nhận hàng tại shop</div>
+                                                                </div>
+                                                            )
+                                                )
+                                            })
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="detail-primary d-flex align-items-center">
+                                <AlarmOnIcon className="mr-2" style={{ color: "#0795df" }} />
+                                <div>Ngày đăng: {Moment(new Date(product.timePost)).format("DD/MM/yyyy - HH:mm:ss A")}</div>
+                            </div>
+                            {
+                                product.note
+                                && (
+                                    <div className="detail-row">
+                                        Lưu ý: <span>{product.note}</span>
+                                    </div>
+                                )
+                            }
+
+                            {
+                                isSell
+                                    ? (
+                                        <div className="auction-detail-action">
+                                            <div className="auction-time">
+                                                <span>{seconds2time(timeCountDown).hours}</span>
+                                                <b>:</b>
+                                                <span>{seconds2time(timeCountDown).minutes}</span>
+                                                <b>:</b>
+                                                <span>{seconds2time(timeCountDown).seconds}</span>
+                                            </div>
+                                            <div className="price-box">
+                                                <button
+                                                    onClick={decreasePrice}
+                                                    disabled={_.isEmpty(auth) || _.isEmpty(auth.user) || isSell || timeCountDown === 0}
+                                                >-</button>
+                                                <div className="price-container">
+                                                    {common.numberWithCommas(priceAuction)}
+                                                </div>
+                                                <button
+                                                    className="button-right"
+                                                    onClick={increasePrice}
+                                                    disabled={_.isEmpty(auth) || _.isEmpty(auth.user) || isSell || timeCountDown === 0}
+                                                >+</button>
+                                            </div>
+                                            <button
+                                                className="btn-auction"
+                                                onClick={createPrice}
+                                                disabled={_.isEmpty(auth) || _.isEmpty(auth.user) || isSell || timeCountDown === 0}
+                                            >
+                                                <img src="/static/hammer.svg" alt="icon-hammer" className="mr-2" />
+                                                Đặt giá thầu
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <h3 style={{ color: "#b90000", marginTop: "20px" }}>Đấu giá kết thúc</h3>
+                                    )
+                            }
+                        </div>
                     </div>
                     <div className="auction-history-container">
                         <div className="title">
@@ -265,6 +440,32 @@ const AuctionDetail = ({ auction, logBidUser, currentPriceAuction }) => {
                             </table>
                         </div>
                     </div>
+                    <div className="auction-details-container">
+                        <div className="auction-details-container__title">
+                            Chi tiết sản phẩm
+                        </div>
+                        <div className="auction-details-container__content">
+                            {
+                                attributes.map(x => {
+                                    return (
+                                        <div key={x.key} className="content-row">
+                                            <span className="label">{`${x.name}: `}</span>
+                                            {
+                                                information[x.key] &&
+                                                <span>{information[x.key]}</span>
+                                            }
+                                        </div>
+                                    )
+                                })
+                            }
+                        </div>
+                        <div className="auction-details-container__title">
+                            Mô tả sản phẩm
+                        </div>
+                        <div className="auction-details-container__content">
+                            <span>{product.description}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -277,6 +478,7 @@ export async function getServerSideProps(ctx) {
     let isSignin = false;
     const logBidUser = [];
     let currentPrice = 0;
+    let listAttribute = [];
 
     // check token
     const cookies = ctx.req.headers.cookie;
@@ -285,7 +487,7 @@ export async function getServerSideProps(ctx) {
         isSignin = token ? true : false;
     }
 
-    let auctionDetail = {
+    let productDetail = {
         id: "",
         brand: "",
         sku: "",
@@ -297,7 +499,8 @@ export async function getServerSideProps(ctx) {
         name: "",
         shopName: "",
         phone: "",
-        countProduct: 0
+        countProduct: 0,
+        arrayDelivery: []
     };
 
     try {
@@ -305,19 +508,30 @@ export async function getServerSideProps(ctx) {
         if (res.status === 200) {
             if (res.data.code === 200) {
                 const { logBid } = res.data;
-                const result = res.data.result;
-                auctionDetail.id = id;
-                auctionDetail.arrayImage = result.arrayImage.map(x => x.url);
-                auctionDetail.name = result.name || "";
-                auctionDetail.description = result.description || "";
-                auctionDetail.sku = result.sku || "";
-                auctionDetail.restWarrantyTime = result.restWarrantyTime || "";
-                auctionDetail.brand = result.brand.name || "";
-                auctionDetail.note = result.note || "";
-                auctionDetail.price = result.price || "";
-                auctionDetail.shopName = result.sellerInfor.nameShop || "";
-                auctionDetail.phone = result.sellerInfor.phone || "";
-                auctionDetail.countProduct = result.countProduct || 0;
+                const data = res.data.result;
+                console.log(data);
+                productDetail.id = id;
+                productDetail.selled = data.selled;
+                productDetail.categoryId = data.categoryInfor._id;
+                productDetail.categoryName = data.categoryInfor.name;
+                productDetail.arrayImage = data.arrayImage;
+                productDetail.name = data.name || "";
+                productDetail.description = data.description || "";
+                productDetail.sku = data.sku || "";
+                productDetail.restWarrantyTime = data.restWarrantyTime || "";
+                productDetail.brand = data.brand.name || "";
+                productDetail.note = data.note || "";
+                productDetail.price = data.price || "";
+                productDetail.shopName = data.sellerInfor.nameShop || "";
+                productDetail.phone = data.sellerInfor.phone || "";
+                productDetail.countProduct = data.countProduct || 0;
+                productDetail.information = data.information;
+                data.deliverArray.forEach((delivery) => {
+                    productDetail.arrayDelivery.push(Object.keys(delivery)[0]);
+                });
+                productDetail.oldPrice = data.oldPrice;
+                productDetail.timePost = data.timePost;
+                productDetail.countProduct = data.countProduct;
                 logBid.forEach(element => {
                     const user = {};
                     user.name = element.inforBuyer.name;
@@ -325,21 +539,36 @@ export async function getServerSideProps(ctx) {
                     user.createTime = element.createTime;
                     logBidUser.push(user);
                 });
-                logBidUser.sort((a, b) => b.priceBid - a.priceBid);
-                currentPrice = logBidUser[0].priceBid
+                if (logBidUser.length > 1) {
+                    logBidUser.sort((a, b) => b.priceBid - a.priceBid);
+                }
+                currentPrice = logBidUser[0] ? logBidUser[0].priceBid : productDetail.price;
+            }
+        }
+
+        const resAttr = await api.category.getDetails(productDetail.categoryId);
+        if (resAttr.status === 200) {
+            if (resAttr.data.code === 200) {
+                let listKey = Object.keys(resAttr.data.result.information);
+                common.ListProperties.forEach(x => {
+                    if (listKey.includes(x.key)) {
+                        listAttribute.push(x);
+                    }
+                })
             }
         }
     } catch (error) {
-        console.log(error);
+        console.log(error.message);
     }
 
     return {
         props: {
-            auction: auctionDetail,
+            product: productDetail,
             shop: {},
             auctionRecommend: [],
             logBidUser,
-            currentPriceAuction: currentPrice
+            currentPriceAuction: currentPrice,
+            attributes: listAttribute
         }
     }
 }
