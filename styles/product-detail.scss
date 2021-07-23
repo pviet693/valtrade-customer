@@ -286,6 +286,21 @@
             box-shadow: 0 1px 1px 0 rgb(0 0 0 / 5%);
             padding: 20px;
             margin-bottom: 10px;
+            position: relative;
+
+            .report {
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                color: #b71b1c;
+                cursor: pointer;
+                white-space: nowrap;
+                line-height: 18px;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
         }
 
         .comment-container {

@@ -48,7 +48,7 @@ function NavBar() {
                     <div className="navbar-link-item">
                         Bảng tin
                     </div>
-                    <div className="navbar-link-item">
+                    <div className="navbar-link-item" onClick={() => router.push("/notification")}>
                         <i className="pi pi-bell" aria-hidden></i>
                         <div>
                             Thông báo

@@ -20,6 +20,7 @@
     "cloudinary-react": "^1.7.0",
     "cookie": "^0.4.1",
     "js-cookie": "^2.2.1",
+    "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "next": "^10.2.3",
     "nprogress": "^0.2.0",
@@ -38,6 +39,7 @@
     "socket.io": "^4.1.2",
     "socket.io-client": "^4.1.2",
     "sweetalert2": "^10.16.5",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "uuidv4": "^6.2.11"
   }
 }

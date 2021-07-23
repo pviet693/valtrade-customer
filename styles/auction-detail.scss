@@ -1,5 +1,5 @@
 .auction-detail-container {
-    background-color: #F6F6F6;
+    background-color: #f6f6f6;
     width: 100%;
     color: #686868 !important;
 
@@ -42,7 +42,7 @@
                     object-position: center;
                     object-fit: cover;
                     border-radius: 50%;
-                    border: 1px solid #D7D7D7;
+                    border: 1px solid #d7d7d7;
                     margin-right: 2rem;
                 }
 
@@ -65,8 +65,8 @@
                         border-radius: 5px;
                         text-align: center;
                         background-color: #fff;
-                        color: #0795DF;
-                        border: 0.5px solid #0795DF;
+                        color: #0795df;
+                        border: 0.5px solid #0795df;
 
                         &:focus {
                             outline: unset;
@@ -79,7 +79,7 @@
                         height: 32px;
                         border-radius: 5px;
                         text-align: center;
-                        background-color: #0795DF;
+                        background-color: #0795df;
                         color: #fff;
 
                         &:focus {
@@ -93,7 +93,7 @@
                 display: flex;
                 align-items: center;
                 justify-content: flex-start;
-                border-left: 1px solid #0795DF;
+                border-left: 1px solid #0795df;
 
                 .col-left {
                     display: flex;
@@ -102,7 +102,7 @@
 
                     .star,
                     u {
-                        color: #0795DF;
+                        color: #0795df;
                     }
 
                     .col-left-row {
@@ -126,7 +126,7 @@
                     margin-left: 8rem;
 
                     u {
-                        color: #0795DF;
+                        color: #0795df;
                     }
 
                     .col-right-row {
@@ -200,42 +200,130 @@
                     margin-bottom: 10px;
                 }
 
-                .detail-time {
-                    
+                .detail-warranty-active {
+                    font-weight: 600;
+                    color: #5cb85c;
                 }
 
-                .detail-action {
-                    .action-price {
-                        div {
-                            .btn {
-                                box-shadow: unset;
-                            }
+                .detail-warranty-expired {
+                    font-weight: 600;
+                    color: #dc4e41;
+                }
 
-                            .btn-change-price {
-                                background-color: #fff;
-                                color: #0795DF;
-                                border: 1px solid #0795DF;
-                                border-radius: 0;
-                            }
+                .auction-detail-action {
+                    margin-top: 1.875em;
 
-                            .price-current {
-                                border: 1px solid #0795DF;
-                                padding: 5px;
-                            }
+                    .auction-time {
+                        color: #c35;
+                        font-weight: 500;
+                        font-size: 25px;
+                        line-height: 35px;
+                        height: 38px;
+                        position: relative;
+                        z-index: 1;
 
-                            display: flex;
-                            align-items: center;
+                        span {
+                            background: #fbfbfb;
+                            border-radius: 5px;
+                            text-align: center;
+                            cursor: default;
+                            border: 1px solid #0000001f;
+                            padding: 10px;
+                            font-weight: 400;
                         }
 
-                        .btn-auction {
-                            box-shadow: unset;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            border-radius: 4px;
-                            border: 1px solid #0795DF;
-                            margin-top: 20px;
+                        b {
+                            padding: 0 10px;
                         }
+                    }
+
+                    .price-box {
+                        margin-top: 20px;
+                        display: inline-block;
+                        border-radius: 6px !important;
+                        overflow: hidden;
+                        box-sizing: border-box;
+                        vertical-align: top;
+                        width: 100%;
+
+                        button {
+                            border: none;
+                            background: #1ab7ea;
+                            outline: 0;
+                            cursor: pointer;
+                            height: 44px;
+                            width: 44px;
+                            max-width: 44px;
+                            min-width: 44px;
+                            line-height: 44px;
+                            border-radius: 0;
+                            padding: 0;
+                            margin: 0;
+                            float: left;
+                            font-size: 18px;
+                            text-align: center;
+                            color: #fff;
+                        }
+
+                        .button-right {
+                            border-top-right-radius: 6px;
+                            border-bottom-right-radius: 6px;
+                        }
+
+                        .price-container {
+                            border-color: #dcdcdc #18b7ea;
+                            border-style: solid;
+                            border-width: 1px;
+                            transition: none;
+                            box-sizing: border-box;
+                            height: 44px;
+                            width: 100px;
+                            float: left;
+                            line-height: 44px;
+                            text-align: center;
+                        }
+                    }
+
+                    .btn-auction {
+                        font-size: 17px;
+                        padding: 1.5px 18px;
+                        border-radius: 6px;
+                        line-height: 36px;
+                        background-color: #fff;
+                        margin-top: 20px;
+                        color: #1ab7ea;
+                        border: 1px solid #1ab7ea;
+                    }
+                }
+            }
+        }
+
+        .auction-details-container {
+            background-color: #fff;
+            box-shadow: 0 1px 1px 0 rgb(0 0 0 / 5%);
+            padding: 20px;
+            margin-bottom: 10px;
+
+            &__title {
+                background: rgba(0, 0, 0, 0.02);
+                color: rgba(0, 0, 0, 0.87);
+                font-size: 1.125rem;
+                padding: 0.875rem;
+                text-transform: capitalize;
+            }
+
+            &__content {
+                margin: 1.875rem 0.9375rem 0.9375rem;
+
+                .content-row {
+                    display: flex;
+                    margin-bottom: 1.125rem;
+
+                    .label {
+                        color: rgba(0, 0, 0, 0.4);
+                        font-size: 0.875rem;
+                        width: 6.25rem;
+                        margin-right: 2.5rem;
                     }
                 }
             }
@@ -245,9 +333,9 @@
             background-color: #fff;
             box-shadow: 0 1px 1px 0 rgb(0 0 0 / 5%);
             padding: 20px;
+            margin-bottom: 10px;
 
             .auction-history-table {
-
             }
         }
 
@@ -270,7 +358,7 @@
                         object-position: center;
                         object-fit: cover;
                         border-radius: 50%;
-                        border: 1px solid #D7D7D7;
+                        border: 1px solid #d7d7d7;
                     }
                 }
 
@@ -282,7 +370,7 @@
                     }
 
                     .content_star {
-                        color: #0795DF;
+                        color: #0795df;
                         display: flex;
                         align-items: center;
 
@@ -309,7 +397,7 @@
                             height: 80px;
                             object-position: center;
                             object-fit: cover;
-                            border: 1px solid #D7D7D7;
+                            border: 1px solid #d7d7d7;
                             margin-bottom: 10px;
                             margin-right: 10px;
                         }
@@ -329,8 +417,8 @@
                 border-radius: 5px;
                 text-align: center;
                 background-color: #fff;
-                color: #0795DF;
-                border: 0.5px solid #0795DF;
+                color: #0795df;
+                border: 0.5px solid #0795df;
                 display: flex;
                 align-items: center;
                 justify-content: space-around;
