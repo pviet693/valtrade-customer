@@ -1,0 +1,77 @@
+.order-item__container {
+    box-shadow: 0px 1px 2px 1px rgb(0 0 0 / 13%);
+    padding: 20px;
+    margin-bottom: 20px;
+    color: #5a616f !important;
+    cursor: pointer;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+
+    &:hover {
+        box-shadow: 0px 1px 2px 2px rgb(0 0 0 / 13%);
+        background-color: #f8f8f8;
+    }
+
+    .order-item__header {
+        padding-bottom: 10px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.09);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+
+        .shop-infor {
+            display: flex;
+            align-items: center;
+            flex-basis: 35%;
+            justify-content: space-between;
+
+            .shop-name {
+                font-size: 1.125em;
+            }
+
+            .shop-contact {
+                color: #0795df;
+            }
+
+            .view-shop {
+                box-shadow: unset;
+                border: 1px solid #0795df;
+                background-color: #fff;
+                border-radius: 4px;
+                padding: 5px;
+            }
+        }
+
+        .order-status {
+            font-size: 1.125em;
+        }
+    }
+
+    .order-item__content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.09);
+
+        .order-infor {
+            display: flex;
+            align-items: center;
+            flex-basis: 85%;
+        }
+
+        .order-price {
+            flex-basis: 10%;
+        }
+    }
+
+    .order-item__summary {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        padding-top: 20px;
+    }
+}

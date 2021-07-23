@@ -16,6 +16,8 @@ import AlarmOnIcon from '@material-ui/icons/AlarmOn';
 import RestorePageOutlinedIcon from '@material-ui/icons/RestorePageOutlined';
 import CheckOutlinedIcon from '@material-ui/icons/CheckOutlined';
 import { InputTextarea } from 'primereact/inputtextarea';
+import { Dialog } from "primereact/dialog";
+import { Button } from 'primereact/button';
 import cookie from "cookie";
 import Moment from 'moment';
 Moment.locale('en');
@@ -23,6 +25,8 @@ Moment.locale('en');
 const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
     const { state, dispatch, toast, swal } = useContext(DataContext);
     const { cart, auth } = state;
+    const [showReport, setShowReport] = useState(false);
+    const [reason, setReason] = useState("");
     const [information] = useState(() => {
         if (typeof product.information === "string") {
             return JSON.parse(product.information);
@@ -246,6 +250,21 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
         return Math.ceil((date - currentDate) / (24 * 3600 * 1000));
     }
 
+    const renderFooter = () => {
+        return (
+            <div>
+                <Button label="Hủy bỏ" icon="pi pi-times" onClick={() => setShowReport(false)} className="p-button-text btn-danger" />
+                <Button label="Gửi" icon="pi pi-check" onClick={() => sendReport()} autoFocus className="btn-primary" />
+            </div>
+        );
+    }
+
+    const sendReport = () => {
+        setShowReport(false);
+        // call api
+        console.log(reason);
+    }
+
     return (
         <div className="product-detail-container">
             <Head>
@@ -314,7 +333,7 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
                             </div>
                             <div className="detail-price d-flex align-items-center">
                                 <LocalOfferIcon className="mr-2" style={{ color: "#0795df" }}/>
-                                <div>Giá: {common.numberWithCommas(product.price)} VNĐ</div>
+                                {/* <div>Giá: {common.numberWithCommas(product.price)} VNĐ</div> */}
                             </div>
                             <div className="detail-primary d-flex align-items-center">
                                 <VerifiedUserOutlinedIcon className="mr-2" style={{ color: "#0795df" }} />
@@ -346,7 +365,7 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
                             </div>
                             <div className="detail-primary d-flex align-items-center">
                                 <i className="pi pi-tag mr-2" style={{ color: "#0795df", fontSize: "1.2em" }}></i>
-                                <div>Giá mua ban đầu: {common.numberWithCommas(product.oldPrice)} VNĐ</div>
+                                {/* <div>Giá mua ban đầu: {common.numberWithCommas(product.oldPrice)} VNĐ</div> */}
                             </div>
                             <div className="detail-primary d-flex">
                                 <LocalShippingOutlinedIcon className="mr-2" style={{ color: "#0795df" }} />
@@ -405,6 +424,9 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
                         </div>
                     </div>
                     <div className="product-details-container">
+                        <div className="report" onClick={() => setShowReport(true)}>
+                            Tố cáo người bán
+                        </div>
                         <div className="title">
                             Thông tin chi tiết
                         </div>
@@ -552,6 +574,15 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
                     </div> */}
                 </div>
             </div>
+
+            <Dialog header="Lý do" visible={showReport} onHide={() => setShowReport(false)} breakpoints={{ '960px': '75vw' }} style={{ width: '50vw' }} footer={renderFooter()}>
+                <textarea
+                    rows="5"
+                    className="form-control w-100 mt-1"
+                    onChange={(e) => setReason(e.target.value)}
+                    value={reason}
+                />
+            </Dialog>
         </div>
     )
 }

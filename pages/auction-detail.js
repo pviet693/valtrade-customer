@@ -372,7 +372,7 @@ const AuctionDetail = ({ product, logBidUser, currentPriceAuction, attributes })
                             }
 
                             {
-                                isSell
+                                !isSell
                                     ? (
                                         <div className="auction-detail-action">
                                             <div className="auction-time">

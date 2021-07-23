@@ -20,6 +20,8 @@ import '../styles/cart-item.scss';
 import '../styles/checkout.scss';
 import '../styles/change-password.scss';
 import '../styles/address.scss';
+import '../styles/notification.scss';
+import '../styles/order-item.scss';
 import "primeicons/primeicons.css";
 import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";
