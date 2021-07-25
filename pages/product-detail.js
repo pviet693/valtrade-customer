@@ -253,7 +253,13 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
     const renderFooter = () => {
         return (
             <div>
-                <Button label="Hủy bỏ" icon="pi pi-times" onClick={() => setShowReport(false)} className="p-button-text btn-danger" />
+                <Button
+                    label="Hủy bỏ"
+                    icon="pi pi-times"
+                    onClick={() => setShowReport(false)}
+                    className="p-button-text btn-danger"
+                    style={{  }}
+                />
                 <Button label="Gửi" icon="pi pi-check" onClick={() => sendReport()} autoFocus className="btn-primary" />
             </div>
         );

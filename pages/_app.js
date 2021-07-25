@@ -25,6 +25,7 @@ import '../styles/order-item.scss';
 import "primeicons/primeicons.css";
 import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";
+import 'react-chat-elements/dist/main.css';
 import Layout from '../components/Layout';
 import Loading from '../components/Loading';
 import { DataProvider } from '../store/GlobalState';
