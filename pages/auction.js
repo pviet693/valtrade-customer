@@ -15,8 +15,6 @@ import AuctionCard from "../components/AuctionCard";
 const Auction = ({ brands, categories, products, query, total }) => {
     const items = [
         { label: 'SẢN PHẨM MỚI', icon: 'pi pi-fw pi-home' },
-        { label: 'GIÁ THẤP', icon: 'pi pi-arrow-up' },
-        { label: 'GIÁ CAO', icon: 'pi pi-arrow-down' },
         { label: 'TÊN (A - Z)', icon: 'pi pi-arrow-up' },
         { label: 'TÊN (Z - A)', icon: 'pi pi-arrow-down' }
     ];

@@ -1,4 +1,3 @@
-import '../styles/globals.css';
 import '../styles/loading.scss';
 import '../styles/navbar.scss';
 import '../styles/footer.scss';
@@ -22,10 +21,12 @@ import '../styles/change-password.scss';
 import '../styles/address.scss';
 import '../styles/notification.scss';
 import '../styles/order-item.scss';
+import '../styles/message.scss';
 import "primeicons/primeicons.css";
 import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";
 import 'react-chat-elements/dist/main.css';
+import '../styles/globals.css';
 import Layout from '../components/Layout';
 import Loading from '../components/Loading';
 import { DataProvider } from '../store/GlobalState';

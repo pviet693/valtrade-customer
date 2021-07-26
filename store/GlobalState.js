@@ -27,10 +27,8 @@ export const DataProvider = ({ children }) => {
     })
 
     useEffect(async () => {
-
+        console.log("Socket connect");
         const socket = io.connect("https://valtrade-api.tech", {
-            // path: 'api/',
-            // withCredentials: false
             transports: ["websocket", "polling"]
         });
         setSocket(socket);
@@ -67,7 +65,7 @@ export const DataProvider = ({ children }) => {
 
                 dispatch({ type: 'ADD_CART', payload: carts });
             } catch (error) {
-                common.ToastPrime('Lỗi', error.response.data.message || error, 'error', toast);
+                common.ToastPrime('Lỗi', error.response ? error.response.data.message : error.message, 'error', toast);
             }
         }
     }, []);

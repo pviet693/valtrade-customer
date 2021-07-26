@@ -65,6 +65,12 @@ const url = {
     },
     transfer: {
         postTransfer: () => `${baseUrl}/api/transfer/createTransfer`
+    },
+    chat: {
+        sendMessage: () => `${baseUrl}/api/message/sendMessage`,
+        getListMessage: () => `${baseUrl}/api/message/getListMessage`,
+        updateMessage: () => `${baseUrl}/api/message/updateMessage`,
+        getListConversation: () => `${baseUrl}/api/message/getListConversation`
     }
 }
 

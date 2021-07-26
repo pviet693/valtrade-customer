@@ -11,6 +11,7 @@ import cookie from "cookie";
 import { useRouter } from 'next/router';
 import { Carousel } from 'primereact/carousel';
 import { DataContext } from "../store/GlobalState";
+import Router from "next/router";
 
 const Home = ({ brands, categories, products, auctions }) => {
     const router = useRouter();
