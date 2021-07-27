@@ -12,14 +12,15 @@ import _ from "lodash";
 import { v4 as uuidv4 } from 'uuid';
 
 function Layout({ children }) {
-    const { state, socket, toast } = useContext(DataContext);
-    const { auth } = state
+    const { dispatch, state, socket, toast } = useContext(DataContext);
+    const { auth, conversations, activeChatUser, openChat } = state
     const [anchorEl, setAnchorEl] = useState(null);
     const [messageText, setMessageText] = useState("");
     const [listMessage, setListMessage] = useState([]);
-    const [listConversation, setListConversation] = useState([]);
     const [chatUserId, setChatUserId] = useState("");
+    const [listConversation, setListConversation] = useState([]);
     const messagesEndRef = useRef(null);
+    const refChatButton = useRef(null);
 
     const scrollToBottom = () => {
         if (messagesEndRef.current) {
@@ -48,27 +49,29 @@ function Layout({ children }) {
         e.preventDefault();
         const text = messageText;
         setMessageText("");
-        try {
-            let body = {
-                typeFrom: "Buyer",
-                typeTo: "Seller",
-                to: chatUserId,
-                message: text
-            }
-            const response = await api.chat.postMessage(body);
-            if (response.status !== 200) {
+        if (activeChatUser) {
+            try {
+                let body = {
+                    typeFrom: "Buyer",
+                    typeTo: "Seller",
+                    to: activeChatUser,
+                    message: text
+                }
+                const response = await api.chat.postMessage(body);
+                if (response.status !== 200) {
+                    common.ToastPrime("Lỗi",
+                        response.data.message,
+                        "error",
+                        toast
+                    );
+                }
+            } catch (error) {
                 common.ToastPrime("Lỗi",
-                    response.data.message,
+                    error.response ? error.response.data.message : error.message,
                     "error",
                     toast
                 );
             }
-        } catch (error) {
-            common.ToastPrime("Lỗi",
-                error.response ? error.response.data.message : error.message,
-                "error",
-                toast
-            );
         }
     };
 
@@ -78,7 +81,7 @@ function Layout({ children }) {
                 setListMessage((prevStates) => [...prevStates, {
                     message: {
                         messageText: res.message,
-                        createdAt: res.time,
+                        createdAt: common.timeSince(new Date(res.time)),
                         imageUrl: "/static/avatar-person.svg"
                     },
                     isMyMessage: res.typeFrom === "Buyer"
@@ -86,58 +89,6 @@ function Layout({ children }) {
             });
         }
     }, [socket]);
-
-    const getAvatar = (conversation) => {
-        const { recipients } = conversation;
-        const { from } = recipients;
-        const { fromId } = from;
-        const { imageUrl } = fromId;
-        if (imageUrl) {
-            const { url } = imageUrl;
-            return url || "/static/avatar-person.svg";
-        };
-
-        return "/static/avatar-person.svg";
-    };
-
-    const getListConversation = async () => {
-        try {
-            const response = await api.chat.getListConversation();
-            if (response.data.code === 200) {
-                const { result } = response.data;
-                const conversations = [];
-                result.forEach((conversation, index) => {
-                    if (index === 0) {
-                        const { recipients } = conversation;
-                        const { to } = recipients;
-                        const { toId } = to;
-                        setChatUserId(toId._id);
-                    }
-                    conversations.push({
-                        avatar: getAvatar(conversation),
-                        alt: "avatar",
-                        title: conversation.recipients.from.fromId.name || "",
-                        subtitle: conversation.lastMessage,
-                        dateString: conversation.date,
-                        unread: conversation.count,
-                    })
-                });
-                setListConversation(conversations);
-            } else {
-                common.ToastPrime("Lỗi",
-                    response.data.message,
-                    "error",
-                    toast
-                );
-            }
-        } catch (error) {
-            common.ToastPrime("Lỗi",
-                error.response ? error.response.data.message : error.message,
-                "error",
-                toast
-            );
-        }
-    }
 
     const getListMessage = async (chatUserId) => {
         try {
@@ -151,7 +102,7 @@ function Layout({ children }) {
                     messages.push({
                         message: {
                             messageText: body,
-                            createdAt: date,
+                            createdAt: common.timeSince(new Date(date)),
                             imageUrl: "/static/avatar-person.svg"
                         },
                         isMyMessage: typeTo === "Buyer"
@@ -175,10 +126,10 @@ function Layout({ children }) {
     };
 
     useEffect(() => {
-        if (!_.isEmpty(auth)) {
-            getListConversation();
+        if (!_.isEmpty(activeChatUser)) {
+            setChatUserId(activeChatUser);
         }
-    }, [auth]);
+    }, [activeChatUser]);
 
     useEffect(() => {
         if (chatUserId) {
@@ -186,12 +137,37 @@ function Layout({ children }) {
         }
     }, [chatUserId]);
 
+    const onClickConversation = (item) => {
+        console.log(item, "click");
+    }
+
+    useEffect(() => {
+        if (conversations.length > 0 && activeChatUser) {
+            const newConversation = conversations.map(
+                (conversation) => ({
+                    ...conversation,
+                    onClick: onClickConversation,
+                    className: conversation.toUserId === activeChatUser ? "active-chat-item" : ""
+                })
+            );
+            console.log(newConversation);
+            setListConversation(newConversation);
+        }
+    }, [conversations, activeChatUser]);
+
+    useEffect(() => {
+        if (openChat) {
+            refChatButton.current.click();
+            dispatch({ type: 'OPEN_CHAT', payload: false });
+        }
+    }, [openChat]);
+
     return (
         <div style={{ width: "100vw", position: "relative", height: "100vh" }}>
             <NavBar />
             <main>{children}</main>
             <Footer />
-            <Button aria-describedby={id} onClick={handleClick}
+            <Button aria-describedby={id} onClick={handleClick} ref={refChatButton}
                 style={{
                     position: "fixed",
                     bottom: 20,
@@ -228,21 +204,6 @@ function Layout({ children }) {
                     </div>
                     <div className="col-lg-7 px-0 h-100" style={{ position: "relative", minHeight: "500px" }}>
                         <div style={{ height: 440, overflow: "auto", padding: 10, marginBottom: 10 }}>
-                            {/* <Message
-                                isMyMessage={false}
-                                message={{
-                                    messageText: "Sản phẩm này bạn có vừa lòng không ạ? Cho shop xin ít ý kiến để cải thiện dịch vụ với ạ. Shop cảm ơn",
-                                    imageUrl: "/static/avatar-person.svg",
-                                    createdAt: "12/07/2021 - 10:20:21 AM"
-                                }}
-                            />
-                            <Message
-                                isMyMessage={true}
-                                message={{
-                                    messageText: "Sản phẩm rất ưng ý nhé shop. Giao hàng nhanh, tư vấn viên nhiệt tình hỗ trợ. Điểm 10 chất lượng",
-                                    createdAt: "12/07/2021 - 10:20:25 AM"
-                                }}
-                            /> */}
                             {
                                 listMessage.map((message) => {
                                     return (

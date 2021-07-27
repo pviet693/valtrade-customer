@@ -15,7 +15,17 @@ export const DataProvider = ({ children }) => {
     const toast = useRef(null);
     const [socket, setSocket] = useState(null);
     const initialState = {
-        notify: {}, auth: {}, cart: [], modal: [], orders: [], users: [], categories: [], searchQuery: ""
+        notify: {},
+        auth: {},
+        cart: [],
+        modal: [],
+        orders: [],
+        users: [],
+        categories: [],
+        searchQuery: "",
+        conversations: [],
+        activeChatUser: "",
+        openChat: false
     }
     const [state, dispatch] = useReducer(reducers, initialState);
     const swal = Swal.mixin({
@@ -24,7 +34,20 @@ export const DataProvider = ({ children }) => {
         showCancelButton: false,
         showConfirmButton: false,
         allowOutsideClick: false,
-    })
+    });
+
+    const getAvatar = (conversation) => {
+        const { recipients } = conversation;
+        const { from } = recipients;
+        const { fromId } = from;
+        const { imageUrl } = fromId;
+        if (imageUrl) {
+            const { url } = imageUrl;
+            return url || "/static/avatar-person.svg";
+        };
+
+        return "/static/avatar-person.svg";
+    };
 
     useEffect(async () => {
         console.log("Socket connect");
@@ -64,6 +87,39 @@ export const DataProvider = ({ children }) => {
                 }
 
                 dispatch({ type: 'ADD_CART', payload: carts });
+
+                const responseConversation = await api.chat.getListConversation();
+                if (responseConversation.data.code === 200) {
+                    const { result } = responseConversation.data;
+                    const conversations = [];
+                    result.forEach((conversation, index) => {
+                        const { recipients } = conversation;
+                        const { from, to } = recipients;
+                        const { fromId } = from;
+                        const { toId } = to;
+                        console.log(from, to);
+                        const checkSeller = from.actors === "Seller";
+                        let title = checkSeller ? fromId.nameOwner : toId.nameOwner;
+                        let fromUserId = checkSeller ? toId._id : fromId._id;
+                        let toUserId = checkSeller ? fromId._id : toId._id;
+                        conversations.push({
+                            fromUserId,
+                            toUserId,
+                            avatar: getAvatar(conversation),
+                            alt: "avatar",
+                            title,
+                            subtitle: conversation.lastMessage,
+                            dateString: common.timeSince(new Date(conversation.date)),
+                            unread: conversation.count,
+                            className: ""
+                        })
+                    });
+
+                    if (conversations.length > 0) {
+                        dispatch({ type: 'GET_CONVERSATIONS', payload: conversations });
+                        dispatch({ type: 'ACTIVE_CHAT_USER', payload: conversations[0].toUserId });
+                    }
+                }
             } catch (error) {
                 common.ToastPrime('Lỗi', error.response ? error.response.data.message : error.message, 'error', toast);
             }

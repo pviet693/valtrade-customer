@@ -48,6 +48,39 @@ const reducers = (state, action) => {
                 ...state,
                 searchQuery: action.payload
             };
+        case ACTIONS.GET_CONVERSATIONS:
+            return {
+                ...state,
+                conversations: action.payload
+            };
+        case ACTIONS.ADD_NEW_CONVERSATION:
+            const { conversations } = state;
+            const newConversation = action.payload;
+            const checkExistConversation = conversations.find(
+                (conversation) => conversation.toUserId === newConversation.toUserId
+            );
+            let newListConversation = [];
+            if (!checkExistConversation) {
+                newListConversation = [...conversations, newConversation];
+            } else {
+                newListConversation = [...conversations];
+            }
+
+            return {
+                ...state,
+                conversations: newListConversation,
+                activeChatUser: newConversation.toUserId
+            }
+        case ACTIONS.ACTIVE_CHAT_USER:
+            return {
+                ...state,
+                activeChatUser: action.payload
+            };
+        case ACTIONS.OPEN_CHAT:
+            return {
+                ...state,
+                openChat: action.payload
+            };
         default:
             return state;
     }
