@@ -177,32 +177,18 @@ const api = {
             if (params.brand) param.brand = params.brand;
             if (params.keysOption !== 0) {
                 if (params.keysOption === 1) {
-                    queryPrice = `&keys=${1000000}`;
+                    queryPrice = `&selled=${false}`;
                 }
                 if (params.keysOption === 2) {
-                    queryPrice = `&keys=${1000000}&keys=${5000000}`;
-                }
-                if (params.keysOption === 3) {
-                    queryPrice = `&keys=${5000000}&keys=${15000000}`;
-                }
-                if (params.keysOption === 4) {
-                    queryPrice = `&keys=${15000000}`;
+                    queryPrice = `&selled=${true}`;
                 }
             }
             if (params.activeItem) {
                 if (params.activeItem === 1) {
                     param.order = 1;
-                    param.sortBy = "price";
-                }
-                if (params.activeItem === 2) {
-                    param.order = -1;
-                    param.sortBy = "price";
-                }
-                if (params.activeItem === 3) {
-                    param.order = 1;
                     param.sortBy = "name";
                 }
-                if (params.activeItem === 4) {
+                if (params.activeItem === 2) {
                     param.order = -1;
                     param.sortBy = "name";
                 }
@@ -343,6 +329,20 @@ const api = {
     notification: {
         getNotification: () =>{
             return axios.get(url.notification.getNotification(), config);
+        }
+    },
+    chat: {
+        postMessage: (body) => {
+            return axios.post(url.chat.sendMessage(), body, config);
+        },
+        getListMessage: (userId) => {
+            return axios.get(url.chat.getListMessage() + `?userId=${userId}`, config);
+        },
+        updateMessage: () => {
+            return axios.get(url.chat.updateMessage(), config);
+        },
+        getListConversation: () => {
+            return axios.get(url.chat.getListConversation(), config);
         }
     }
 };

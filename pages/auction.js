@@ -15,8 +15,6 @@ import AuctionCard from "../components/AuctionCard";
 const Auction = ({ brands, categories, products, query, total }) => {
     const items = [
         { label: 'SẢN PHẨM MỚI', icon: 'pi pi-fw pi-home' },
-        { label: 'GIÁ THẤP', icon: 'pi pi-arrow-up' },
-        { label: 'GIÁ CAO', icon: 'pi pi-arrow-down' },
         { label: 'TÊN (A - Z)', icon: 'pi pi-arrow-up' },
         { label: 'TÊN (Z - A)', icon: 'pi pi-arrow-down' }
     ];
@@ -140,35 +138,24 @@ const Auction = ({ brands, categories, products, query, total }) => {
         )
     }
 
-    const FilterPriceCard = (props) => {
-        const { from, to, gt, lt, checked, onChange } = props;
+    const FilterStatus = (props) => {
+        const { status, checked, onChange } = props;
 
-        if (!from && !to) {
+        if (status === true) {
             return (
                 <div className="filter-price-row">
                     <Checkbox onChange={onChange} checked={checked} />
                     <div className="price-value">
-                        Tất cả
+                        Đang đấu giá
                     </div>
                 </div>
             )
-        }
-
-        if (gt) {
+        } else if (status === false) {
             return (
                 <div className="filter-price-row">
                     <Checkbox onChange={onChange} checked={checked} />
                     <div className="price-value">
-                        Trên {from}
-                    </div>
-                </div>
-            )
-        } else if (lt) {
-            return (
-                <div className="filter-price-row">
-                    <Checkbox onChange={onChange} checked={checked} />
-                    <div className="price-value">
-                        Dưới {from}
+                        Đã đấu giá
                     </div>
                 </div>
             )
@@ -177,7 +164,7 @@ const Auction = ({ brands, categories, products, query, total }) => {
                 <div className="filter-price-row">
                     <Checkbox onChange={onChange} checked={checked} />
                     <div className="price-value">
-                        Từ {from} đến {to}
+                        Tất cả
                     </div>
                 </div>
             )
@@ -271,11 +258,9 @@ const Auction = ({ brands, categories, products, query, total }) => {
                                     Giá tiền
                                 </div>
                                 <div className="filter-row-content">
-                                    <FilterPriceCard from="" to="" gt={true} lt={false} onChange={() => onChangeFilterPrice(0)} checked={filter.keysOption === 0} />
-                                    <FilterPriceCard from="1000000" to="" gt={false} lt={true} onChange={() => onChangeFilterPrice(1)} checked={filter.keysOption === 1} />
-                                    <FilterPriceCard from="1000000" to="5000000" gt={false} lt={false} onChange={() => onChangeFilterPrice(2)} checked={filter.keysOption === 2} />
-                                    <FilterPriceCard from="5000000" to="15000000" gt={false} lt={false} onChange={() => onChangeFilterPrice(3)} checked={filter.keysOption === 3} />
-                                    <FilterPriceCard from="15000000" to="" gt={true} lt={false} onChange={() => onChangeFilterPrice(4)} checked={filter.keysOption === 4} />
+                                    <FilterStatus  onChange={() => onChangeFilterPrice(0)} checked={filter.keysOption === 0} />
+                                    <FilterStatus status={true} onChange={() => onChangeFilterPrice(1)} checked={filter.keysOption === 1} />
+                                    <FilterStatus status={false} onChange={() => onChangeFilterPrice(2)} checked={filter.keysOption === 2} />
                                 </div>
                             </div>
                             <div className="filter-row">

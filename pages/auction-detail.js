@@ -6,7 +6,7 @@ import { DataContext } from '../store/GlobalState';
 import { useContext, useEffect, useState } from 'react';
 import * as common from "../utils/common";
 import cookie from "cookie";
-import StarBorderIcon from '@material-ui/icons/StarBorder';
+import Cookie from 'js-cookie';
 import LocalOfferIcon from '@material-ui/icons/LocalOffer';
 import BeenhereOutlinedIcon from '@material-ui/icons/BeenhereOutlined';
 import VerifiedUserOutlinedIcon from '@material-ui/icons/VerifiedUserOutlined';
@@ -110,13 +110,23 @@ const AuctionDetail = ({ product, logBidUser, currentPriceAuction, attributes })
     }, [])
 
     useEffect(() => {
-        if (Object.keys(auth).length > 0 && socket) {
-            socket.emit("joinRoom", {
-                bidId: product.id,
-                userId: auth.user.userId,
-            });
+        if (socket) {
+            let token = Cookie.get('access_token');
+            if (token) {
+                if (!_.isEmpty(auth)) {
+                    socket.emit("joinRoom", {
+                        bidId: product.id,
+                        userId: auth.user.userId,
+                    });
+                }
+            } else {
+                socket.emit("joinRoom", {
+                    bidId: product.id,
+                    userId: undefined
+                });
+            }
         }
-    }, [auth]);
+    }, [auth, socket]);
 
     const increasePrice = () => {
         let price = priceAuction;
@@ -509,7 +519,6 @@ export async function getServerSideProps(ctx) {
             if (res.data.code === 200) {
                 const { logBid } = res.data;
                 const data = res.data.result;
-                console.log(data);
                 productDetail.id = id;
                 productDetail.selled = data.selled;
                 productDetail.categoryId = data.categoryInfor._id;

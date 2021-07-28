@@ -8,11 +8,13 @@ import ProductCard from "../components/ProductCard";
 import AuctionCard from "../components/AuctionCard";
 import Category from "../components/Category";
 import cookie from "cookie";
-import Router from 'next/router';
+import { useRouter } from 'next/router';
 import { Carousel } from 'primereact/carousel';
 import { DataContext } from "../store/GlobalState";
+import Router from "next/router";
 
 const Home = ({ brands, categories, products, auctions }) => {
+    const router = useRouter();
     const { state, dispatch, toast, swal, socket } = useContext(DataContext);
     const [listCountDown, setListCountDown] = useState({});
     const [listCountUser, setListCountUser] = useState({});

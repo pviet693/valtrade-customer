@@ -253,7 +253,13 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
     const renderFooter = () => {
         return (
             <div>
-                <Button label="Hủy bỏ" icon="pi pi-times" onClick={() => setShowReport(false)} className="p-button-text btn-danger" />
+                <Button
+                    label="Hủy bỏ"
+                    icon="pi pi-times"
+                    onClick={() => setShowReport(false)}
+                    className="p-button-text btn-danger"
+                    style={{  }}
+                />
                 <Button label="Gửi" icon="pi pi-check" onClick={() => sendReport()} autoFocus className="btn-primary" />
             </div>
         );
@@ -283,7 +289,26 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
                                     Liên hệ: {product.phone}
                                 </div>
                                 <div className="shop-action">
-                                    <button className="btn btn-follow">Theo dõi</button>
+                                    <button
+                                        className="btn btn-follow"
+                                        onClick={() => {
+                                            const newConversation = {
+                                                toUserId: product.sellerInfor._id,
+                                                avatar: "/static/avatar-person.svg",
+                                                alt: "avatar",
+                                                title: product.sellerInfor.nameOwner,
+                                                subtitle: "",
+                                                dateString: "Vừa mới",
+                                                unread: 0,
+                                                className: ""
+                                            };
+                                            dispatch({ type: 'ADD_NEW_CONVERSATION', payload: newConversation });
+                                            dispatch({ type: 'ACTIVE_CHAT_USER', payload: product.sellerInfor._id });
+                                            dispatch({ type: 'OPEN_CHAT', payload: true })
+                                        }}
+                                    >
+                                        Nhắn tin
+                                    </button>
                                     <button className="btn btn-view-shop">Xem shop</button>
                                 </div>
                             </div>
@@ -291,7 +316,7 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
                         <div className="shop-info-right">
                             <div className="col-left">
                                 <div className="col-left-row star">
-                                    <u className="mr-3 mt-1">5.0</u>
+                                    <u className="mr-3 mt-1">{(product.rateMedium / 20).toFixed(2)}</u>
                                     <i className="pi pi-star"></i>
                                     <i className="pi pi-star"></i>
                                     <i className="pi pi-star"></i>
@@ -299,25 +324,19 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
                                     <i className="pi pi-star"></i>
                                 </div>
                                 <div className="col-left-row">
-                                    <div>Số lượng đánh giá: <u>100</u></div>
+                                    <div>Số lượng đánh giá: <u>{product.rateCount}</u></div>
                                 </div>
                                 <div className="col-left-row">
-                                    <div>Số lượng sản phẩm đã đăng: <u>100</u></div>
+                                    <div>Số lượng sản phẩm đã đăng: <u>{product.countProductCreate}</u></div>
                                 </div>
                                 <div className="col-left-row">
-                                    <div>Số lượng sản phẩm đã bán: <u>100</u></div>
+                                    <div>Số lượng sản phẩm đã bán: <u>0</u></div>
                                 </div>
                             </div>
                             <div className="col-right">
                                 <div className="col-right-row"></div>
                                 <div className="col-right-row">
-                                    <div>Người theo dõi: <u>100</u></div>
-                                </div>
-                                <div className="col-right-row">
-                                    <div>Tham gia: <u>1 ngày trước</u></div>
-                                </div>
-                                <div className="col-right-row">
-                                    <div>Số phẩm vi phạm: <u>0</u></div>
+                                    <div>Tham gia: <u>{getDiffTime(product.restWarrantyTime)} ngày trước</u></div>
                                 </div>
                             </div>
                         </div>
@@ -627,7 +646,6 @@ export async function getServerSideProps(ctx) {
         const res = await api.buyer.getDetailProduct(id);
         if (res.status === 200) {
             if (res.data.code === 200) {
-                console.log(res.data);
                 const data = res.data.result;
                 productDetail.id = id;
                 productDetail.categoryId = data.categoryInfor._id;
@@ -650,6 +668,10 @@ export async function getServerSideProps(ctx) {
                 productDetail.oldPrice = data.oldPrice;
                 productDetail.timePost = data.timePost;
                 productDetail.countProduct = data.countProduct;
+                productDetail.sellerInfor = data.sellerInfor;
+                productDetail.rateCount = data.rateCount;
+                productDetail.countProductCreate = data.countProductCreate;
+                productDetail.rateMedium = data.rateMedium;
             }
         }
 
