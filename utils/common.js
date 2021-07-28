@@ -1,4 +1,5 @@
 import Swal from 'sweetalert2';
+import Moment from "moment";
 
 export const Toast = (message, type, timer = 1500) => {
     const Toast = Swal.mixin({
@@ -154,4 +155,8 @@ export function timeSince(date) {
         return Math.floor(interval) + " phút trước";
     }
     return Math.floor(seconds) + " giây";
+}
+
+export function formatTimeChat(date) {
+    return Moment(new Date(date)).format("DD/MM/yyyy HH:mm:ss A");
 }

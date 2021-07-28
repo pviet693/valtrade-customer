@@ -92,12 +92,11 @@ export const DataProvider = ({ children }) => {
                 if (responseConversation.data.code === 200) {
                     const { result } = responseConversation.data;
                     const conversations = [];
-                    result.forEach((conversation, index) => {
+                    result.forEach((conversation) => {
                         const { recipients } = conversation;
                         const { from, to } = recipients;
                         const { fromId } = from;
                         const { toId } = to;
-                        console.log(from, to);
                         const checkSeller = from.actors === "Seller";
                         let title = checkSeller ? fromId.nameOwner : toId.nameOwner;
                         let fromUserId = checkSeller ? toId._id : fromId._id;
@@ -109,7 +108,7 @@ export const DataProvider = ({ children }) => {
                             alt: "avatar",
                             title,
                             subtitle: conversation.lastMessage,
-                            dateString: common.timeSince(new Date(conversation.date)),
+                            dateString: common.formatTimeChat(new Date(conversation.date)),
                             unread: conversation.count,
                             className: ""
                         })
