@@ -325,6 +325,9 @@ const api = {
             if (isEnable()) {
                 return axios.post(url.order.createOrder(), body, config);
             }
+        },
+        getOrder: () =>{
+            return axios.get(url.order.getOrder(), config);
         }
     },
     category: {
@@ -336,6 +339,11 @@ const api = {
         postTransfer: (body) => {
             return axios.post(url.transfer.postTransfer(), body, config);
         } 
+    },
+    notification: {
+        getNotification: () =>{
+            return axios.get(url.notification.getNotification(), config);
+        }
     }
 };
 

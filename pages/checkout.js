@@ -30,6 +30,8 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
         const type = Object.keys(value)[0];
         let body = {};
 
+        
+
         if (type === "ghn") {
             body = {
                 from_district_id: value.ghn.district.district_id,
@@ -44,7 +46,6 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
                 insurance_fee: cartCheckouts[id].totalPrice,
                 coupon: null
             }
-
             const res = await api.ghn.calculateShippingFee(body);
             if (res.data.code === 200) {
                 const listCartCheckout = { ...cartCheckouts };
@@ -99,6 +100,8 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
         }
     }
 
+    console.log(cartCheckouts);
+
     const createOrder = async () => {
         const arrayOrder = [];
         console.log(deliveryAddress);
@@ -151,6 +154,8 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
         setDeliveryAddress(() => deliveryAddresses.find(address => address.id === id));
     }
 
+    console.log(cartCheckouts);
+
     useEffect(() => {
         console.log(deliveryAddress);
     }, [deliveryAddress]);
@@ -181,15 +186,48 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
             if (res.status === 200) {
                 if (res.data.code === 200) {
                     common.Toast("Thanh toán thành công", 'success');
-                    let body = { listProductId: productCheckouts };
-                    const res1 = await api.cart.deleteCart(body);
-                    if (res1.status === 200) {
-                        if (res1.data.code === 200) {
-                            // common.ToastPrime('Thành công', 'Xóa giỏ hàng thành công.', 'success', toast);
-                            router.push('/cart');
-                        } else {
-                            let message = res.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
-                            common.ToastPrime('Lỗi', message, 'error', toast);
+                    const arrayOrder = [];
+                    Object.keys(cartCheckouts).forEach(id => {
+                        const { arrayCart } = cartCheckouts[id];
+                        let order = {
+                            addressOrder: deliveryAddress.address.full_address,
+                            arrayProductShop: [],
+                            price: cartCheckouts[id].totalPrice,
+                            shippingFee: cartCheckouts[id].shippingFee,
+                            total: cartCheckouts[id].total,
+                            shipType: cartCheckouts[id].shippingMethod,
+                            payment: "paypal",
+                            sellerId: cartCheckouts[id].seller._id,
+                            nameRecei: user.name,
+                            contact: user.phone,
+                            note: ""
+                        }
+
+                        arrayCart.forEach(cart => {
+                            order.arrayProductShop.push({
+                                inforProduct: cart._id,
+                                quantity: cart.quantity, 
+                                onProduct: cart.typeProduct
+                            })
+                        });
+
+                        arrayOrder.push(order);
+                    })
+
+
+
+                    const res1 = await api.order.createOrder({ arrayOrder });
+                    if (res1.data.code === 200) {
+                        let body = { listProductId: productCheckouts };
+                        const res2 = await api.cart.deleteCart(body);
+                        if (res2.status === 200) {
+                            if (res2.data.code === 200) {
+                                common.Toast('Xóa giỏ hàng thành công.', 'success');
+                                router.push('/');
+                            } else {
+                                let message = res2.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
+                                common.ToastPrime('Lỗi', message, 'error', toast);
+                            }
                         }
                     }
                 } else {
@@ -383,7 +421,7 @@ export async function getServerSideProps(ctx) {
     };
     let listAddress = [];
     let groupCartBySeller = {};
-    let user = { id: ""};
+    let user = { id: "", phone: "", name: ""};
 
     const cookies = ctx.req.headers.cookie;
     if (cookies) {
@@ -490,7 +528,9 @@ export async function getServerSideProps(ctx) {
                 const infoBuyer = await api.buyer.getProfile(token);
                 if (infoBuyer.status === 200){
                     if (infoBuyer.data.code === 200){
-                        user.id  = infoBuyer.data.information.userId
+                        user.id  = infoBuyer.data.information.userId;
+                        user.phone = infoBuyer.data.information.phone;
+                        user.name = infoBuyer.data.information.name;
                     }
                 }
             } catch (error) {

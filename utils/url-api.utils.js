@@ -59,13 +59,17 @@ const url = {
     },
     order: {
         createOrder: () => `${baseUrl}/api/order/createOrder`,
+        getOrder: () => `${baseUrl}/api/order/getByBuyer`,
     },
     category: {
         getDetails: () => `${baseUrl}/api/category/detail/:id`,
     },
     transfer: {
         postTransfer: () => `${baseUrl}/api/transfer/createTransfer`
-    }
+    },
+    notification: {
+        getNotification: () => `${baseUrl}/api/notification/list`
+    },
 }
 
 export default url;
