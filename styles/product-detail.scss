@@ -288,6 +288,8 @@
             position: relative;
 
             .report {
+                display: flex;
+                align-items: center;
                 position: absolute;
                 top: 20px;
                 right: 20px;
@@ -295,6 +297,9 @@
                 cursor: pointer;
                 white-space: nowrap;
                 line-height: 18px;
+                border: 1px solid #b71b1c;
+                border-radius: 4px;
+                padding: 10px;
 
                 &:hover {
                     text-decoration: underline;

@@ -352,7 +352,6 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
                             </div>
                             <div className="detail-price d-flex align-items-center">
                                 <LocalOfferIcon className="mr-2" style={{ color: "#0795df" }}/>
-                                {/* <div>Giá: {common.numberWithCommas(product.price)} VNĐ</div> */}
                             </div>
                             <div className="detail-primary d-flex align-items-center">
                                 <VerifiedUserOutlinedIcon className="mr-2" style={{ color: "#0795df" }} />
@@ -424,10 +423,10 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
                                 <AlarmOnIcon className="mr-2" style={{ color: "#0795df" }} />
                                 <div>Ngày đăng: {Moment(new Date(product.timePost)).format("DD/MM/yyyy - HH:mm:ss A")}</div>
                             </div>
-                            {/* <div className="detail-primary d-flex align-items-center">
+                            <div className="detail-primary d-flex align-items-center">
                                 <RestorePageOutlinedIcon className="mr-2" style={{ color: "#0795df" }} />
                                 <div>Số lượng còn lại: {product.countProduct} sản phẩm</div>
-                            </div> */}
+                            </div>
                             {
                                 product.note
                                 && (
@@ -444,7 +443,8 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
                     </div>
                     <div className="product-details-container">
                         <div className="report" onClick={() => setShowReport(true)}>
-                            Tố cáo người bán
+                            <img src="/static/flag-report.svg" width="20" height="20" />
+                            <span>Tố cáo người bán</span>
                         </div>
                         <div className="title">
                             Thông tin chi tiết

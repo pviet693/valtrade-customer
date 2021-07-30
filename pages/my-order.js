@@ -3,40 +3,40 @@ import SlideNav from "./../components/SlideNav";
 import { OrderItem } from "../components/OrderItem";
 import { useEffect, useState } from "react";
 import api from "../utils/backend-api.utils";
+import { v4 as uuidv4 } from "uuid";
 
-function MyOrder(params) {
+function MyOrder() {
     const [lstOrder, setLstOrder] = useState([]);
-    const [products, setProducts] = useState([]);
-     
+
     useEffect(async() =>{
         try{
             const res = await api.order.getOrder();
             if (res.status==200){
                 if (res.data.code === 200){
                     let orders = [];
-                    res.data.result.map(x => {
-                        let order = {
-                            contact: "",
-                            lstProduct: []
+                    const { result } = res.data;
+                    result.forEach((order) => {
+                        const { inforOrder } = order;
+                        const { total, contact, stateOrder, arrayProductShop } = inforOrder;
+                        const status = stateOrder[stateOrder.length - 1].state
+                        let orderItem = {
+                            total,
+                            contact,
+                            status,
+                            arrayProductShop: []
                         }
-                        order.contact = x.inforOrder.contact || "";
-                        let listProduct = [];
-                        x.inforOrder.arrayProductShop.forEach(x=>{
-                            let product = {
-                                image: "",
-                                name: "",
-                                quantity: 0,
-                                id: ""
-                            };
-                            product.name = x.inforProduct.name || "";
-                            product.image = x.inforProduct.arrayImage[0].url || "";
-                            product.quantity = x.quantity || 0;
-                            product.id = x.inforProduct._id || "";
-                            listProduct.push(product);
+                        arrayProductShop.forEach((product) => {
+                            const { inforProduct, quantity } = product;
+                            const { name, arrayImage } = inforProduct;
+                            const image = arrayImage[0].url;
+                            orderItem.arrayProductShop.push({
+                                name,
+                                image,
+                                quantity
+                            });
                         });
-                        order.lstProduct = listProduct;
-                        orders.push(order);
-                    })
+                        orders.push(orderItem);
+                    });
                     setLstOrder(orders);
                 }
             }
@@ -44,8 +44,6 @@ function MyOrder(params) {
             console.log(err);
         }
     },[]);
-
-    console.log(lstOrder);
 
     return (
         <>
@@ -59,12 +57,12 @@ function MyOrder(params) {
                         <div className="notification__content">
                             <div className="notification__content__title">Quản lí đơn hàng</div>
                             <hr />
-
-                            {/* <OrderItem />
-                            <OrderItem /> */}
                             {
                                 lstOrder.map(order => (
-                                    <OrderItem phone={order.contact} arrayProduct={order.lstProduct} />
+                                    <OrderItem
+                                        key={uuidv4()}
+                                        order={order}
+                                    />
                                 ))
                             }
                         </div>

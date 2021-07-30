@@ -160,3 +160,7 @@ export function timeSince(date) {
 export function formatTimeChat(date) {
     return Moment(new Date(date)).format("DD/MM/yyyy HH:mm:ss A");
 }
+
+export function formatTime(date) {
+    return Moment(new Date(date)).format("DD/MM/yyyy-HH:mm:ss A");
+}

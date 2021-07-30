@@ -12,13 +12,8 @@ import dynamic from "next/dynamic";
 const PaypalBtn = dynamic(() => import("../components/Paypal"), {
     ssr: false,
   });
-// import PaypalBtn from '../components/Paypal';
 
 const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckout, user }) => {
-    // console.log(buyer);
-    // console.log(groupCartBySeller);
-    //console.log(listAddress);
-    // console.log(productCheckouts);
     const [editAddress, setEditAddress] = useState(false);
     const [deliveryAddresses, setDeliveryAddresses] = useState(listAddress);
     const [deliveryAddress, setDeliveryAddress] = useState(() => deliveryAddresses.find(address => address.isDefault === true));
@@ -100,12 +95,8 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
         }
     }
 
-    console.log(cartCheckouts);
-
     const createOrder = async () => {
         const arrayOrder = [];
-        console.log(deliveryAddress);
-        console.log(cartCheckouts);
         Object.keys(cartCheckouts).forEach(id => {
             const { arrayCart } = cartCheckouts[id];
             let order = {
@@ -132,8 +123,6 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
             arrayOrder.push(order);
         })
 
-        console.log(arrayOrder);
-
         // const res = await api.order.createOrder({ arrayOrder });
         // if (res.data.code === 200) {
         //     let body = { listProductId: productCheckouts };
@@ -153,12 +142,6 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
     const onChangeAddress = (id) => {
         setDeliveryAddress(() => deliveryAddresses.find(address => address.id === id));
     }
-
-    console.log(cartCheckouts);
-
-    useEffect(() => {
-        console.log(deliveryAddress);
-    }, [deliveryAddress]);
 
     const transactionSuccess = async () => {
         try{
@@ -237,7 +220,11 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
             }
     
         }catch(err){
-            console.log(err);
+            common.ToastPrime("Lỗi",
+                error.response ? error.response.data.message : error.message,
+                "error",
+                toast
+            );
         }
     };
     
