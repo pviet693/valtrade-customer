@@ -89,7 +89,7 @@ const api = {
             if (params.brand) param.brand = params.brand;
             if (params.keysOption !== 0) {
                 if (params.keysOption === 1) {
-                    queryPrice = `&keys=${1000000}`;
+                    queryPrice = `&keys=${0}&keys=${1000000}`;
                 }
                 if (params.keysOption === 2) {
                     queryPrice = `&keys=${1000000}&keys=${5000000}`;
@@ -177,10 +177,10 @@ const api = {
             if (params.brand) param.brand = params.brand;
             if (params.keysOption !== 0) {
                 if (params.keysOption === 1) {
-                    queryPrice = `&selled=${false}`;
+                    queryPrice = `&selled=${true}`;
                 }
                 if (params.keysOption === 2) {
-                    queryPrice = `&selled=${true}`;
+                    queryPrice = `&selled=${false}`;
                 }
             }
             if (params.activeItem) {

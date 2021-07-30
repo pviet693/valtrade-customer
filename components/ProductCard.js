@@ -20,7 +20,7 @@ const ProductCard = ({ id, name, price, brand, sku, oldPrice, image, imageId, wa
                 let sameProduct = cartTemp.filter(x => x.productId === id);
                 if (sameProduct.length === 1) {
                     setLoading(false);
-                    if (countProduct === sameProduct[0].quantity) {
+                    if (countProduct === 0 || countProduct === sameProduct[0].quantity) {
                         common.ToastPrime('Lỗi', 'Sản phẩm không đủ số lượng.', 'error', toast);
                         return;
                     } else {
@@ -49,6 +49,11 @@ const ProductCard = ({ id, name, price, brand, sku, oldPrice, image, imageId, wa
                         }
                     }
                 } else {
+                    if (countProduct === 0) {
+                        common.ToastPrime('Lỗi', 'Sản phẩm không đủ số lượng.', 'error', toast);
+                        setLoading(false);
+                        return;
+                    }
                     let body = {
                         cartItems: [
                             {
@@ -80,6 +85,11 @@ const ProductCard = ({ id, name, price, brand, sku, oldPrice, image, imageId, wa
                     }
                 }
             } else {
+                if (countProduct === 0) {
+                    common.ToastPrime('Lỗi', 'Sản phẩm không đủ số lượng.', 'error', toast);
+                    setLoading(false);
+                    return;
+                }
                 let body = {
                     cartItems: [
                         {
