@@ -256,7 +256,7 @@ function Layout({ children }) {
                     background: "#0795df",
                     borderRadius: "50%"
                 }}>
-                <img src="/static/chat-icon.svg" />
+                <img src="/static/chat-icon.svg" alt="chat-icon" />
             </Button>
             <Popover
                 id={id}

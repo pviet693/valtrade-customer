@@ -1,6 +1,9 @@
 import Swal from 'sweetalert2';
 import Moment from "moment";
 import crypto from 'crypto';
+import { VNPay } from '../components/VNPAY';
+
+const TEST_CONFIG = VNPay.TEST_CONFIG;
 
 export const Toast = (message, type, timer = 1500) => {
     const Toast = Swal.mixin({
@@ -196,3 +199,9 @@ export function toUpperCase(s = '') {
 
     return s.toUpperCase();
 }
+
+export const vnpay = new VNPay({
+    paymentGateway: TEST_CONFIG.paymentGateway,
+    merchant: TEST_CONFIG.merchant,
+    secureSecret: TEST_CONFIG.secureSecret,
+});

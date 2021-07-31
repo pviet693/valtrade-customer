@@ -10,6 +10,7 @@ import { Dropdown } from 'primereact/dropdown';
 import { RadioButton } from 'primereact/radiobutton';
 import dynamic from "next/dynamic";
 import { DataContext } from '../store/GlobalState';
+import axios from 'axios';
 const PaypalBtn = dynamic(() => import("../components/Paypal"), {
     ssr: false,
 });
@@ -248,7 +249,27 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
     const transactionCanceled = () => {
         console.log('Transaction Canceled');
     }
-    let currency_total = Math.round(totalCheckout.total/23000);
+    let currency_total = Math.round(totalCheckout.total / 23000);
+    
+    const checkoutVNPay = async () => {
+        const checkoutPayload = {
+            amount: 500000,
+            locale: 'vn',
+            orderInfo: 'Thanh toan giay adidas',
+            orderType: 'fashion',
+            returnUrl: 'http://localhost:3000/?xxxx=1',
+            bankCode: "NCB",
+            orderDescription: "test",
+            language: "vn"
+        };
+
+        const redirectUrl = await axios.post("/api/create_payment_url", checkoutPayload);
+        if (redirectUrl.data.code === 200) {
+            const { data } = redirectUrl.data;
+            // window.location.href = data;
+            window.open(data, "_blank");
+        }
+    }
 
     return (
         <>
@@ -391,16 +412,18 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
                                     <button className="btn sum-checkout__btn-checkout" onClick={createOrder}>Đặt hàng</button>
                                 </div>
                             </div>
-                            {/* <PaypalBtn 
-                                total = {currency_total}
-                                
-                            /> */}
                             <PaypalBtn 
                                 toPay = {currency_total}
                                 transactionSuccess={transactionSuccess}
                                 transactionError = {transactionError}
                                 transactionCanceled = {transactionCanceled}
                             />
+                            <button
+                                className="btn btn-primary"
+                                onClick={checkoutVNPay}
+                            >
+                                VNPAY
+                            </button>
                         </div>
                     </div>
                 </div>
