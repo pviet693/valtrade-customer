@@ -40,7 +40,7 @@ class VNPay {
                 vnp_CreateDate: data.createdDate || common.vnPayDateFormat(new Date()),
             };
 
-            const redirectUrl = new URL(config.paymentGateway);
+            const redirectUrl = new URLSearchParams(config.paymentGateway);
             const secureCode = [];
 
             Object.keys(arrParam)
