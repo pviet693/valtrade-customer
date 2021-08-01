@@ -1,6 +1,5 @@
 import Head from 'next/head';
-import EditIcon from '@material-ui/icons/Edit';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import { useRouter } from 'next/router'
 import cookie from 'cookie';
 import * as common from './../utils/common';
@@ -8,9 +7,18 @@ import api from '../utils/backend-api.utils';
 import { v4 as uuidv4 } from "uuid";
 import { Dropdown } from 'primereact/dropdown';
 import { RadioButton } from 'primereact/radiobutton';
+import Button from '@material-ui/core/Button';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogActions from '@material-ui/core/DialogActions';
+import Dialog from '@material-ui/core/Dialog';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import Radio from '@material-ui/core/Radio';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import dynamic from "next/dynamic";
 import { DataContext } from '../store/GlobalState';
 import axios from 'axios';
+
 const PaypalBtn = dynamic(() => import("../components/Paypal"), {
     ssr: false,
 });
@@ -22,13 +30,15 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
     const [deliveryAddress, setDeliveryAddress] = useState(() => deliveryAddresses.find(address => address.isDefault === true));
     const [cartCheckouts, setCartCheckouts] = useState(groupCartBySeller);
     const [totalCheckout, setTotalCheckout] = useState(sumCheckout);
+    const [paymentMethod, setPaymentMethod] = useState(common.PaymentMethods[0].value);
+    const [openPaymentMethod, setOpenPaymentMethod] = useState(false);
     const router = useRouter();
     const onChangeShippingMethod = async (event, id) => {
         const { value } = event;
         const type = Object.keys(value)[0];
         let body = {};
 
-        
+
 
         if (type === "ghn") {
             body = {
@@ -116,7 +126,7 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
                 shippingFee: cartCheckouts[id].shippingFee,
                 total: cartCheckouts[id].total,
                 shipType: { [shippingMethodName]: address },
-                payment: "local",
+                payment: paymentMethod,
                 sellerId: cartCheckouts[id].seller._id,
                 nameRecei: user.name,
                 contact: user.phone,
@@ -137,29 +147,61 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
         const res = await api.order.createOrder({ arrayOrder });
         if (res.data.code === 200) {
             let body = { listProductId: productCheckouts };
-            const res = await api.cart.deleteCart(body);
+            const resDeleteCart = await api.cart.deleteCart(body);
             swal.close();
-            if (res.status === 200) {
-                if (res.data.code === 200) {
-                    common.ToastPrime('Thành công', 'Đặt thành công.', 'success', toast);
-                    router.push("/");
+            if (resDeleteCart.status === 200) {
+                if (resDeleteCart.data.code === 200) {
+                    if (paymentMethod === "local") {
+                        common.ToastPrime('Thành công', 'Đặt thành công.', 'success', toast);
+                        router.push('/checkout-done', null, { shallow: true });
+                    } else if (paymentMethod === "vnpay") {
+                        let arr = [];
+                        let arrProduct = [];
+                        Object.keys(cartCheckouts).forEach(key => {
+                            arr = arr.concat(cartCheckouts[key].arrayCart);
+                            arr.forEach(x => {
+                                let objProduct = {
+                                    onPro: x.typeProduct,
+                                    inforProduct: x._id
+                                }
+                                arrProduct.push(objProduct);
+                            })
+                        });
+                        const arrayProduct = JSON.stringify(arrProduct)
+                        let returnUrl = `http://localhost:3000/checkout-done?arrayProduct=${arrayProduct}&balance=${totalCheckout.total}`;
+                        const checkoutPayload = {
+                            amount: totalCheckout.total,
+                            locale: 'vn',
+                            orderType: '120000',
+                            returnUrl,
+                            bankCode: "NCB",
+                            orderDescription: "test",
+                            language: "vn"
+                        };
+
+                        const redirectUrl = await axios.post("/api/create_payment_url", checkoutPayload);
+                        if (redirectUrl.data.code === 200) {
+                            const { data } = redirectUrl.data;
+                            window.location.href = data;
+                        }
+                    }
                 } else {
-                    let message = res.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
+                    let message = res.resDeleteCart.message || "Có lỗi xảy ra vui lòng thử lại sau.";
                     common.ToastPrime('Lỗi', message, 'error', toast);
                 }
             }
         }
     }
-    
+
     const onChangeAddress = (id) => {
         setDeliveryAddress(() => deliveryAddresses.find(address => address.id === id));
     }
 
     const transactionSuccess = async () => {
-        try{
+        try {
             let arr = [];
             let arrProduct = [];
-            Object.keys(cartCheckouts).forEach(key=>{
+            Object.keys(cartCheckouts).forEach(key => {
                 arr = arr.concat(cartCheckouts[key].arrayCart);
                 arr.forEach(x => {
                     let objProduct = {
@@ -203,7 +245,7 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
                         arrayCart.forEach(cart => {
                             order.arrayProductShop.push({
                                 inforProduct: cart._id,
-                                quantity: cart.quantity, 
+                                quantity: cart.quantity,
                                 onProduct: cart.typeProduct
                             })
                         });
@@ -218,13 +260,7 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
                         let body = { listProductId: productCheckouts };
                         const res2 = await api.cart.deleteCart(body);
                         if (res2.status === 200) {
-                            if (res2.data.code === 200) {
-                                common.Toast('Xóa giỏ hàng thành công.', 'success');
-                                router.push('/');
-                            } else {
-                                let message = res2.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
-                                common.ToastPrime('Lỗi', message, 'error', toast);
-                            }
+                            router.push('/checkout-done', null, { shallow: true });
                         }
                     }
                 } else {
@@ -232,8 +268,8 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
                     common.Toast(message, 'error');
                 }
             }
-    
-        }catch(err){
+
+        } catch (err) {
             common.ToastPrime("Lỗi",
                 error.response ? error.response.data.message : error.message,
                 "error",
@@ -241,35 +277,15 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
             );
         }
     };
-    
+
     const transactionError = () => {
         console.log('Paypal error');
     }
-    
+
     const transactionCanceled = () => {
         console.log('Transaction Canceled');
     }
     let currency_total = Math.round(totalCheckout.total / 23000);
-    
-    const checkoutVNPay = async () => {
-        const checkoutPayload = {
-            amount: 500000,
-            locale: 'vn',
-            orderInfo: 'Thanh toan giay adidas',
-            orderType: 'fashion',
-            returnUrl: 'http://localhost:3000/?xxxx=1',
-            bankCode: "NCB",
-            orderDescription: "test",
-            language: "vn"
-        };
-
-        const redirectUrl = await axios.post("/api/create_payment_url", checkoutPayload);
-        if (redirectUrl.data.code === 200) {
-            const { data } = redirectUrl.data;
-            // window.location.href = data;
-            window.open(data, "_blank");
-        }
-    }
 
     return (
         <>
@@ -391,8 +407,18 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
                             }
                             <div className="sum-checkout">
                                 <div className="sum-checkout__payment-method">
-                                    <div>Phương thức thanh toán: <span>Thanh toán khi nhận hàng</span></div>
-                                    <button className="btn sum-checkout__payment-method__change-method">Thay dổi</button>
+                                    <div>
+                                        Phương thức thanh toán:
+                                        <span className="ml-2">
+                                            {common.PaymentMethods.find((item) => item.value === paymentMethod).label}
+                                        </span>
+                                    </div>
+                                    <button
+                                        className="btn sum-checkout__payment-method__change-method"
+                                        onClick={() => setOpenPaymentMethod(true)}
+                                    >
+                                        Thay dổi
+                                    </button>
                                 </div>
                                 <div className="sum-checkout__sum-payment">
                                     <div className="sum-checkout__sum-payment__row">
@@ -409,25 +435,59 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
                                     </div>
                                 </div>
                                 <div className="d-flex justify-content-end">
-                                    <button className="btn sum-checkout__btn-checkout" onClick={createOrder}>Đặt hàng</button>
+                                    {
+                                        paymentMethod === "paypal"
+                                            ? (
+                                                <div style={{
+                                                    marginTop: 10
+                                                }}
+                                                >
+                                                    <PaypalBtn
+                                                        toPay={currency_total}
+                                                        transactionSuccess={transactionSuccess}
+                                                        transactionError={transactionError}
+                                                        transactionCanceled={transactionCanceled}
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <button
+                                                    className="btn sum-checkout__btn-checkout"
+                                                    onClick={createOrder}>
+                                                    Đặt hàng
+                                                </button>
+                                            )
+                                    }
                                 </div>
                             </div>
-                            <PaypalBtn 
-                                toPay = {currency_total}
-                                transactionSuccess={transactionSuccess}
-                                transactionError = {transactionError}
-                                transactionCanceled = {transactionCanceled}
-                            />
-                            <button
-                                className="btn btn-primary"
-                                onClick={checkoutVNPay}
-                            >
-                                VNPAY
-                            </button>
                         </div>
                     </div>
                 </div>
             </div>
+            <Dialog
+                maxWidth="xs"
+                aria-labelledby="confirmation-dialog-title"
+                open={openPaymentMethod}
+                onClose={() => setOpenPaymentMethod(false)}
+            >
+                <DialogTitle id="confirmation-dialog-title">Phương thức thanh toán</DialogTitle>
+                <DialogContent dividers>
+                    <RadioGroup
+                        aria-label="ringtone"
+                        name="ringtone"
+                        value={paymentMethod}
+                        onChange={(e) => setPaymentMethod(e.target.value)}
+                    >
+                        {common.PaymentMethods.map((option) => (
+                            <FormControlLabel value={option.value} key={option.value} control={<Radio />} label={option.label} />
+                        ))}
+                    </RadioGroup>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenPaymentMethod(false)} color="primary">
+                        Lưu
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </>
     )
 }
@@ -444,7 +504,7 @@ export async function getServerSideProps(ctx) {
     };
     let listAddress = [];
     let groupCartBySeller = {};
-    let user = { id: "", phone: "", name: ""};
+    let user = { id: "", phone: "", name: "" };
 
     const cookies = ctx.req.headers.cookie;
     if (cookies) {
@@ -547,11 +607,11 @@ export async function getServerSideProps(ctx) {
                         listAddress.push(address);
                     });
                 }
-                
+
                 const infoBuyer = await api.buyer.getProfile(token);
-                if (infoBuyer.status === 200){
-                    if (infoBuyer.data.code === 200){
-                        user.id  = infoBuyer.data.information.userId;
+                if (infoBuyer.status === 200) {
+                    if (infoBuyer.data.code === 200) {
+                        user.id = infoBuyer.data.information.userId;
                         user.phone = infoBuyer.data.information.phone;
                         user.name = infoBuyer.data.information.name;
                     }
@@ -580,4 +640,4 @@ export async function getServerSideProps(ctx) {
     }
 }
 
-export default Checkout;                              
+export default Checkout;

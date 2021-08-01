@@ -121,7 +121,7 @@ const Cart = ({ listCards, recommendProducts }) => {
         Router.push({
             pathname: '/product-detail',
             query: { id: productId },
-        })
+        }, null, { shallow: true });
     }
 
     const remove = async (productId) => {
@@ -244,8 +244,8 @@ const Cart = ({ listCards, recommendProducts }) => {
                 cartCheckout = cartCheckout.map(x => x.productId);
                 Router.push({
                     pathname: '/checkout',
-                    query: { productCheckouts: cartCheckout },
-                })
+                    query: { productCheckouts: cartCheckout }
+                }, null, { shallow: true })
             } catch (e) {
                 common.ToastPrime('Lỗi', e, 'error', toast);
             }

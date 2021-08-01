@@ -202,7 +202,7 @@ const Auction = ({ brands, categories, products, query, total }) => {
         Router.push({
             pathname: '/auction-detail',
             query: { id: product.id },
-        })
+        }, null, { shallow: true });
     }
 
     const onChangeFilterPrice = (option) => {

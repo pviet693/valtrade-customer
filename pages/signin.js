@@ -46,7 +46,7 @@ const SigIn = () => {
                             });
                             setLoading(false);
                             common.ToastPrime('Thành công', 'Đăng nhật thành công.', 'success', toast);
-                            router.push('/');
+                            router.push('/', null, { shallow: true });
                         } else {
                             setLoading(false);
                             const message = profileRes.data.message || "Error when get profile.";
@@ -83,7 +83,7 @@ const SigIn = () => {
                                     user: profileRes.data.information
                                 }
                             });
-                            router.push('/');
+                            router.push('/', null, { shallow: true });
                         }
                     }
                 }
@@ -111,7 +111,7 @@ const SigIn = () => {
                                     user: profileRes.data.information
                                 }
                             });
-                            router.push('/');
+                            router.push('/', null, { shallow: true });
                         }
                     }
                 }

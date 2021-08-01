@@ -53,7 +53,7 @@ const Register = () => {
                             });
                             setLoading(false);
                             common.ToastPrime('Thành công', 'Đăng kí thành công.', 'success', toast);
-                            router.push('/');
+                            router.push('/', null, { shallow: true });
                         } else {
                             setLoading(false);
                             const message = profileRes.data.message || "Error when get profile.";
@@ -91,7 +91,7 @@ const Register = () => {
                                     user: profileRes.data.information
                                 }
                             });
-                            router.push('/');
+                            router.push('/', null, { shallow: true });
                         }
                     }
                 }
@@ -121,7 +121,7 @@ const Register = () => {
                                     user: profileRes.data.information
                                 }
                             });
-                            router.push('/');
+                            router.push('/', null, { shallow: true });
                         }
                     }
                 }

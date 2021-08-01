@@ -28,7 +28,14 @@ const Paypal = ({ toPay, transactionSuccess, transactionError, transactionCancel
 
     return (
         <PaypalExpressBtn env={env} client={client} currency={currency} total={total} onError={onError} onSuccess={onSuccess} onCancel={onCancel}
-            style={{ size: 'medium', color: 'blue', shape: 'rect', label: 'checkout' }}
+            style={{
+                color: 'blue',
+                shape: 'rect',
+                label: 'paypal',
+                size: 'small',
+                height: 40,
+                tagline: false
+            }}
         />
     );
 }

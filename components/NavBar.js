@@ -35,7 +35,7 @@ function NavBar() {
         router.push({
             pathname: '/product',
             query: { search: searchQuery },
-        })
+        }, null, { shallow: true });
     }
 
     return (
@@ -48,7 +48,7 @@ function NavBar() {
                     <div className="navbar-link-item">
                         Bảng tin
                     </div>
-                    <div className="navbar-link-item" onClick={() => router.push("/notification")}>
+                    <div className="navbar-link-item" onClick={() => router.push("/notification", null, { shallow: true })}>
                         <i className="pi pi-bell" aria-hidden></i>
                         <div>
                             Thông báo

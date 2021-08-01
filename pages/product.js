@@ -177,7 +177,7 @@ const Product = ({ brands, categories, products, query, total }) => {
         router.push({
             pathname: '/product',
             query: queryTemp
-        })
+        }, null, { shallow: true });
     }
 
     const filterBrand = (brandId) => {
@@ -186,7 +186,7 @@ const Product = ({ brands, categories, products, query, total }) => {
         router.push({
             pathname: '/product',
             query: queryTemp
-        })
+        }, null, { shallow: true });
     }
 
     const brand = brands.map((x, index) =>
@@ -208,7 +208,7 @@ const Product = ({ brands, categories, products, query, total }) => {
         Router.push({
             pathname: '/product-detail',
             query: { id: product.id },
-        })
+        }, null, { shallow: true });
     }
 
     const onChangeFilterPrice = (option) => {
