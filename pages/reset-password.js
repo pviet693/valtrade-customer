@@ -1,10 +1,13 @@
+import * as common from './../utils/common';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { useState } from 'react';
 import url from '../utils/backend-api.utils';
 
 const ResetPassword = () => {
 
     const [email, setEmail] = useState('');
+    const router = useRouter();
 
     const handleChangeInput = event => {
         const { name, value } = event.target;
@@ -15,7 +18,8 @@ const ResetPassword = () => {
         event.preventDefault();
         const res = await url.buyer.resetLink({ email: email });
         if (res.status === 200) {
-            // console.log(res.data);
+            common.Toast("Vui lòng kiểm tra email", "success");
+            router.push('/signin');
         }
     }
 

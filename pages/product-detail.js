@@ -27,6 +27,7 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
     const { cart, auth } = state;
     const [showReport, setShowReport] = useState(false);
     const [reason, setReason] = useState("");
+    const [title, setTitle] = useState("");
     const [information] = useState(() => {
         if (typeof product.information === "string") {
             return JSON.parse(product.information);
@@ -265,10 +266,29 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
         );
     }
 
-    const sendReport = () => {
-        setShowReport(false);
-        // call api
-        console.log(reason);
+    const sendReport = async () => {
+        try{
+            let bodyReport = {
+                title: title,
+                content: reason,
+                type: "Product",
+                idReport: product.id
+            };
+            const res = await api.report.createReport(bodyReport);
+            if (res.status === 200){
+                if (res.data.code === 200){
+                    setShowReport(false);
+                    common.Toast("Tố cáo thành công", "success");
+                    setTitle("");
+                    setReason("");
+                }
+                else {
+                    common.Toast("Vui lòng điền đầy đủ thông tin", "error");
+                }
+            }
+        } catch(err){
+            console.log(err);
+        }
     }
 
     return (
@@ -352,7 +372,6 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
                             </div>
                             <div className="detail-price d-flex align-items-center">
                                 <LocalOfferIcon className="mr-2" style={{ color: "#0795df" }}/>
-                                {/* <div>Giá: {common.numberWithCommas(product.price)} VNĐ</div> */}
                             </div>
                             <div className="detail-primary d-flex align-items-center">
                                 <VerifiedUserOutlinedIcon className="mr-2" style={{ color: "#0795df" }} />
@@ -424,10 +443,10 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
                                 <AlarmOnIcon className="mr-2" style={{ color: "#0795df" }} />
                                 <div>Ngày đăng: {Moment(new Date(product.timePost)).format("DD/MM/yyyy - HH:mm:ss A")}</div>
                             </div>
-                            {/* <div className="detail-primary d-flex align-items-center">
+                            <div className="detail-primary d-flex align-items-center">
                                 <RestorePageOutlinedIcon className="mr-2" style={{ color: "#0795df" }} />
                                 <div>Số lượng còn lại: {product.countProduct} sản phẩm</div>
-                            </div> */}
+                            </div>
                             {
                                 product.note
                                 && (
@@ -444,7 +463,8 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
                     </div>
                     <div className="product-details-container">
                         <div className="report" onClick={() => setShowReport(true)}>
-                            Tố cáo người bán
+                            <img src="/static/flag-report.svg" width="20" height="20" />
+                            <span>Tố cáo người bán</span>
                         </div>
                         <div className="title">
                             Thông tin chi tiết
@@ -595,6 +615,7 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
             </div>
 
             <Dialog header="Lý do" visible={showReport} onHide={() => setShowReport(false)} breakpoints={{ '960px': '75vw' }} style={{ width: '50vw' }} footer={renderFooter()}>
+                <input type="text" className="form-control" id="title" placeholder="Tiêu đề" name="title" value={title} onChange={(e) => setTitle(e.target.value)} style={{marginTop:'0'}}/>
                 <textarea
                     rows="5"
                     className="form-control w-100 mt-1"

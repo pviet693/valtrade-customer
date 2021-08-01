@@ -89,6 +89,11 @@ const AuctionDetail = ({ product, logBidUser, currentPriceAuction, attributes })
                 socket.off('countDownRoom');
                 socket.off('reply_price');
                 socket.off('infonewBid');
+                socket.emit("leaveRoom", {
+                    bidId: product.id,
+                    userId: auth.user ? auth.user.userId : undefined,
+                });
+                socket.off('leaveRoom');
             }
         }
     }, [socket]);
@@ -96,18 +101,6 @@ const AuctionDetail = ({ product, logBidUser, currentPriceAuction, attributes })
     useEffect(() => {
         console.log(logAuction);
     }, [logAuction]);
-
-    useEffect(() => {
-        return () => {
-            if (Object.keys(auth).length) {
-                socket.emit("leaveRoom", {
-                    bidId: product.id,
-                    userId: auth.user.userId,
-                });
-                socket.off('leaveRoom');
-            }
-        }
-    }, [])
 
     useEffect(() => {
         if (socket) {
@@ -124,6 +117,13 @@ const AuctionDetail = ({ product, logBidUser, currentPriceAuction, attributes })
                     bidId: product.id,
                     userId: undefined
                 });
+            }
+            return () => {
+                socket.emit("leaveRoom", {
+                    bidId: product.id,
+                    userId: auth.user ? auth.user.userId : undefined,
+                });
+                socket.off('leaveRoom');
             }
         }
     }, [auth, socket]);

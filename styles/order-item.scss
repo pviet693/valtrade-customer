@@ -1,6 +1,5 @@
 .order-item__container {
     box-shadow: 0px 1px 2px 1px rgb(0 0 0 / 13%);
-    padding: 20px;
     margin-bottom: 20px;
     color: #5a616f !important;
     cursor: pointer;
@@ -21,11 +20,12 @@
         justify-content: space-between;
         align-items: center;
         width: 100%;
+        padding: 20px;
 
         .shop-infor {
             display: flex;
             align-items: center;
-            flex-basis: 35%;
+            flex-basis: 40%;
             justify-content: space-between;
 
             .shop-name {
@@ -47,6 +47,7 @@
 
         .order-status {
             font-size: 1.125em;
+            color: #5CB85C;
         }
     }
 
@@ -56,6 +57,7 @@
         justify-content: space-between;
         padding: 20px 0;
         border-bottom: 1px solid rgba(0, 0, 0, 0.09);
+        padding: 20px;
 
         .order-infor {
             display: flex;
@@ -72,6 +74,8 @@
         display: flex;
         justify-content: flex-end;
         align-items: center;
-        padding-top: 20px;
+        height: 80px;
+        background-color: rgba(#0795df, 0.09);
+        padding: 20px;
     }
 }

@@ -4,9 +4,16 @@ import * as common from './../utils/common';
 import Button from '@material-ui/core/Button';
 import { useEffect } from 'react';
 import api from '../utils/backend-api.utils';
+import { v4 as uuidv4 } from "uuid";
 
-export const OrderItem = ({phone, arrayProduct }) => {
-    console.log(arrayProduct);
+export const OrderItem = (props) => {
+    const { order } = props;
+    const {
+        total,
+        contact,
+        status,
+        arrayProductShop
+    } = order;
     return (
         <div className="order-item__container">
             <div className="order-item__header">
@@ -15,33 +22,33 @@ export const OrderItem = ({phone, arrayProduct }) => {
                         Liên hệ shop:
                     </div>
                     <div className="shop-contact">
-                        {phone}
+                        {contact}
                     </div>
                     <button className="view-shop">
                         Xem shop
                     </button>
                 </div>
                 <div className="order-status">
-                    Trạng thái đơn hàng
+                    {status}
                 </div>
             </div>
             <div className="order-item__content">
                 {
-                    arrayProduct.map(x=> (
-                        <div key={x.id} className="order-infor">
-                            <img src={x.image} width="150" height="130" />
-                            <div className="ml-3">
+                    arrayProductShop?.map((product) => (
+                        <div key={uuidv4()} className="order-infor">
+                            <img src={product.image} width="160" height="140" />
+                            <div className="ml-4">
                                 <div className="product-name">
-                                    {x.name}
+                                    {product.name}
                                 </div>
-                                <div>x {x.quantity}</div>
+                                <div>x {product.quantity}</div>
                             </div>
                         </div>
                     ))
                 }
             </div>
             <div className="order-item__summary">
-                Tổng số tiền: 150.000   
+                Tổng số tiền: {common.numberWithCommas(total)}
             </div>
         </div>
     )

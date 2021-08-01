@@ -50,7 +50,7 @@ const NewPassword = () => {
         try {
             const body = {
                 password: password.new_password,
-                id: id,
+                userId: id,
                 token: token
             }
             const res = await url.buyer.resetPassword(body)

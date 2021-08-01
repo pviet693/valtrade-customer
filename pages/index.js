@@ -270,7 +270,7 @@ export async function getServerSideProps(ctx) {
                     product.sku = x.sku || "";
                     product.imageId = x.arrayImage[0].id || "";
                     product.image = x.arrayImage[0].url || "";
-                    product.countProduct = x.countProduct || 1;
+                    product.countProduct = x.countProduct;
                     products.push(product);
                 });
             }

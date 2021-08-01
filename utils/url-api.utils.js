@@ -75,6 +75,9 @@ const url = {
         getListMessage: () => `${baseUrl}/api/message/getListMessage`,
         updateMessage: () => `${baseUrl}/api/message/updateMessage`,
         getListConversation: () => `${baseUrl}/api/message/getListConversation`
+    },
+    report: {
+        createReport: () => `${baseUrl}/api/report/createReport`,
     }
 }
 

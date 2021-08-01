@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import EditIcon from '@material-ui/icons/Edit';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/router'
 import cookie from 'cookie';
 import * as common from './../utils/common';
@@ -9,16 +9,13 @@ import { v4 as uuidv4 } from "uuid";
 import { Dropdown } from 'primereact/dropdown';
 import { RadioButton } from 'primereact/radiobutton';
 import dynamic from "next/dynamic";
+import { DataContext } from '../store/GlobalState';
 const PaypalBtn = dynamic(() => import("../components/Paypal"), {
     ssr: false,
-  });
-// import PaypalBtn from '../components/Paypal';
+});
 
 const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckout, user }) => {
-    // console.log(buyer);
-    // console.log(groupCartBySeller);
-    //console.log(listAddress);
-    // console.log(productCheckouts);
+    const { toast, swal } = useContext(DataContext);
     const [editAddress, setEditAddress] = useState(false);
     const [deliveryAddresses, setDeliveryAddresses] = useState(listAddress);
     const [deliveryAddress, setDeliveryAddress] = useState(() => deliveryAddresses.find(address => address.isDefault === true));
@@ -100,65 +97,62 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
         }
     }
 
-    console.log(cartCheckouts);
-
     const createOrder = async () => {
+        const { address } = deliveryAddress;
+        swal.fire({
+            willOpen: () => {
+                swal.showLoading();
+            },
+        })
         const arrayOrder = [];
-        console.log(deliveryAddress);
-        console.log(cartCheckouts);
         Object.keys(cartCheckouts).forEach(id => {
-            const { arrayCart } = cartCheckouts[id];
+            const { arrayCart, shippingMethod } = cartCheckouts[id];
+            const shippingMethodName = Object.keys(shippingMethod)[0];
             let order = {
                 addressOrder: deliveryAddress.address.full_address,
                 arrayProductShop: [],
                 price: cartCheckouts[id].totalPrice,
                 shippingFee: cartCheckouts[id].shippingFee,
                 total: cartCheckouts[id].total,
-                shipType: cartCheckouts[id].shippingMethod,
+                shipType: { [shippingMethodName]: address },
                 payment: "local",
                 sellerId: cartCheckouts[id].seller._id,
-                nameRecei: "",
-                contact: "",
+                nameRecei: user.name,
+                contact: user.phone,
                 note: ""
             }
 
             arrayCart.forEach(cart => {
                 order.arrayProductShop.push({
                     inforProduct: cart._id,
-                    quantity: cart.quantity
+                    quantity: cart.quantity,
+                    onProduct: cart.typeProduct
                 })
             });
 
             arrayOrder.push(order);
-        })
+        });
 
-        console.log(arrayOrder);
-
-        // const res = await api.order.createOrder({ arrayOrder });
-        // if (res.data.code === 200) {
-        //     let body = { listProductId: productCheckouts };
-        //     const res = await api.cart.deleteCart(body);
-        //     if (res.status === 200) {
-        //         swal.close();
-        //         if (res.data.code === 200) {
-        //             common.ToastPrime('Thành công', 'Xóa giỏ hàng thành công.', 'success', toast);
-        //         } else {
-        //             let message = res.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
-        //             common.ToastPrime('Lỗi', message, 'error', toast);
-        //         }
-        //     }
-        // }
+        const res = await api.order.createOrder({ arrayOrder });
+        if (res.data.code === 200) {
+            let body = { listProductId: productCheckouts };
+            const res = await api.cart.deleteCart(body);
+            swal.close();
+            if (res.status === 200) {
+                if (res.data.code === 200) {
+                    common.ToastPrime('Thành công', 'Đặt thành công.', 'success', toast);
+                    router.push("/");
+                } else {
+                    let message = res.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
+                    common.ToastPrime('Lỗi', message, 'error', toast);
+                }
+            }
+        }
     }
     
     const onChangeAddress = (id) => {
         setDeliveryAddress(() => deliveryAddresses.find(address => address.id === id));
     }
-
-    console.log(cartCheckouts);
-
-    useEffect(() => {
-        console.log(deliveryAddress);
-    }, [deliveryAddress]);
 
     const transactionSuccess = async () => {
         try{
@@ -187,15 +181,17 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
                 if (res.data.code === 200) {
                     common.Toast("Thanh toán thành công", 'success');
                     const arrayOrder = [];
+                    const { address } = deliveryAddress;
                     Object.keys(cartCheckouts).forEach(id => {
-                        const { arrayCart } = cartCheckouts[id];
+                        const { arrayCart, shippingMethod } = cartCheckouts[id];
+                        const shippingMethodName = Object.keys(shippingMethod)[0];
                         let order = {
                             addressOrder: deliveryAddress.address.full_address,
                             arrayProductShop: [],
                             price: cartCheckouts[id].totalPrice,
                             shippingFee: cartCheckouts[id].shippingFee,
                             total: cartCheckouts[id].total,
-                            shipType: cartCheckouts[id].shippingMethod,
+                            shipType: { [shippingMethodName]: address },
                             payment: "paypal",
                             sellerId: cartCheckouts[id].seller._id,
                             nameRecei: user.name,
@@ -237,7 +233,11 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
             }
     
         }catch(err){
-            console.log(err);
+            common.ToastPrime("Lỗi",
+                error.response ? error.response.data.message : error.message,
+                "error",
+                toast
+            );
         }
     };
     

@@ -10,6 +10,7 @@ import { DataContext } from '../store/GlobalState';
 import * as common from "../utils/common";
 import _ from "lodash";
 import { v4 as uuidv4 } from 'uuid';
+import { ChatItem } from 'react-chat-elements';
 
 function Layout({ children }) {
     const { dispatch, state, socket, toast } = useContext(DataContext);
@@ -29,8 +30,21 @@ function Layout({ children }) {
     };
 
     useEffect(() => {
+        scrollToBottom();
         if (listMessage.length > 0) {
-            scrollToBottom();
+            const length = listMessage.length;
+            const newConversation = listConversation.map(
+                (conversation) => {
+                    if (conversation.toUserId === activeChatUser) {
+                        return ({
+                            ...conversation,
+                            subtitle: listMessage[length - 1].message.messageText
+                        });
+                    }
+                    return conversation;
+                }
+            );
+            setListConversation(newConversation);
         }
     }, [listMessage]);
 
@@ -81,11 +95,11 @@ function Layout({ children }) {
                 setListMessage((prevStates) => [...prevStates, {
                     message: {
                         messageText: res.message,
-                        createdAt: common.timeSince(new Date(res.time)),
+                        createdAt: common.formatTimeChat(new Date(res.time)),
                         imageUrl: "/static/avatar-person.svg"
                     },
                     isMyMessage: res.typeFrom === "Buyer"
-                }])
+                }]);
             });
         }
     }, [socket]);
@@ -102,7 +116,7 @@ function Layout({ children }) {
                     messages.push({
                         message: {
                             messageText: body,
-                            createdAt: common.timeSince(new Date(date)),
+                            createdAt: common.formatTimeChat(new Date(date)),
                             imageUrl: "/static/avatar-person.svg"
                         },
                         isMyMessage: typeTo === "Buyer"
@@ -137,8 +151,77 @@ function Layout({ children }) {
         }
     }, [chatUserId]);
 
-    const onClickConversation = (item) => {
-        console.log(item, "click");
+    const onClickConversation = async (conversation) => {
+        try {
+            const { toUserId, unread } = conversation;
+            if (unread) {
+                const response = await api.chat.updateMessage(toUserId);
+                if (response.data.code === 200) {
+                    const newConversation = listConversation.map(
+                        (conversation) => {
+                            if (conversation.toUserId === activeChatUser) {
+                                return ({
+                                    ...conversation,
+                                    unread: 0
+                                });
+                            }
+                            return conversation;
+                        }
+                    );
+                    setListConversation(newConversation);
+                } else {
+                    common.ToastPrime("Lỗi",
+                        response.data.message,
+                        "error",
+                        toast
+                    );
+                }
+            }
+        } catch (error) {
+            common.ToastPrime("Lỗi",
+                error.response ? error.response.data.message : error.message,
+                "error",
+                toast
+            );
+        }
+    }
+
+    const updateMessage = async () => {
+        const conversation = conversations.find((item) => item.toUserId === activeChatUser);
+        if (conversation) {
+            try {
+                const { toUserId, unread } = conversation;
+                if (unread) {
+                    const response = await api.chat.updateMessage(toUserId);
+                    if (response.data.code === 200) {
+                        const newConversation = listConversation.map(
+                            (conversation) => {
+                                if (conversation.toUserId === activeChatUser) {
+                                    return ({
+                                        ...conversation,
+                                        unread: 0
+                                    });
+                                }
+                                return conversation;
+                            }
+                        );
+                        setListConversation(newConversation);
+                    } else {
+                        common.ToastPrime("Lỗi",
+                            response.data.message,
+                            "error",
+                            toast
+                        );
+                    }
+                }
+            } catch (error) {
+                common.ToastPrime("Lỗi",
+                    error.response ? error.response.data.message : error.message,
+                    "error",
+                    toast
+                );
+            }
+        }
     }
 
     useEffect(() => {
@@ -146,11 +229,9 @@ function Layout({ children }) {
             const newConversation = conversations.map(
                 (conversation) => ({
                     ...conversation,
-                    onClick: onClickConversation,
                     className: conversation.toUserId === activeChatUser ? "active-chat-item" : ""
                 })
             );
-            console.log(newConversation);
             setListConversation(newConversation);
         }
     }, [conversations, activeChatUser]);
@@ -198,9 +279,21 @@ function Layout({ children }) {
                             minHeight: 500
                         }}
                     >
-                        <ChatList
-                            className='chat-list'
-                            dataSource={listConversation} />
+                        {
+                            listConversation.map((conversation) => (
+                                <ChatItem
+                                    key={uuidv4()}
+                                    avatar={conversation.avatar}
+                                    alt={conversation.alt}
+                                    title={conversation.title}
+                                    subtitle={conversation.subtitle}
+                                    dateString={conversation.dateString}
+                                    unread={conversation.unread}
+                                    onClick={() => onClickConversation(conversation)}
+                                    className={conversation.className}
+                                />
+                            ))
+                        }
                     </div>
                     <div className="col-lg-7 px-0 h-100" style={{ position: "relative", minHeight: "500px" }}>
                         <div style={{ height: 440, overflow: "auto", padding: 10, marginBottom: 10 }}>
@@ -226,6 +319,7 @@ function Layout({ children }) {
                                 placeholder="Nhập tin nhắn ở đây..."
                                 value={messageText}
                                 onChange={(e) => setMessageText(e.target.value)}
+                                onFocus={() => updateMessage()}
                             />
                             <button
                                 type="submit"

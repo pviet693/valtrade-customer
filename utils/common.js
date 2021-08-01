@@ -1,4 +1,6 @@
 import Swal from 'sweetalert2';
+import Moment from "moment";
+import crypto from 'crypto';
 
 export const Toast = (message, type, timer = 1500) => {
     const Toast = Swal.mixin({
@@ -154,4 +156,43 @@ export function timeSince(date) {
         return Math.floor(interval) + " phút trước";
     }
     return Math.floor(seconds) + " giây";
+}
+
+export function formatTimeChat(date) {
+    return Moment(new Date(date)).format("DD/MM/yyyy HH:mm:ss A");
+}
+
+export function formatTime(date) {
+    return Moment(new Date(date)).format("DD/MM/yyyy-HH:mm:ss A");
+}
+
+export function vnPayDateFormat(date) {
+    if (date.constructor.name !== 'Date') {
+        throw new Error('vnPayDateFormat:param must be a date');
+    }
+
+    let result = '';
+    result += date.getFullYear().toString();
+    result += to2DigitNumber(date.getMonth() + 1);
+    result += to2DigitNumber(date.getDate());
+    result += to2DigitNumber(date.getHours());
+    result += to2DigitNumber(date.getMinutes());
+    result += to2DigitNumber(date.getSeconds());
+
+    return result;
+}
+
+export function createMd5Hash(data) {
+    return crypto
+        .createHash('md5')
+        .update(data)
+        .digest('hex');
+}
+
+export function toUpperCase(s = '') {
+    if (typeof s !== 'string') {
+        throw new Error('toUpperCase:param must be string');
+    }
+
+    return s.toUpperCase();
 }

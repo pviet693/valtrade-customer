@@ -8,6 +8,7 @@ import NotificationCard from '../components/Notification'
 import Moment from 'moment';
 import { DataContext } from "../store/GlobalState";
 import _ from "lodash"
+import { v4 as uuidv4 } from "uuid";
 
 function Notification(params) {
     const [lstNotification, setLstNotification] = useState([]);
@@ -26,7 +27,7 @@ function Notification(params) {
                             time: "",
                         };
                         notification.content = x.content || "";
-                        notification.time = Moment(new Date(x.time)).format("DD/MM/yyyy HH:mm:ss A") || "";
+                        notification.time = common.formatTime(x.time);
                         notifications.push(notification);
                     });
                     setLstNotification(notifications);
@@ -42,9 +43,15 @@ function Notification(params) {
             const {user} = auth
             const { userId } = user;
             socket.on("notification", (res) => {
-                if (res.id === userId){
-                    const newListNotifiction = [...lstNotification, { content: res.content, time: res.time}];
-                    setLstNotification(newListNotifiction);
+                if (res.id === userId) {
+                    setLstNotification((prevStates) =>
+                        prevStates.concat([
+                            {
+                                content: res.content,
+                                time: common.formatTime(res.time)
+                            }
+                        ])
+                    );
                 } 
             });
         }
@@ -65,10 +72,10 @@ function Notification(params) {
 
                             {
                                 lstNotification.map(x=>(
-                                    <div className="notification-item__container">
+                                    <div className="notification-item__container" key={uuidv4()}>
                                         <div className="notification-item__content">
                                             <div className="notification-item__row">
-                                                <img src="/static/adidas-3-la.jpg" width="60" height="60" />
+                                                <img src="/static/bell_notification.svg" width="60" height="60" />
                                                 <div className="notification-content">
                                                     <div className="content">
                                                         {x.content}

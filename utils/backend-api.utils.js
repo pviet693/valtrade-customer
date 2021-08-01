@@ -48,8 +48,8 @@ const api = {
                 return axios.get(url.buyer.getProfile(), config);
             }
         },
-        resetLink: () => {
-            return axios.post(url.buyer.postResetLink());
+        resetLink: (body) => {
+            return axios.post(url.buyer.postResetLink(), body);
         },
         resetPassword: (body) => {
             return axios.post(url.buyer.postResetPassword(), body);
@@ -89,7 +89,7 @@ const api = {
             if (params.brand) param.brand = params.brand;
             if (params.keysOption !== 0) {
                 if (params.keysOption === 1) {
-                    queryPrice = `&keys=${1000000}`;
+                    queryPrice = `&keys=${0}&keys=${1000000}`;
                 }
                 if (params.keysOption === 2) {
                     queryPrice = `&keys=${1000000}&keys=${5000000}`;
@@ -177,10 +177,10 @@ const api = {
             if (params.brand) param.brand = params.brand;
             if (params.keysOption !== 0) {
                 if (params.keysOption === 1) {
-                    queryPrice = `&selled=${false}`;
+                    queryPrice = `&selled=${true}`;
                 }
                 if (params.keysOption === 2) {
-                    queryPrice = `&selled=${true}`;
+                    queryPrice = `&selled=${false}`;
                 }
             }
             if (params.activeItem) {
@@ -338,11 +338,19 @@ const api = {
         getListMessage: (userId) => {
             return axios.get(url.chat.getListMessage() + `?userId=${userId}`, config);
         },
-        updateMessage: () => {
-            return axios.get(url.chat.updateMessage(), config);
+        updateMessage: (toUserId) => {
+            const body = {
+                to: toUserId
+            }
+            return axios.post(url.chat.updateMessage(), body, config);
         },
         getListConversation: () => {
             return axios.get(url.chat.getListConversation(), config);
+        }
+    },
+    report: {
+        createReport: (body) => {
+            return axios.post(url.report.createReport(), body, config);
         }
     }
 };
