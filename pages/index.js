@@ -44,7 +44,7 @@ const Home = ({ brands, categories, products, auctions }) => {
             query: {
                 brand: brandId
             }
-        })
+        }, null, { shallow: true });
     }
 
     const product = products.slice(0, size).map((x, index) =>
@@ -71,21 +71,21 @@ const Home = ({ brands, categories, products, auctions }) => {
             query: {
                 categoryId: id
             }
-        })
+        }, null, { shallow: true });
     }
 
     const navigateToDetailProduct = (product) => {
         Router.push({
             pathname: '/product-detail',
             query: { id: product.id },
-        })
+        }, null, { shallow: true });
     }
 
     const navigateToDetailAuction = (auction) => {
         Router.push({
             pathname: '/auction-detail',
             query: { id: auction.id },
-        })
+        }, null, { shallow: true });
     }
 
     useEffect(() => {
