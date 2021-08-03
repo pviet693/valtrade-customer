@@ -154,6 +154,8 @@ function Layout({ children }) {
     const onClickConversation = async (conversation) => {
         try {
             const { toUserId, unread } = conversation;
+            setChatUserId(toUserId);
+            dispatch({ type: 'ACTIVE_CHAT_USER', payload: toUserId });
             if (unread) {
                 const response = await api.chat.updateMessage(toUserId);
                 if (response.data.code === 200) {

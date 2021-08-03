@@ -172,6 +172,7 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
                         });
                         const arrayProduct = JSON.stringify(arrProduct)
                         let returnUrl = `https://www.valtrade.me/checkout-done?arrayProduct=${arrayProduct}&balance=${totalCheckout.total}`;
+                        // let returnUrl = `http://localhost:3000/checkout-done?arrayProduct=${arrayProduct}&balance=${totalCheckout.total}`;
                         const checkoutPayload = {
                             amount: totalCheckout.total,
                             locale: 'vn',
@@ -265,7 +266,6 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
 
                         arrayOrder.push(order);
                     })
-                    console.log(arrayOrder);
 
                     const res1 = await api.order.createOrder({ arrayOrder });
                     if (res1.data.code === 200) {
@@ -496,7 +496,7 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setOpenPaymentMethod(false)} color="primary">
-                        Lưu
+                        Đóng
                     </Button>
                 </DialogActions>
             </Dialog>

@@ -22,6 +22,156 @@
             font-size: 1.1em;
         }
 
-        
+        .order-details-status {
+            display: flex;
+            justify-content: space-between;
+            padding: 25px 20px;
+            position: relative;
+
+            .status__line {
+                position: absolute;
+                top: 54px;
+                height: 4px;
+                width: 100%;
+            }
+
+            .status__line-background, .status__line-foreground {
+                position: absolute;
+                width: calc(100% - 160px);
+                margin: 0 60px;
+                height: 100%;
+                box-sizing: border-box;
+            }
+
+            .step-status {
+                width: 140px;
+                text-align: center;
+                z-index: 1;
+
+                .step-status__icon {
+                    position: relative;
+                    margin: auto;
+                    width: 60px;
+                    height: 60px;
+                    border-radius: 50%;
+                    font-size: 1.875rem;
+                    border: 4px solid #e0e0e0;
+                    color: #e0e0e0;
+                    background-color: #fff;
+
+                    .svg-icon {
+                        display: inline-block;
+                        width: 1em;
+                        height: 1em;
+                        fill: #e0e0e0;
+                        position: relative;
+                        stroke: #e0e0e0;
+                    }
+
+                    .active {
+                        fill: #2dc258;
+                        stroke: #2dc258;
+                        color: #2dc258;
+                    }
+                }
+
+                .active-icon {
+                    border-color: #2dc258;
+                }
+
+                .step-status__label {
+                    text-transform: capitalize;
+                    font-size: .875rem;
+                    color: rgba(0,0,0,.8);
+                    line-height: 1.25rem;
+                    margin: 1.25rem 0 .25rem;
+                }
+
+                .step-status__time {
+                    font-size: .75rem;
+                    color: rgba(0,0,0,.26);
+                    height: .875rem;
+                }
+            }
+        }
+
+        .divide {
+            margin-top: 20px;
+            margin-bottom: 10px;
+            height: .1875rem;
+            width: 100%;
+            background-position-x: -1.875rem;
+            background-size: 7.25rem .1875rem;
+            background-image: repeating-linear-gradient(45deg,#6fa6d6,#6fa6d6 33px,transparent 0,transparent 41px,
+                #f18d9b 0,#f18d9b 74px,transparent 0,transparent 82px);
+        }
+
+        .address-order {
+            flex-basis: 40%;
+            border-right: 1px solid rgba($color: #000000, $alpha: 0.1);
+        }
+
+        .order-timeline {
+            margin-top: 20px;
+        }
+
+        .p-timeline-event-opposite {
+            padding: unset;
+            flex: unset;
+        }
+
+        .p-timeline-event {
+            min-height: 30px;
+        }
+
+        .p-timeline-event-content {
+            margin-top: -5px;
+        }
+
+        .order-cart {
+            box-shadow: 0px 1px 2px 1px rgb(0 0 0 / 13%);
+            margin-bottom: 20px;
+            color: #5a616f !important;
+            cursor: pointer;
+
+            .order-cart__header {
+                padding: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+            }
+
+            .order-cart__product {
+                padding: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+
+                .product-info {
+                    display: flex;
+                    align-items: center;
+                    flex-basis: 70%;
+
+                    img {
+                        width: 100px;
+                        height: 100px;
+                        object-fit: cover;
+                        margin-right: 30px;
+                    }
+                }
+            }
+
+            .order-summary {
+                display: flex;
+                padding: 20px;
+                flex-direction: column;
+                align-items: flex-end;
+
+                .money {
+                    min-width: 120px;
+                    text-align: right;
+                }
+            }
+        }
     }
 }
