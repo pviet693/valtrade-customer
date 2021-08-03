@@ -171,7 +171,7 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
                             })
                         });
                         const arrayProduct = JSON.stringify(arrProduct)
-                        let returnUrl = `http://localhost:3000/checkout-done?arrayProduct=${arrayProduct}&balance=${totalCheckout.total}`;
+                        let returnUrl = `https://www.valtrade.me/checkout-done?arrayProduct=${arrayProduct}&balance=${totalCheckout.total}`;
                         const checkoutPayload = {
                             amount: totalCheckout.total,
                             locale: 'vn',
@@ -318,13 +318,13 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
                                     <div className="address-delivery__content">
                                         <div className="address-delivery__content-info">
                                             <div className="address-delivery__content-row">
-                                                Tên người nhận: <span>{deliveryAddress.name}</span>
+                                                Tên người nhận: <span>{deliveryAddress?.name}</span>
                                             </div>
                                             <div className="address-delivery__content-row">
-                                                Số điện thoại: <span>{deliveryAddress.phone}</span>
+                                                Số điện thoại: <span>{deliveryAddress?.phone}</span>
                                             </div>
                                             <div className="address-delivery__content-row">
-                                                Địa chỉ: <span>{deliveryAddress.address.full_address}</span>
+                                                Địa chỉ: <span>{deliveryAddress?.address.full_address}</span>
                                             </div>
                                         </div>
                                         <button className="btn btn-change-address" onClick={() => setEditAddress(true)}>Thay đổi địa chỉ</button>
@@ -624,7 +624,7 @@ export async function getServerSideProps(ctx) {
                 if (infoBuyer.status === 200) {
                     if (infoBuyer.data.code === 200) {
                         user.id = infoBuyer.data.information.userId;
-                        user.phone = infoBuyer.data.information.phone;
+                        user.phone = infoBuyer.data.information.phone || "";
                         user.name = infoBuyer.data.information.name;
                     }
                 }

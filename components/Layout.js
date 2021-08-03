@@ -256,7 +256,10 @@ function Layout({ children }) {
                     background: "#0795df",
                     borderRadius: "50%"
                 }}>
-                <img src="https://asliddinusmonov.github.io/popup-chat-react/logo-no-bg.4d881dc9.svg" alt="chat-icon" style={{width: '50px', height: '50px'}} />
+                <img src="https://asliddinusmonov.github.io/popup-chat-react/logo-no-bg.4d881dc9.svg"
+                    alt="chat-icon"
+                    style={{ width: '50px', height: '50px' }}
+                />
             </Button>
             <Popover
                 id={id}
