@@ -1,0 +1,30 @@
+.article-detail{
+    padding: 50px;
+    background: #fff;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 13%);
+}
+
+.separate{
+    border-left: 1px solid #888;
+    height: 100vh;
+
+}
+
+.article-list{
+    padding: 50px;
+    background: #fff;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 13%);
+
+    .container-article{
+        padding: 10px;
+
+        &:hover {
+            background-color: rgba($color: #000000, $alpha: 0.08);
+            cursor: pointer;
+        }
+        
+        .image-title {
+            font-size: 15px;
+        }
+    }
+}
