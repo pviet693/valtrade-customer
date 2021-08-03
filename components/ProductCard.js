@@ -6,6 +6,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { useContext, useRef, useState } from 'react';
 import { DataContext } from '../store/GlobalState';
 import { Image } from 'cloudinary-react';
+import Router from "next/router";
 
 const ProductCard = ({ id, name, price, brand, sku, oldPrice, image, imageId, warrantyStatus, onClick, countProduct }) => {
     const [loading, setLoading] = useState(false);
@@ -22,7 +23,7 @@ const ProductCard = ({ id, name, price, brand, sku, oldPrice, image, imageId, wa
                     setLoading(false);
                     if (countProduct === 0 || countProduct === sameProduct[0].quantity) {
                         common.ToastPrime('Lỗi', 'Sản phẩm không đủ số lượng.', 'error', toast);
-                        return;
+                        return false;
                     } else {
                         sameProduct[0].quantity++;
                         let body = {
@@ -42,9 +43,11 @@ const ProductCard = ({ id, name, price, brand, sku, oldPrice, image, imageId, wa
                                 dispatch({
                                     type: 'ADD_CART', payload: cartTemp
                                 });
+                                return true;
                             } else {
                                 let message = res.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
                                 common.ToastPrime('Lỗi', message, 'error', toast);
+                                return false;
                             }
                         }
                     }
@@ -52,7 +55,7 @@ const ProductCard = ({ id, name, price, brand, sku, oldPrice, image, imageId, wa
                     if (countProduct === 0) {
                         common.ToastPrime('Lỗi', 'Sản phẩm không đủ số lượng.', 'error', toast);
                         setLoading(false);
-                        return;
+                        return false;
                     }
                     let body = {
                         cartItems: [
@@ -78,9 +81,11 @@ const ProductCard = ({ id, name, price, brand, sku, oldPrice, image, imageId, wa
                             dispatch({
                                 type: 'ADD_CART', payload: cartTemp
                             });
+                            return true;
                         } else {
                             let message = res.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
                             common.ToastPrime('Lỗi', message, 'error', toast);
+                            return false;
                         }
                     }
                 }
@@ -88,7 +93,7 @@ const ProductCard = ({ id, name, price, brand, sku, oldPrice, image, imageId, wa
                 if (countProduct === 0) {
                     common.ToastPrime('Lỗi', 'Sản phẩm không đủ số lượng.', 'error', toast);
                     setLoading(false);
-                    return;
+                    return false;
                 }
                 let body = {
                     cartItems: [
@@ -114,21 +119,35 @@ const ProductCard = ({ id, name, price, brand, sku, oldPrice, image, imageId, wa
                         dispatch({
                             type: 'ADD_CART', payload: cartTemp
                         });
+                        return true;
                     } else {
                         let message = res.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
                         common.ToastPrime('Lỗi', message, 'error', toast);
+                        return false;
                     }
                 }
             }
         } catch (e) {
             setLoading(false);
             common.ToastPrime('Lỗi', e.message || e, 'error', toast);
+            return false;
         }
     }
 
     const getVersionImage = (linkImage) => {
         const arr = linkImage.split("/");
         return arr[6].replace("v", "");
+    }
+
+    const buyNow = async () => {
+        const response = await addToCart();
+        if (response) {
+            const cartCheckout = [id];
+            Router.push({
+                pathname: '/checkout',
+                query: { productCheckouts: cartCheckout }
+            }, null, { shallow: true })
+        }
     }
 
     return (
@@ -174,6 +193,7 @@ const ProductCard = ({ id, name, price, brand, sku, oldPrice, image, imageId, wa
                     variant="contained"
                     type="button"
                     className="btn button-buy-now"
+                    onClick={buyNow}
                 >
                     Mua ngay
                 </Button>

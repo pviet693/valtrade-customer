@@ -4,8 +4,10 @@ import { OrderItem } from "../components/OrderItem";
 import { useEffect, useState } from "react";
 import api from "../utils/backend-api.utils";
 import { v4 as uuidv4 } from "uuid";
+import { useRouter } from 'next/router';
 
 function MyOrder() {
+    const router = useRouter();
     const [lstOrder, setLstOrder] = useState([]);
 
     useEffect(async() =>{
@@ -16,10 +18,11 @@ function MyOrder() {
                     let orders = [];
                     const { result } = res.data;
                     result.forEach((order) => {
-                        const { inforOrder } = order;
+                        const { inforOrder, _id } = order;
                         const { total, contact, stateOrder, arrayProductShop } = inforOrder;
-                        const status = stateOrder[stateOrder.length - 1].state
+                        const status = stateOrder[stateOrder.length - 1].state;
                         let orderItem = {
+                            id: _id,
                             total,
                             contact,
                             status,
@@ -62,6 +65,12 @@ function MyOrder() {
                                     <OrderItem
                                         key={uuidv4()}
                                         order={order}
+                                        onClick={() => {
+                                            router.push({
+                                                pathname: '/order-details',
+                                                query: { id: order.id },
+                                            })
+                                        }}
                                     />
                                 ))
                             }

@@ -136,8 +136,12 @@ const api = {
         changePassword: (body) => {
             return axios.post(url.buyer.changePassword(), body, config);
         },
-        getListRecommended: () => {
-            return axios.get(url.buyer.getListRecommended(), config);
+        getListRecommended: (token) => {
+            if (isEnable(token)) {
+                return axios.get(url.buyer.getListRecommended(), config);
+            } else {
+                return axios.get(url.buyer.getListRecommended());
+            }
         }
     },
     product: {
@@ -317,6 +321,9 @@ const api = {
         },
         getOrder: () =>{
             return axios.get(url.order.getOrder(), config);
+        },
+        getOrderDetail: (id) => {
+            return axios.get(url.order.getOrderDetail() + id, config);
         }
     },
     category: {

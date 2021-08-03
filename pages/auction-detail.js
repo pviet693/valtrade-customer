@@ -22,7 +22,8 @@ const AuctionDetail = ({ product, logBidUser, currentPriceAuction, attributes })
     const [timeCountDown, setTimeCountDown] = useState(0);
     const [isSell, setIsSell] = useState(product.selled);
     const [currentPrice, setCurrentPrice] = useState(currentPriceAuction || product.price);
-    const [priceAuction, setPriceAuction] = useState(currentPriceAuction)
+    const [priceAuction, setPriceAuction] = useState(currentPriceAuction);
+    const [newBid, setNewBid] = useState(null);
     const [information] = useState(() => {
         if (typeof product.information === "string") {
             return JSON.parse(product.information);
@@ -71,15 +72,7 @@ const AuctionDetail = ({ product, logBidUser, currentPriceAuction, attributes })
                 }
             });
             socket.on("infonewBid", (res) => {
-                let newLogAuction = [...logAuction];
-                newLogAuction.push({
-                    ...res,
-                    uuid: uuid()
-                })
-                newLogAuction.sort((a, b) => b.priceBid - a.priceBid);
-                setLogAuction(newLogAuction);
-                setCurrentPrice(newLogAuction[0].priceBid);
-                console.log(res, "listUser");
+                setNewBid(res);
             });
             socket.on("reply_price", (res) => {
                 console.log(res, "price");
@@ -97,6 +90,19 @@ const AuctionDetail = ({ product, logBidUser, currentPriceAuction, attributes })
             }
         }
     }, [socket]);
+
+    useEffect(() => {
+        if (newBid) {
+            let newLogAuction = logAuction.concat([{
+                ...newBid,
+                uuid: uuid()
+            }]);
+            console.log(newLogAuction);
+            newLogAuction.sort((a, b) => b.priceBid - a.priceBid);
+            setLogAuction(newLogAuction);
+            setCurrentPrice(newLogAuction[0].priceBid);
+        }
+    }, [newBid]);
 
     useEffect(() => {
         console.log(logAuction);
@@ -130,13 +136,13 @@ const AuctionDetail = ({ product, logBidUser, currentPriceAuction, attributes })
 
     const increasePrice = () => {
         let price = priceAuction;
-        price += 100000;
+        price += 10000;
         setPriceAuction(price);
     }
 
     const decreasePrice = () => {
         let price = priceAuction;
-        price -= 100000;
+        price -= 10000;
         setPriceAuction(price);
     }
 

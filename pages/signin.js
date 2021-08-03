@@ -66,7 +66,9 @@ const SigIn = () => {
     }
 
     const responseFacebook = async (response) => {
-
+        if (response.status === "unknown") {
+            return;
+        }
         try {
             const res = await api.buyer.authFacebook(response);
             if (res.status === 200) {
@@ -131,7 +133,7 @@ const SigIn = () => {
                 <div className="container">
                     <div className="signin-title">
                         <div>
-                            Tạo tài khoản
+                            Đăng nhập
                         </div>
                         <div>
                             <span>Bạn chưa có tài khoản?
@@ -205,14 +207,14 @@ const SigIn = () => {
                                     <GoogleLogin
                                         className="btn btn-signin-google w-100 mb-4"
                                         clientId="472816343412-ur81bi98s6dit0oo2h1bjqv56qonrsfc.apps.googleusercontent.com"
-                                        buttonText="Đăng kí bằng tài khoản Google"
+                                        buttonText="Đăng nhập bằng tài khoản Google"
                                         onSuccess={responseGoogle}
-                                        onFailure={responseGoogle}
+                                        onFailure={() => {}}
                                     />
                                     <FacebookLogin
                                         cssClass="btn btn-signin-facebook w-100"
                                         appId="350501502927602" //APP ID NOT CREATED YET
-                                        textButton="Đăng kí bằng tài khoản Facebook"
+                                        textButton="Đăng nhập bằng tài khoản Facebook"
                                         fields="name,email,picture"
                                         callback={responseFacebook}
                                     />

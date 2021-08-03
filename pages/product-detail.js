@@ -19,6 +19,7 @@ import { InputTextarea } from 'primereact/inputtextarea';
 import { Dialog } from "primereact/dialog";
 import { Button } from 'primereact/button';
 import cookie from "cookie";
+import Router from "next/router";
 import Moment from 'moment';
 Moment.locale('en');
 
@@ -108,10 +109,10 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
             if (cart.length > 0) {
                 let sameProduct = cartTemp.filter(x => x.productId === product.id);
                 if (sameProduct.length === 1) {
-                    if (product.countProduct === sameProduct[0].quantity) {
+                    if (product.countProduct === 0 || product.countProduct === sameProduct[0].quantity) {
                         swal.close();
                         common.ToastPrime('Lỗi', 'Sản phẩm không đủ số lượng.', 'error', toast);
-                        return;
+                        return false;
                     } else {
                         sameProduct[0].quantity++;
                         let body = {
@@ -131,13 +132,21 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
                                 dispatch({
                                     type: 'ADD_CART', payload: cartTemp
                                 });
+                                return true;
                             } else {
                                 let message = res.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
                                 common.ToastPrime('Lỗi', message, 'error', toast);
+                                return false;
                             }
                         }
                     }
                 } else {
+                    if (product.countProduct === 0) {
+                        swal.close();
+                        common.ToastPrime('Lỗi', 'Sản phẩm không đủ số lượng.', 'error', toast);
+                        return false;
+                    }
+
                     let body = {
                         cartItems: [
                             {
@@ -162,13 +171,21 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
                                 type: 'ADD_CART', payload: cartTemp
                             });
                             common.ToastPrime('Thành công', 'Thêm vào giỏ hàng thành công.', 'success', toast);
+                            return true;
                         } else {
                             let message = res.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
                             common.ToastPrime('Lỗi', message, 'error', toast);
+                            return false;
                         }
                     }
                 }
             } else {
+                if (product.countProduct === 0) {
+                    swal.close();
+                    common.ToastPrime('Lỗi', 'Sản phẩm không đủ số lượng.', 'error', toast);
+                    return false;
+                }
+
                 let body = {
                     cartItems: [
                         {
@@ -193,15 +210,18 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
                             type: 'ADD_CART', payload: cartTemp
                         });
                         common.ToastPrime('Thành công', 'Thêm vào giỏ hàng thành công.', 'success', toast);
+                        return true;
                     } else {
                         let message = res.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
                         common.ToastPrime('Lỗi', message, 'error', toast);
+                        return false;
                     }
                 }
             }
         } catch (e) {
             swal.close();
             common.ToastPrime('Lỗi', e.message || e, 'error', toast);
+            return false;
         }
     }
 
@@ -291,6 +311,17 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
         }
     }
 
+    const buyNow = async () => {
+        const response = await addToCart();
+        if (response === true) {
+            const cartCheckout = [product.id];
+            Router.push({
+                pathname: '/checkout',
+                query: { productCheckouts: cartCheckout }
+            }, null, { shallow: true })
+        }
+    }
+
     return (
         <div className="product-detail-container">
             <Head>
@@ -371,7 +402,8 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
                                 {product.name}
                             </div>
                             <div className="detail-price d-flex align-items-center">
-                                <LocalOfferIcon className="mr-2" style={{ color: "#0795df" }}/>
+                                <LocalOfferIcon className="mr-2" style={{ color: "#0795df" }} />
+                                <div>{common.numberWithCommas(product.price)} VNĐ</div>
                             </div>
                             <div className="detail-primary d-flex align-items-center">
                                 <VerifiedUserOutlinedIcon className="mr-2" style={{ color: "#0795df" }} />
@@ -403,7 +435,7 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
                             </div>
                             <div className="detail-primary d-flex align-items-center">
                                 <i className="pi pi-tag mr-2" style={{ color: "#0795df", fontSize: "1.2em" }}></i>
-                                {/* <div>Giá mua ban đầu: {common.numberWithCommas(product.oldPrice)} VNĐ</div> */}
+                                <div>Giá mua ban đầu: {common.numberWithCommas(product.oldPrice)} VNĐ</div>
                             </div>
                             <div className="detail-primary d-flex">
                                 <LocalShippingOutlinedIcon className="mr-2" style={{ color: "#0795df" }} />
@@ -457,7 +489,7 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
                             }
                             <div className="detail-action">
                                 <button className="btn button-add-to-cart" onClick={addToCart}><i className="pi pi-shopping-cart"></i> Thêm vào giỏ hàng</button>
-                                <button className="btn button-buy-now">Mua ngay</button>
+                                <button className="btn button-buy-now" onClick={buyNow}>Mua ngay</button>
                             </div>
                         </div>
                     </div>

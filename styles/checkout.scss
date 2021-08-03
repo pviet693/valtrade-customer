@@ -52,8 +52,9 @@
           align-items: flex-start;
           margin-right: 40px;
         }
+      }
 
-        .btn-change-address {
+      .btn-change-address {
           position: absolute;
           border: 1px solid #0795df;
           background-color: #fff;
@@ -62,7 +63,6 @@
           right: 20px;
           top: 20px;
         }
-      }
     }
 
     .checkout-item__container {

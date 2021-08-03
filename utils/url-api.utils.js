@@ -61,6 +61,7 @@ const url = {
     order: {
         createOrder: () => `${baseUrl}/api/order/createOrder`,
         getOrder: () => `${baseUrl}/api/order/getByBuyer`,
+        getOrderDetail: () => `${baseUrl}/api/order/detail/`
     },
     category: {
         getDetails: () => `${baseUrl}/api/category/detail/:id`,

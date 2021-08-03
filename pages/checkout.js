@@ -33,8 +33,7 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
     const [paymentMethod, setPaymentMethod] = useState(common.PaymentMethods[0].value);
     const [openPaymentMethod, setOpenPaymentMethod] = useState(false);
     const router = useRouter();
-    
-    console.log(deliveryAddress);
+
 
     const onChangeShippingMethod = async (event, id) => {
         const { value } = event;
@@ -172,6 +171,7 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
                         });
                         const arrayProduct = JSON.stringify(arrProduct)
                         let returnUrl = `https://www.valtrade.me/checkout-done?arrayProduct=${arrayProduct}&balance=${totalCheckout.total}`;
+                        // let returnUrl = `http://localhost:3000/checkout-done?arrayProduct=${arrayProduct}&balance=${totalCheckout.total}`;
                         const checkoutPayload = {
                             amount: totalCheckout.total,
                             locale: 'vn',
@@ -265,7 +265,6 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
 
                         arrayOrder.push(order);
                     })
-                    console.log(arrayOrder);
 
                     const res1 = await api.order.createOrder({ arrayOrder });
                     if (res1.data.code === 200) {
@@ -333,18 +332,21 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
                             }
                             {
                                 editAddress && (
-                                    deliveryAddresses.map((address) => {
-                                        return (
-                                            <div key={address.id} className="address-card">
-                                                <RadioButton inputId={address.id} name="category" value={deliveryAddress} onChange={() => onChangeAddress(address.id)} checked={deliveryAddress.id === address.id} />
-                                                <div className="address-card__info" htmlFor={address.id}>
-                                                    <div>{`Tên người nhận: ${address.name}`}</div>
-                                                    <div>{`Số điện thoại: ${address.phone}`}</div>
-                                                    <div>{address.address.full_address}</div>
+                                    <> {
+                                        deliveryAddresses.map((address) => {
+                                            return (
+                                                <div key={address.id} className="address-card">
+                                                    <RadioButton inputId={address.id} name="category" value={deliveryAddress} onChange={() => onChangeAddress(address.id)} checked={deliveryAddress.id === address.id} />
+                                                    <div className="address-card__info" htmlFor={address.id}>
+                                                        <div>{`Tên người nhận: ${address.name}`}</div>
+                                                        <div>{`Số điện thoại: ${address.phone}`}</div>
+                                                        <div>{address.address.full_address}</div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        )
-                                    })
+                                            )
+                                        })}
+                                    <button className="btn btn-change-address" onClick={() => setEditAddress(false)}>Đóng</button>
+                                    </>
                                 )
                             }
                         </div>
@@ -496,7 +498,7 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setOpenPaymentMethod(false)} color="primary">
-                        Lưu
+                        Đóng
                     </Button>
                 </DialogActions>
             </Dialog>

@@ -13,25 +13,17 @@ const CheckoutDone = ({ query }) => {
     const { state, toast } = useContext(DataContext);
     const { auth } = state;
     const [loading, setLoading] = useState(true);
-    const [states, setStates] = useState({
-        onUser: "",
-        onModel: "Buyer",
-        typePay: "vnpay",
-        arrayProduct: [],
-        isPay: true,
-        balance: 0
-    });
+    const [states, setStates] = useState(null);
     const [success, setSuccess] = useState(true);
 
     const verifyReturnUrl = async () => {
         try {
             const response = await axios.post("/api/vnpay_ipn", query);
-            console.log(response);
             if (response.status === 200) {
                 if (response.data.RspCode === "00") {
                     setSuccess(true);
-
                     const responseTransaction = await api.transfer.postTransfer(states);
+
                     if (response.status !== 200) {
                         common.ToastPrime(
                             "Lỗi",
@@ -61,12 +53,14 @@ const CheckoutDone = ({ query }) => {
             const { arrayProduct, balance } = query;
             const { user } = auth;
             const { userId } = user;
-            setStates((prevStates) => ({
-                ...prevStates,
+            setStates({
                 onUser: userId,
-                arrayProduct: arrayProduct ? JSON.parse(arrayProduct) : null,
+                onModel: "Buyer",
+                typePay: "vnpay",
+                arrayProduct: arrayProduct ? JSON.parse(arrayProduct) : [],
+                isPay: true,
                 balance: Number(balance)
-            }));
+            });
 
             if (!_.isEmpty(query)) {
                 verifyReturnUrl();
@@ -75,6 +69,16 @@ const CheckoutDone = ({ query }) => {
             }
         }
     }, [auth]);
+
+    useEffect(() => {
+        if (!_.isEmpty(query)) {
+            if (states) {
+                verifyReturnUrl();
+            }
+        } else {
+            setLoading(false);
+        }
+    }, [states]);
 
     return (
         <div>

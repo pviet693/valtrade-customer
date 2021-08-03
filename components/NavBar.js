@@ -77,7 +77,7 @@ function NavBar() {
                                 <button className="search-box-button" type="submit"><SearchIcon /></button>
                             </div>
                         </form>
-                        <div className="search-suggestion">
+                        {/* <div className="search-suggestion">
                             <div className="suggestion-item">
                                 Đồng hồ
                             </div>
@@ -93,7 +93,7 @@ function NavBar() {
                             <div className="suggestion-item">
                                 Máy tính bảng
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                     <div className="navbar-info">
                         <div className="navbar-info-item">

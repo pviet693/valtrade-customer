@@ -23,8 +23,6 @@ const Home = ({ brands, categories, products, auctions }) => {
 
     const size = 8;
 
-    console.log(products);
-
     function seconds2Time(number) {
         let hours = Math.floor(number / 3600);
         let minutes = Math.floor((number - (hours * 3600)) / 60);
@@ -49,12 +47,12 @@ const Home = ({ brands, categories, products, auctions }) => {
         }, null, { shallow: true });
     }
 
-    const product = products.slice(0, size).map((x, index) =>{
+    const product = products.map((x, index) =>(
         <div key={x.id} className="col-md-3 d-flex align-items-center flex-column mb-4">
             <ProductCard id={x.id} name={x.name} image={x.image} imageId={x.imageId} countProduct={x.countProduct}
                 price={x.price} brand={x.brand.name} sku={x.sku} oldPrice={x.oldPrice} onClick={() => navigateToDetailProduct(x)} />
         </div>
-    });
+    ));
 
     const auction = auctions.map((x, index) =>
         <div key={x.id} className="col-md-3 d-flex align-items-center flex-column mb-4">
@@ -192,11 +190,12 @@ export async function getServerSideProps(ctx) {
     let products = [];
     let auctions = [];
     let isSignin = false;
+    let token;
 
     // check token
     const cookies = ctx.req.headers.cookie;
     if (cookies) {
-        const token = cookie.parse(cookies).seller_token;
+        token = cookie.parse(cookies).access_token;
         isSignin = token ? true : false;
     }
 
@@ -245,48 +244,13 @@ export async function getServerSideProps(ctx) {
                 common.Toast(message, 'error');
             }
         }
-        // // call api list product
-        // let params = {
-        //     page: 0,
-        //     rows: 8
-        // };
-        // const res2 = await api.buyer.getListProduct(params);
-        // if (res2.status === 200) {
-        //     if (res2.data.code === 200) {
-        //         res2.data.result.map(x => {
-        //             let product = {
-        //                 id: "",
-        //                 name: "",
-        //                 price: "",
-        //                 brand: "",
-        //                 sku: "",
-        //                 oldPrice: "",
-        //                 image: "",
-        //                 countProduct: 1
-        //             };
-        //             product.id = x._id || "";
-        //             product.name = x.name || "";
-        //             product.price = x.price || "";
-        //             product.oldPrice = x.oldPrice || "";
-        //             product.brand = x.brand || "";
-        //             product.sku = x.sku || "";
-        //             product.imageId = x.arrayImage[0].id || "";
-        //             product.image = x.arrayImage[0].url || "";
-        //             product.countProduct = x.countProduct;
-        //             products.push(product);
-        //         });
-        //     }
-        //     else {
-        //         let message = res2.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
-        //         common.Toast(message, 'error');
-        //     }
-        // }
 
         // call api get recommendProduct
-        const res2 = await api.buyer.getListRecommended();
+        const res2 = await api.buyer.getListRecommended(token);
         if (res2.status === 200) {
             if (res2.data.code === 200) {
-                res2.data.result.map(x => {
+                const { result } = res2.data;
+                result.map(x => {
                     let product = {
                         id: "",
                         name: "",
@@ -308,10 +272,6 @@ export async function getServerSideProps(ctx) {
                     product.countProduct = x.countProduct;
                     products.push(product);
                 });
-            }
-            else {
-                let message = res2.data.message || "Có lỗi xảy ra vui lòng thử lại sau.";
-                common.Toast(message, 'error');
             }
         }
 
@@ -350,10 +310,8 @@ export async function getServerSideProps(ctx) {
                 common.Toast(message, 'error');
             }
         }
-    }
-
-    catch (error) {
-        console.log(error.message);
+    } catch (error) {
+        console.log(error);
     }
     return {
         props: { brands: brands, categories: categories, products: products, isSignin: isSignin, auctions }

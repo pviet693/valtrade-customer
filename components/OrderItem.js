@@ -1,13 +1,8 @@
-import { Checkbox } from 'primereact/checkbox';
-import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import * as common from './../utils/common';
-import Button from '@material-ui/core/Button';
-import { useEffect } from 'react';
-import api from '../utils/backend-api.utils';
 import { v4 as uuidv4 } from "uuid";
 
 export const OrderItem = (props) => {
-    const { order } = props;
+    const { order, onClick } = props;
     const {
         total,
         contact,
@@ -15,7 +10,7 @@ export const OrderItem = (props) => {
         arrayProductShop
     } = order;
     return (
-        <div className="order-item__container">
+        <div className="order-item__container" onClick={onClick}>
             <div className="order-item__header">
                 <div className="shop-infor">
                     <div className="shop-name">
