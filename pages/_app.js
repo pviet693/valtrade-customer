@@ -22,6 +22,7 @@ import '../styles/address.scss';
 import '../styles/notification.scss';
 import '../styles/order-item.scss';
 import '../styles/message.scss';
+import '../styles/order-details.scss';
 import "primeicons/primeicons.css";
 import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";
