@@ -45,7 +45,7 @@ function NavBar() {
                     <div className="navbar-link-item">
                         <a href="https://valtrade-seller.me/" className="link-seller" >Trang người bán</a>
                     </div>
-                    <div className="navbar-link-item">
+                    <div className="navbar-link-item" onClick={() => router.push("/article", null, { shallow: true })}>
                         Bảng tin
                     </div>
                     <div className="navbar-link-item" onClick={() => router.push("/notification", null, { shallow: true })}>
