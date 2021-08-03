@@ -33,8 +33,7 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
     const [paymentMethod, setPaymentMethod] = useState(common.PaymentMethods[0].value);
     const [openPaymentMethod, setOpenPaymentMethod] = useState(false);
     const router = useRouter();
-    
-    console.log(deliveryAddress);
+
 
     const onChangeShippingMethod = async (event, id) => {
         const { value } = event;
@@ -333,18 +332,21 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
                             }
                             {
                                 editAddress && (
-                                    deliveryAddresses.map((address) => {
-                                        return (
-                                            <div key={address.id} className="address-card">
-                                                <RadioButton inputId={address.id} name="category" value={deliveryAddress} onChange={() => onChangeAddress(address.id)} checked={deliveryAddress.id === address.id} />
-                                                <div className="address-card__info" htmlFor={address.id}>
-                                                    <div>{`Tên người nhận: ${address.name}`}</div>
-                                                    <div>{`Số điện thoại: ${address.phone}`}</div>
-                                                    <div>{address.address.full_address}</div>
+                                    <> {
+                                        deliveryAddresses.map((address) => {
+                                            return (
+                                                <div key={address.id} className="address-card">
+                                                    <RadioButton inputId={address.id} name="category" value={deliveryAddress} onChange={() => onChangeAddress(address.id)} checked={deliveryAddress.id === address.id} />
+                                                    <div className="address-card__info" htmlFor={address.id}>
+                                                        <div>{`Tên người nhận: ${address.name}`}</div>
+                                                        <div>{`Số điện thoại: ${address.phone}`}</div>
+                                                        <div>{address.address.full_address}</div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        )
-                                    })
+                                            )
+                                        })}
+                                    <button className="btn btn-change-address" onClick={() => setEditAddress(false)}>Đóng</button>
+                                    </>
                                 )
                             }
                         </div>
