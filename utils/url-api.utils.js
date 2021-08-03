@@ -20,7 +20,8 @@ const url = {
         getListProductFilter: () => `${baseUrl}/api/product/get?categoryId=`,
         getDetailProduct: () => `${baseUrl}/api/product/detail/:id`,
         postCart: () => `${baseUrl}/api/cart/updateCart`,
-        changePassword: () => `${baseUrl}/api/buyer/changePassword`
+        changePassword: () => `${baseUrl}/api/buyer/changePassword`,
+        getListRecommended: () => `${baseUrl}/api/product/recommend`,
     },
     product: {
         postCreate: () => `${baseUrl}/api/product/create`,
@@ -78,6 +79,10 @@ const url = {
     },
     report: {
         createReport: () => `${baseUrl}/api/report/createReport`,
+    },
+    article: {
+        getList: () => `${baseUrl}/api/post/listPost`,
+        getDetail: () => `${baseUrl}/api/post/detail/:id`,
     }
 }
 

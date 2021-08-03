@@ -135,6 +135,9 @@ const api = {
         },
         changePassword: (body) => {
             return axios.post(url.buyer.changePassword(), body, config);
+        },
+        getListRecommended: () => {
+            return axios.get(url.buyer.getListRecommended(), config);
         }
     },
     product: {
@@ -351,6 +354,14 @@ const api = {
     report: {
         createReport: (body) => {
             return axios.post(url.report.createReport(), body, config);
+        }
+    },
+    article: {
+        getList: () => {
+            return axios.get(url.article.getList());
+        },
+        getDetail: (id) => {
+            return axios.get(url.article.getDetail().replace(':id', id));
         }
     }
 };

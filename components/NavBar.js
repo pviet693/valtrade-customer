@@ -43,7 +43,7 @@ function NavBar() {
             <div className="top-navbar-content container">
                 <div className="navbar-link">
                     <div className="navbar-link-item">
-                        Trang người bán
+                        <a href="https://valtrade-seller.me/" className="link-seller" >Trang người bán</a>
                     </div>
                     <div className="navbar-link-item">
                         Bảng tin
