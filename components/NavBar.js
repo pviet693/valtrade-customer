@@ -154,7 +154,7 @@ function NavBar() {
                                             Hồ sơ của tôi
                                         </a>
                                     </Link>
-                                    <Link href="/order">
+                                    <Link href="/my-order">
                                         <a>
                                             Đơn hàng của tôi
                                         </a>
