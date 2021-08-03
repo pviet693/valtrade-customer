@@ -49,6 +49,12 @@ const Article = () => {
         }
     },[]);
 
+    const navigateToDetail = (article) => {
+        Router.push({
+            pathname: '/article-detail',
+            query: { id: article.id },
+        }, null, { shallow: true });
+    };
 
     return (
         <>
@@ -63,7 +69,9 @@ const Article = () => {
                         <div className="content-list">
                             {
                                 listArticle.map(article => (
-                                    <ArticleCard title={article.title} content={article.content} image={article.imageUrl} timeCreate={article.timeCreate}/>
+                                    <div key={article.id}>
+                                        <ArticleCard title={article.title} content={article.content} image={article.imageUrl} timeCreate={article.timeCreate} onClick={() => navigateToDetail(article)}/>
+                                    </div>
                                 ))
                             }
                         </div>

@@ -1,6 +1,6 @@
-const ArticleCard = ({image, title, content, timeCreate}) => {
+const ArticleCard = ({image, title, content, timeCreate, onClick}) => {
     return (
-        <div className="article-card row"> 
+        <div className="article-card row" onClick={onClick}> 
             <div className="article-card-img col-md-4">
                 <img src={image} alt="banner" style={{width: '300px', height: '200px'}}/>
             </div>

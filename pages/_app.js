@@ -5,6 +5,7 @@ import '../styles/home.scss';
 import '../styles/register.scss';
 import '../styles/signin.scss';
 import '../styles/article.scss';
+import '../styles/article-detail.scss';
 import '../styles/profile.scss';
 import '../styles/slidenav.scss';
 import '../styles/reset-password.scss';
