@@ -29,6 +29,13 @@
             text-shadow: 2px 2px 4px rgb(0 0 0 / 50%);
           }
         }
+        .link-article{
+          &:hover {
+            text-decoration: none;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgb(0 0 0 / 50%);
+          }
+        }
 
         i {
           margin-right: 3px;

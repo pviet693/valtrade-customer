@@ -46,7 +46,7 @@ function NavBar() {
                         <a href="https://valtrade-seller.me/" className="link-seller" >Trang người bán</a>
                     </div>
                     <div className="navbar-link-item">
-                        Bảng tin
+                        <a href="https://valtrade.me/article" className="link-article" >Bảng tin</a>
                     </div>
                     <div className="navbar-link-item" onClick={() => router.push("/notification", null, { shallow: true })}>
                         <i className="pi pi-bell" aria-hidden></i>
