@@ -195,7 +195,7 @@ const Product = ({ brands, categories, products, query, total }) => {
 
     const product = listProduct.map((x, index) =>
         <div className="col-md-4 d-flex align-items-center flex-column mb-4" key={x.id}>
-            <ProductCard name={x.name} image={x.image} imageId={x.imageId} onClick={() => navigateToDetail(x)}
+            <ProductCard id={x.id} name={x.name} image={x.image} imageId={x.imageId} onClick={() => navigateToDetail(x)}
                 price={x.price} brand={x.brand.name} sku={x.sku} oldPrice={x.oldPrice} warrantyStatus={true} />
         </div>
     );

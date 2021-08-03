@@ -1,0 +1,35 @@
+.article{
+    .article-content{
+        cursor: pointer;
+
+        .content-list{
+            .article-card{
+                color: #000;
+                background: #fff;
+                box-shadow: 0 2px 8px rgb(0 0 0 / 16%);
+                font-family: -apple-system, BlinkMacSystemFont, Roboto, "Segoe UI", "Fira Sans", Avenir, "Helvetica Neue", "Lucida Grande", sans-serif;
+                height: auto;
+                width: 100%;
+                padding: 20px;
+                margin: 20px 0;
+                .article-card-infor{
+
+                    .article-card-title{
+                        font-weight: bold;
+                    }
+                    .article-card-content{
+                        // overflow: ellipsis;
+                        height: 110px;
+                        overflow: hidden; 
+                    }
+
+                    .article-card-time{
+                        margin-top: 45px;
+                        margin-left: 500px;
+                    }
+                } 
+            }
+
+        }
+    }
+}

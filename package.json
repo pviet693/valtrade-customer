@@ -21,6 +21,7 @@
     "cookie": "^0.4.1",
     "crypto": "^1.0.1",
     "dateformat": "^4.5.1",
+    "html-react-parser": "^1.2.7",
     "js-cookie": "^2.2.1",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",

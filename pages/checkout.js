@@ -33,12 +33,13 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
     const [paymentMethod, setPaymentMethod] = useState(common.PaymentMethods[0].value);
     const [openPaymentMethod, setOpenPaymentMethod] = useState(false);
     const router = useRouter();
+    
+    console.log(deliveryAddress);
+
     const onChangeShippingMethod = async (event, id) => {
         const { value } = event;
         const type = Object.keys(value)[0];
         let body = {};
-
-
 
         if (type === "ghn") {
             body = {
@@ -128,8 +129,8 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
                 shipType: { [shippingMethodName]: address },
                 payment: paymentMethod,
                 sellerId: cartCheckouts[id].seller._id,
-                nameRecei: user.name,
-                contact: user.phone,
+                nameRecei: deliveryAddress.name,
+                contact: deliveryAddress.phone,
                 note: ""
             }
 
@@ -143,6 +144,8 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
 
             arrayOrder.push(order);
         });
+
+
 
         const res = await api.order.createOrder({ arrayOrder });
         if (res.data.code === 200) {
@@ -191,6 +194,16 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
                 }
             }
         }
+        else if (res.data.code === 300){
+            swal.close()
+            let message = "Sản phẩm không đủ số lượng";
+            common.ToastPrime('Lỗi', message, 'error', toast);
+            let body = { listProductId: [res.data.result] };
+            const res2 = await api.cart.deleteCart(body);
+            if (res2.status === 200) {
+                router.push('/cart', null, { shallow: true });
+            }
+        }
     }
 
     const onChangeAddress = (id) => {
@@ -237,8 +250,8 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
                             shipType: { [shippingMethodName]: address },
                             payment: "paypal",
                             sellerId: cartCheckouts[id].seller._id,
-                            nameRecei: user.name,
-                            contact: user.phone,
+                            nameRecei: deliveryAddress.name,
+                            contact: deliveryAddress.phone,
                             note: ""
                         }
 
@@ -252,8 +265,7 @@ const Checkout = ({ groupCartBySeller, listAddress, productCheckouts, sumCheckou
 
                         arrayOrder.push(order);
                     })
-
-
+                    console.log(arrayOrder);
 
                     const res1 = await api.order.createOrder({ arrayOrder });
                     if (res1.data.code === 200) {
