@@ -12,6 +12,8 @@ import { useRouter } from 'next/router';
 import { Carousel } from 'primereact/carousel';
 import { DataContext } from "../store/GlobalState";
 import Router from "next/router";
+import Cookie from 'js-cookie';
+import Moment from "moment";
 
 const Home = ({ brands, categories, products, auctions }) => {
     const router = useRouter();
@@ -19,7 +21,7 @@ const Home = ({ brands, categories, products, auctions }) => {
     const [listCountDown, setListCountDown] = useState({});
     const [listCountUser, setListCountUser] = useState({});
     const [listPrice, setListPrice] = useState({});
-    const { auth } = state;
+    const { auth, firstAccess } = state;
 
     const size = 8;
 
@@ -106,6 +108,20 @@ const Home = ({ brands, categories, products, auctions }) => {
             }
         }
     }, [socket]);
+
+    const setNewAccess = async () => {
+        if (!Cookie.get(`access${Moment(new Date()).format("YYYY/MM/DD")}`)) {
+            const responseAccess = await api.buyer.access();
+            Cookie.set(`access${Moment(new Date()).format("YYYY/MM/DD")}`, true, {
+                path: '/',
+                expires: 1
+            })
+        }
+    };
+
+    useEffect(() => {
+        setNewAccess();
+    }, []);
 
     return (
         <>

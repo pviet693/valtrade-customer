@@ -25,7 +25,8 @@ export const DataProvider = ({ children }) => {
         searchQuery: "",
         conversations: [],
         activeChatUser: "",
-        openChat: false
+        openChat: false,
+        firstAccess: true
     }
     const [state, dispatch] = useReducer(reducers, initialState);
     const swal = Swal.mixin({

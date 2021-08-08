@@ -268,7 +268,7 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
     const getDiffTime = (time) => {
         const date = (new Date(time)).getTime();
         const currentDate = (new Date()).getTime();
-        return Math.ceil((date - currentDate) / (24 * 3600 * 1000));
+        return Math.ceil((Math.abs(currentDate - date)) / (24 * 3600 * 1000));
     }
 
     const renderFooter = () => {
@@ -387,7 +387,7 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
                             <div className="col-right">
                                 <div className="col-right-row"></div>
                                 <div className="col-right-row">
-                                    <div>Tham gia: <u>{getDiffTime(product.restWarrantyTime)} ngày trước</u></div>
+                                    <div>Tham gia: <u>{getDiffTime(product.sellerInfor.timeAccept)} ngày trước</u></div>
                                 </div>
                             </div>
                         </div>

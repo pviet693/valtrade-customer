@@ -142,6 +142,9 @@ const api = {
             } else {
                 return axios.get(url.buyer.getListRecommended());
             }
+        },
+        access: () => {
+            return axios.post(url.buyer.access());
         }
     },
     product: {

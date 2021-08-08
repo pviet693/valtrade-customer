@@ -22,6 +22,7 @@ const url = {
         postCart: () => `${baseUrl}/api/cart/updateCart`,
         changePassword: () => `${baseUrl}/api/buyer/changePassword`,
         getListRecommended: () => `${baseUrl}/api/product/recommend`,
+        access: () => `${baseUrl}/api/buyer/newaccess`
     },
     product: {
         postCreate: () => `${baseUrl}/api/product/create`,

@@ -81,6 +81,11 @@ const reducers = (state, action) => {
                 ...state,
                 openChat: action.payload
             };
+        case ACTIONS.NEW_ACCESS:
+            return {
+                ...state,
+                firstAccess: action.payload
+            };
         default:
             return state;
     }
