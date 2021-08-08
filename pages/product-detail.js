@@ -22,13 +22,16 @@ import cookie from "cookie";
 import Router from "next/router";
 import Moment from 'moment';
 Moment.locale('en');
+import { InputNumber } from 'primereact/inputnumber';
 
 const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
     const { state, dispatch, toast, swal } = useContext(DataContext);
     const { cart, auth } = state;
     const [showReport, setShowReport] = useState(false);
+    const [showRequire, setShowRequire] = useState(false);
     const [reason, setReason] = useState("");
     const [title, setTitle] = useState("");
+    const [price, setPrice] = useState("");
     const [information] = useState(() => {
         if (typeof product.information === "string") {
             return JSON.parse(product.information);
@@ -286,6 +289,43 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
         );
     }
 
+    const renderFooterRequire = () => {
+        return (
+            <div>
+                <Button
+                    label="Hủy bỏ"
+                    icon="pi pi-times"
+                    onClick={() => setShowRequire(false)}
+                    className="p-button-text btn-danger"
+                    style={{  }}
+                />
+                <Button label="Gửi" icon="pi pi-check" onClick={() => requirePrice()} autoFocus className="btn-primary" />
+            </div>
+        );
+    }
+
+    const requirePrice = async () => {
+        try{
+            let bodyRequire = {
+                productId: product.id,
+                priceSuggest: price
+            };
+            const res = await api.buyer.postPriceRequire(bodyRequire);
+            if (res.status === 200){
+                if (res.data.code === 200){
+                    setShowRequire(false);
+                    common.Toast("Gửi yêu cầu thành công", "success");
+                    setPrice("");
+                }
+                else {
+                    common.Toast("Vui lòng điền đầy đủ thông tin", "error");
+                }
+            }
+        } catch(err){
+            console.log(err);
+        }
+    }
+
     const sendReport = async () => {
         try{
             let bodyReport = {
@@ -381,7 +421,7 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
                                     <div>Số lượng sản phẩm đã đăng: <u>{product.countProductCreate}</u></div>
                                 </div>
                                 <div className="col-left-row">
-                                    <div>Số lượng sản phẩm đã bán: <u>0</u></div>
+                                    <div>Số lượng sản phẩm đã bán: <u>3</u></div>
                                 </div>
                             </div>
                             <div className="col-right">
@@ -404,6 +444,7 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
                             <div className="detail-price d-flex align-items-center">
                                 <LocalOfferIcon className="mr-2" style={{ color: "#0795df" }} />
                                 <div>{common.numberWithCommas(product.price)} VNĐ</div>
+                                <Button className="require-price" onClick={() => setShowRequire(true)}>Yêu cầu giá</Button>
                             </div>
                             <div className="detail-primary d-flex align-items-center">
                                 <VerifiedUserOutlinedIcon className="mr-2" style={{ color: "#0795df" }} />
@@ -653,6 +694,11 @@ const ProductDetail = ({ product, productRecommend, comments, attributes }) => {
                     className="form-control w-100 mt-1"
                     onChange={(e) => setReason(e.target.value)}
                     value={reason}
+                />
+            </Dialog>
+
+            <Dialog header="Yêu cầu giá với người bán" visible={showRequire} onHide={() => setShowRequire(false)} breakpoints={{ '960px': '75vw' }} style={{ width: '50vw' }} footer={renderFooterRequire()}>
+                <InputNumber id="price" placeholder="Giá yêu cầu" name="price" value={price} onValueChange={(e) =>setPrice(e.target.value)} style={{marginTop:'0', width:'100%'}}
                 />
             </Dialog>
         </div>

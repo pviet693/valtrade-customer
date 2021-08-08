@@ -203,13 +203,32 @@ const AuctionDetail = ({ product, logBidUser, currentPriceAuction, attributes })
                             <img src="/static/avatar2.png" alt="Avatar" />
                             <div>
                                 <div className="shop-name">
-                                    Shop ABC
+                                    {product.shopName}
                                 </div>
                                 <div className="shop-contact">
-                                    Liên hệ: 0968 250 823
+                                    Liên hệ: {product.phone}
                                 </div>
                                 <div className="shop-action">
-                                    <button className="btn btn-follow">Theo dõi</button>
+                                    <button
+                                        className="btn btn-follow"
+                                        onClick={() => {
+                                            const newConversation = {
+                                                toUserId: product.sellerInfor._id,
+                                                avatar: "/static/avatar-person.svg",
+                                                alt: "avatar",
+                                                title: product.sellerInfor.nameOwner,
+                                                subtitle: "",
+                                                dateString: "Vừa mới",
+                                                unread: 0,
+                                                className: ""
+                                            };
+                                            dispatch({ type: 'ADD_NEW_CONVERSATION', payload: newConversation });
+                                            dispatch({ type: 'ACTIVE_CHAT_USER', payload: product.sellerInfor._id });
+                                            dispatch({ type: 'OPEN_CHAT', payload: true })
+                                        }}
+                                    >
+                                        Nhắn tin
+                                    </button>
                                     <button className="btn btn-view-shop">Xem shop</button>
                                 </div>
                             </div>
@@ -217,7 +236,7 @@ const AuctionDetail = ({ product, logBidUser, currentPriceAuction, attributes })
                         <div className="shop-info-right">
                             <div className="col-left">
                                 <div className="col-left-row star">
-                                    <u className="mr-3 mt-1">5.0</u>
+                                    <u className="mr-3 mt-1">{(product.rateMedium / 20).toFixed(2)}</u>
                                     <i className="pi pi-star"></i>
                                     <i className="pi pi-star"></i>
                                     <i className="pi pi-star"></i>
@@ -225,25 +244,19 @@ const AuctionDetail = ({ product, logBidUser, currentPriceAuction, attributes })
                                     <i className="pi pi-star"></i>
                                 </div>
                                 <div className="col-left-row">
-                                    <div>Số lượng đánh giá: <u>100</u></div>
+                                    <div>Số lượng đánh giá: <u>{product.rateCount}</u></div>
                                 </div>
                                 <div className="col-left-row">
-                                    <div>Số lượng sản phẩm đã đăng: <u>100</u></div>
+                                    <div>Số lượng sản phẩm đã đăng: <u>{product.countProductCreate}</u></div>
                                 </div>
                                 <div className="col-left-row">
-                                    <div>Số lượng sản phẩm đã bán: <u>100</u></div>
+                                    <div>Số lượng sản phẩm đã bán: <u>3</u></div>
                                 </div>
                             </div>
                             <div className="col-right">
                                 <div className="col-right-row"></div>
                                 <div className="col-right-row">
-                                    <div>Người theo dõi: <u>100</u></div>
-                                </div>
-                                <div className="col-right-row">
-                                    <div>Tham gia: <u>1 ngày trước</u></div>
-                                </div>
-                                <div className="col-right-row">
-                                    <div>Số phẩm vi phạm: <u>0</u></div>
+                                    <div>Tham gia: <u>{getDiffTime(product.restWarrantyTime)} ngày trước</u></div>
                                 </div>
                             </div>
                         </div>
@@ -521,6 +534,7 @@ export async function getServerSideProps(ctx) {
 
     try {
         const res = await api.auction.getDetail(id);
+        console.log(res);
         if (res.status === 200) {
             if (res.data.code === 200) {
                 const { logBid } = res.data;
@@ -547,6 +561,9 @@ export async function getServerSideProps(ctx) {
                 productDetail.oldPrice = data.oldPrice;
                 productDetail.timePost = data.timePost;
                 productDetail.countProduct = data.countProduct;
+                productDetail.rateCount = data.rateCount;
+                productDetail.countProductCreate = data.countProductCreate;
+                productDetail.rateMedium = data.rateMedium;
                 logBid.forEach(element => {
                     const user = {};
                     user.name = element.inforBuyer.name;
