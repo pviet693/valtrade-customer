@@ -145,6 +145,9 @@ const api = {
         },
         access: () => {
             return axios.post(url.buyer.access());
+        },
+        postPriceRequire: (body) => {
+            return axios.post(url.buyer.postPriceRequire(), body, config);
         }
     },
     product: {
