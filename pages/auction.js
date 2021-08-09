@@ -215,16 +215,16 @@ const Auction = ({ brands, categories, products, query, total }) => {
     useEffect(() => {
         if (socket) {
             socket.on("countListUser", (res) => {
-                console.log(res, "countListUser");
+                // console.log(res, "countListUser");
                 setListCountUser(res);
             });
             socket.on("listPrice", (res) => {
-                console.log(res, "listPrice");
+                // console.log(res, "listPrice");
                 setListPrice(res);
             });
             socket.on("listCountDown", (res) => {
                 setListCountDown(res);
-                console.log(res);
+                // console.log(res);
             });
             return () => {
                 socket.off('countListUser');

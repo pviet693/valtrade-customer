@@ -177,7 +177,7 @@ const Product = ({ brands, categories, products, query, total }) => {
         router.push({
             pathname: '/product',
             query: queryTemp
-        }, null, { shallow: true });
+        });
     }
 
     const filterBrand = (brandId) => {
@@ -186,7 +186,7 @@ const Product = ({ brands, categories, products, query, total }) => {
         router.push({
             pathname: '/product',
             query: queryTemp
-        }, null, { shallow: true });
+        });
     }
 
     const brand = brands.map((x, index) =>
